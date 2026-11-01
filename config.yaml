@@ -1,0 +1,59 @@
+# 顧家貓設定檔
+# 這裡不放任何金鑰；金鑰一律放在 .env（參考 .env.example）。
+
+# 角色和模型的對應（SPEC 第 8 節）
+models:
+  router: "groq:openai/gpt-oss-120b"     # 輕量、快速
+  verifier: "groq:openai/gpt-oss-120b"   # 暫定；做完模型比較（SPEC 11-1）再決定
+  reporter: "groq:openai/gpt-oss-120b"   # 暫定，同上
+
+# offline：假模型，給測試用
+# replay：讀 replay_cache/ 裡錄好的回應，不需要金鑰（預設）
+# live：真的呼叫模型，同時把回應寫進快取
+# 環境變數 GUARDIAN_LLM_MODE 有值時會覆蓋這裡
+llm_mode: replay
+replay_cache_dir: replay_cache
+# live 模式是否把回應寫進回放快取。只用在模擬資料；LINE 伺服器會強制關閉（決策 D2）
+replay_cache_write: true
+
+# 呼叫參數，沿用老師 Planning 範例的設定。
+# 角色名稱底下的值會覆蓋 default；寫成 null 代表不傳這個參數
+# （例如換成不支援 reasoning_effort 的模型時：verifier: {reasoning_effort: null}）
+model_params:
+  default:
+    temperature: 0.3
+    reasoning_effort: low
+    max_completion_tokens: 8192
+
+# 快速過濾的分數門檻（SPEC 3-2）：score < watch 不處理；watch ≤ score < candidate 觀察；score ≥ candidate 候選
+# 各條規則的權重在 guardian/rules.yaml
+thresholds:
+  watch: 30
+  candidate: 60
+
+# 165 開放資料（SPEC 3-2，決策 D7）。更新：python -m guardian.data_165 --update（在自己電腦上跑）
+data_165:
+  cache_dir: data/165
+  max_age_days: 7
+  sources:
+    - id: fake_investment
+      name: 165 假投資（博弈）網站
+      dataset_id: "160055"
+      expect_title: 假投資
+    - id: suspended_sites
+      name: 遭停止解析涉詐網站
+      dataset_id: "176455"     # 待確認：第一次下載時會比對標題，不含「停止解析」就跳過
+      expect_title: 停止解析
+
+# 發言模式（SPEC 第 4 節）
+speaking:
+  mode: silent            # silent｜gentle｜on_mention
+  max_reply_chars: 100
+
+# Thread 存活時間（SPEC 3-5）
+thread_ttl_hours: 24
+
+# 隱私（SPEC 第 7 節）
+privacy:
+  record_retention_days: 30
+  hash_salt_env: GUARDIAN_HASH_SALT     # 發送者 ID 雜湊用的鹽，值放在 .env

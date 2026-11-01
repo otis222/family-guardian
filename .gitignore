@@ -1,0 +1,11 @@
+# 金鑰
+.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 風險事件的最小紀錄（真實資料，不進版控）
+records/

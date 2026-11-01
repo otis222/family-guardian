@@ -1,0 +1,14 @@
+# 課程固定套件（沿用老師範例的版本）
+aisuite[groq]==0.2.0
+groq==0.37.1
+gradio==6.30.0
+
+# 本專案
+PyYAML>=6.0
+python-dotenv>=1.0
+
+# 開發與測試
+pytest>=8
+jupytext>=1.16
+
+# Phase 6（LINE 伺服器）會再加入：fastapi、uvicorn、line-bot-sdk

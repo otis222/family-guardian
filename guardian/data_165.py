@@ -5,6 +5,7 @@
   來源有填 download_url 時直接用它。
 - 快取：data/165/<來源 id>.csv（只有 domain 一欄），另存 meta.json（下載時間、網域數、下載網址）。
 - 下載失敗沿用舊快取，不重試、不擋啟動。
+- 闢謠專區（kind=rumors）另存 title、content 兩欄，給查證 Worker 的 search_165_rumors 用（RumorIndex）。
 
 在自己的電腦上執行（每週一次）：
     python -m guardian.data_165 --update
@@ -14,16 +15,19 @@ from __future__ import annotations
 
 import argparse
 import csv
+import html
 import io
 import json
+import math
 import re
 import sys
+from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Iterable, Iterator
 
-from .urls import domain_suffixes, url_host
+from .urls import domain_suffixes, normalize_width, url_host
 
 DATASET_API = "https://data.gov.tw/api/v2/rest/dataset/{dataset_id}"
 USER_AGENT = "family-guardian/0.2 (TAICA course project)"
@@ -31,6 +35,9 @@ MAX_BYTES = 20 * 1024 * 1024
 TAIPEI = timezone(timedelta(hours=8))
 URL_COLUMN_HINTS = ("網址", "url", "網域", "domain")
 META_FILE = "meta.json"
+MAX_RUMOR_CHARS = 2000
+SNIPPET_CHARS = 80  # 放回 prompt 的摘錄長度，控制 token
+MIN_SHARED_GRAMS = 3
 
 Fetcher = Callable[[str], bytes]
 
@@ -46,6 +53,7 @@ class Source:
     dataset_id: str | None = None
     download_url: str | None = None
     expect_title: str | None = None
+    kind: str = "domains"  # domains｜rumors
 
 
 @dataclass(frozen=True)
@@ -92,6 +100,37 @@ def parse_domains(csv_text: str) -> set[str]:
         for cell in cells:
             domains.update(_cell_hosts(cell))
     return domains
+
+
+_TAG = re.compile(r"<[^>]+>")
+
+
+def _clean_cell(cell: str | None) -> str:
+    return " ".join(html.unescape(_TAG.sub(" ", cell or "")).split())
+
+
+def parse_rumors(csv_text: str) -> list[tuple[str, str]]:
+    """闢謠專區的 CSV（編號、標題、發佈時間、發佈內容）→ (標題, 內容)。"""
+    reader = csv.DictReader(io.StringIO(csv_text))
+    fields = reader.fieldnames or []
+    title_key = next((name for name in fields if "標題" in name), None)
+    content_key = next((name for name in fields if "內容" in name), None)
+    if not title_key or not content_key:
+        return []
+    rows: dict[str, str] = {}
+    for row in reader:
+        title = _clean_cell(row.get(title_key))
+        if title:
+            rows.setdefault(title, _clean_cell(row.get(content_key))[:MAX_RUMOR_CHARS])
+    return list(rows.items())
+
+
+def _rumor_csv(rows: list[tuple[str, str]]) -> str:
+    buffer = io.StringIO()
+    writer = csv.writer(buffer, lineterminator="\n")
+    writer.writerow(["title", "content"])
+    writer.writerows(rows)
+    return buffer.getvalue()
 
 
 # ---------------------------------------------------------------- data.gov.tw API
@@ -212,9 +251,15 @@ def update(
             continue
         try:
             url = resolve_download_url(source, fetch)
-            domains = parse_domains(decode_bytes(fetch(url)))
-            if not domains:
-                raise Data165Error(f"{source.name}：下載的檔案裡找不到任何網域")
+            text = decode_bytes(fetch(url))
+            if source.kind == "rumors":
+                rumors = parse_rumors(text)
+                count, content = len(rumors), _rumor_csv(rumors)
+            else:
+                domains = parse_domains(text)
+                count, content = len(domains), "\n".join(["domain", *sorted(domains)]) + "\n"
+            if not count:
+                raise Data165Error(f"{source.name}：下載的檔案裡找不到任何{'文章' if source.kind == 'rumors' else '網域'}")
         except Data165Error as exc:
             results.append(UpdateResult(source.id, "failed", old_count, str(exc)))
             continue
@@ -222,16 +267,15 @@ def update(
             message = f"{source.name}：{type(exc).__name__}: {exc}"
             results.append(UpdateResult(source.id, "failed", old_count, message[:300]))
             continue
-        lines = ["domain", *sorted(domains)]
-        _write_atomic(cache_dir / f"{source.id}.csv", "\n".join(lines) + "\n")
+        _write_atomic(cache_dir / f"{source.id}.csv", content)
         meta[source.id] = {
             "name": source.name,
             "dataset_id": source.dataset_id,
             "download_url": url,
             "downloaded_at": now.isoformat(timespec="seconds"),
-            "domains": len(domains),
+            "domains": count,
         }
-        results.append(UpdateResult(source.id, "updated", len(domains)))
+        results.append(UpdateResult(source.id, "updated", count))
     _write_atomic(cache_dir / META_FILE, json.dumps(meta, ensure_ascii=False, indent=2) + "\n")
     return results
 
@@ -281,6 +325,47 @@ class DomainList:
         return f"{len(self._domains)} 個網域{newest}"
 
 
+def _bigrams(text: str) -> set[str]:
+    clean = re.sub(r"[\W_]+", "", normalize_width(text)).lower()
+    return {clean[index:index + 2] for index in range(len(clean) - 1)}
+
+
+class RumorIndex:
+    """165 闢謠專區的本機檢索（決策 D14）：字元雙連詞加 IDF，不需要額外套件，結果固定。標題命中的權重加倍。"""
+
+    def __init__(self, rows: Iterable[tuple[str, str]] = ()) -> None:
+        self.rows = list(rows)
+        self._titles = [_bigrams(title) for title, _ in self.rows]
+        self._grams = [titles | _bigrams(content) for titles, (_, content) in zip(self._titles, self.rows)]
+        frequency = Counter(gram for grams in self._grams for gram in grams)
+        self._idf = {gram: math.log(1 + len(self.rows) / count) for gram, count in frequency.items()}
+
+    def __len__(self) -> int:
+        return len(self.rows)
+
+    def search(self, query: str, limit: int = 2) -> list[dict[str, str]]:
+        wanted = _bigrams(query)
+        scored = []
+        for index, grams in enumerate(self._grams):
+            shared = wanted & grams
+            if len(shared) >= MIN_SHARED_GRAMS:
+                score = sum(self._idf[gram] * (2 if gram in self._titles[index] else 1) for gram in shared)
+                scored.append((-score, index))
+        return [{"title": self.rows[index][0], "snippet": self.rows[index][1][:SNIPPET_CHARS]}
+                for _, index in sorted(scored)[:limit]]
+
+    @classmethod
+    def from_cache(cls, cache_dir: Path, source: Source) -> RumorIndex:
+        path = Path(cache_dir) / f"{source.id}.csv"
+        if not path.is_file():
+            return cls()
+        with path.open(encoding="utf-8", newline="") as handle:
+            return cls([(row.get("title") or "", row.get("content") or "") for row in csv.DictReader(handle)])
+
+    def describe(self) -> str:
+        return f"{len(self.rows)} 篇" if self.rows else "尚未下載（在自己電腦上執行 python -m guardian.data_165 --update）"
+
+
 # ---------------------------------------------------------------- 命令列
 
 STATUS_LABELS = {"updated": "已更新", "fresh": "不用更新", "failed": "失敗（沿用舊快取）"}
@@ -302,12 +387,14 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     failed = False
     if args.update or args.force:
-        for result in update(settings.cache_dir, settings.sources,
+        for result in update(settings.cache_dir, [*settings.sources, settings.rumors],
                              max_age_days=settings.max_age_days, force=args.force):
             failed = failed or result.status == "failed"
             detail = f"：{result.message}" if result.message else ""
-            print(f"{result.source_id}｜{STATUS_LABELS[result.status]}｜{result.domains} 個網域{detail}")
+            unit = "篇" if result.source_id == settings.rumors.id else "個網域"
+            print(f"{result.source_id}｜{STATUS_LABELS[result.status]}｜{result.domains} {unit}{detail}")
     print(f"165 名單：{DomainList.from_cache(settings.cache_dir, settings.sources).describe()}")
+    print(f"165 闢謠專區：{RumorIndex.from_cache(settings.cache_dir, settings.rumors).describe()}")
     return 1 if failed else 0
 
 

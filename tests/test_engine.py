@@ -1,15 +1,14 @@
-"""引擎：Phase 1 驗收（offline 跑完劇本），Phase 2 起用正式的遮罩、網址抽取和快速過濾。"""
+"""引擎：offline 跑完劇本、正規化和隱私。流程的各個分支在 test_pipeline.py。"""
 
 import json
 
 import pytest
 
 from guardian.config import PROJECT_ROOT, load_config
-from guardian.data_165 import DomainList
+from guardian.data_165 import RumorIndex
 from guardian.engine import DEMO_SALT, Engine, hash_sender
 from guardian.llm import LLMClient
 from guardian.models import RECORD_FIELDS, RiskSignal, SchemaError
-from guardian.rules import BLOCKLIST_REASON, FastFilter, RuleSet
 from guardian.scenario import load_scenario
 
 DEMO = PROJECT_ROOT / "scenarios" / "demo_family.yaml"
@@ -26,6 +25,7 @@ def scenario():
 
 
 def make_engine(config, **kwargs):
+    kwargs.setdefault("rumors", RumorIndex())  # 不受開發者本機的闢謠快取影響
     return Engine(config, salt=DEMO_SALT, llm_client=LLMClient.from_config(config), **kwargs)
 
 
@@ -49,12 +49,17 @@ def test_offline_demo_runs_end_to_end(config, scenario):
     assert summary.events == len(scenario.messages) == 21
     assert summary.by_kind == {"text": 19, "member_joined": 1, "mention": 1}
     assert summary.by_band == {"ignore": 14, "watch": 1, "candidate": 5}
-    assert [t.id for t in engine.candidate_queue] == ["m03", "m06", "m08", "m09", "m16"]
+    assert (summary.candidates, summary.pending, summary.router_rounds) == (5, 0, 5)
     assert {r.event_id: r.outcome for r in engine.records} == {
-        "m03": "candidate", "m06": "candidate", "m08": "candidate", "m09": "candidate",
-        "m14": "watch", "m16": "candidate",
+        "m03": "reported", "m06": "reported", "m08": "reported", "m09": "reported_replied",
+        "m14": "reported", "m16": "reported",
     }
-    assert summary.llm["total_calls"] == 0  # 快速過濾不呼叫模型（測試清單第 4 項的前半）
+    assert {r.risk_level for r in engine.records} == {"high"}
+    assert [r.event_id for r in engine.reports] == ["m03", "m06", "m08", "m09", "m14", "m16"]
+    assert [r.event_id for r in engine.replies] == ["m09"]  # silent 模式只回應 @
+    # 5 次分流＋1 次起草；6 次查證；6 次 high 的摘要。日常訊息 0 次（測試清單第 4 項）
+    assert summary.llm["calls"] == {"router": 6, "verifier": 6, "reporter": 6}
+    assert engine.counts["thread_skipped"] == 1  # m14 開了 Thread，表哥之後的 0 分訊息不送模型（決策 D10）
 
 
 def test_demo_bands_match_labels(config, scenario):
@@ -151,16 +156,8 @@ def test_fast_filter_bands_route_events(config, scenario):
     engine = make_engine(config, fast_filter=fake_filter)
     summary = engine.run(scenario.raw_events())
     assert summary.by_band == {"ignore": 18, "watch": 1, "candidate": 1}
-    assert [t.id for t in engine.candidate_queue] == ["m03"]
-    assert {r.event_id: r.outcome for r in engine.records} == {"m03": "candidate", "m06": "watch"}
-
-
-def test_blocklist_hit_goes_to_candidates(config):
-    fast_filter = FastFilter(RuleSet.load(), DomainList({"bad.example": "fake_investment"}))
-    engine = make_engine(config, fast_filter=fast_filter)
-    engine.process(raw_event(text="大家看看 https://login.bad.example/x"))
-    assert [t.id for t in engine.candidate_queue] == ["x1"]
-    assert engine.records[0].rules[0] == BLOCKLIST_REASON
+    assert summary.candidates == 1
+    assert {r.event_id: r.outcome for r in engine.records} == {"m03": "reported", "m06": "discarded"}
 
 
 def test_custom_redact_hook_is_used(config):

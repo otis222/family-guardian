@@ -8,7 +8,7 @@ from __future__ import annotations
 import os
 import re
 import warnings
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -38,6 +38,7 @@ class Data165Settings:
     cache_dir: Path
     max_age_days: int
     sources: tuple[Source, ...]
+    rumors: Source
 
 
 @dataclass(frozen=True)
@@ -52,6 +53,7 @@ class Config:
     speaking_mode: str
     max_reply_chars: int
     thread_ttl_hours: int
+    router_latency_seconds: int
     record_retention_days: int
     hash_salt_env: str
 
@@ -169,6 +171,7 @@ def load_config(path: str | Path | None = None, env: Mapping[str, str] | None = 
         cache_dir=_path(_get(data_raw, "cache_dir", "data_165"), "data_165.cache_dir", config_path),
         max_age_days=_int(_get(data_raw, "max_age_days", "data_165"), "data_165.max_age_days", 1),
         sources=_sources(_get(data_raw, "sources", "data_165")),
+        rumors=replace(_sources([_get(data_raw, "rumors", "data_165")])[0], kind="rumors"),
     )
 
     model_params = _mapping(raw.get("model_params") or {}, "model_params")
@@ -200,6 +203,7 @@ def load_config(path: str | Path | None = None, env: Mapping[str, str] | None = 
         speaking_mode=_choice(_get(speaking, "mode", "speaking"), "speaking.mode", SPEAKING_MODES),
         max_reply_chars=_int(_get(speaking, "max_reply_chars", "speaking"), "speaking.max_reply_chars", 1),
         thread_ttl_hours=_int(_get(raw, "thread_ttl_hours", where), "thread_ttl_hours", 1),
+        router_latency_seconds=_int(_get(raw, "router_latency_seconds", where), "router_latency_seconds", 0),
         record_retention_days=_int(
             _get(privacy, "record_retention_days", "privacy"), "privacy.record_retention_days", 1
         ),

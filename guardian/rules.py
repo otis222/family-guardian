@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 
 DEFAULT_RULES_PATH = Path(__file__).with_name("rules.yaml")
 BLOCKLIST_REASON = "165 涉詐網站名單"
+INJECTION_REASON = "訊息夾帶給 AI 的指令"
 _ID = re.compile(r"^[a-z][a-z0-9_]*$")
 
 
@@ -103,6 +104,9 @@ class RuleSet:
     amount_name: str
     amount_weight: int
     amount_patterns: tuple[re.Pattern, ...]
+    injection_patterns: tuple[re.Pattern, ...] = ()
+    injection_positive: tuple[str, ...] = ()
+    injection_negative: tuple[str, ...] = ()
 
     @classmethod
     def load(cls, path: str | Path = DEFAULT_RULES_PATH) -> RuleSet:
@@ -163,6 +167,14 @@ class RuleSet:
         if not amount_patterns:
             raise RulesError("context.amount.patterns 不能是空的")
 
+        injection = raw.get("injection_markers")
+        if not isinstance(injection, dict):
+            raise RulesError(f"{path.name}：缺少 injection_markers")
+        injection_patterns = _strings(injection.get("patterns"), "injection_markers.patterns")
+        if not injection_patterns:
+            raise RulesError("injection_markers.patterns 不能是空的")
+        injection_examples = injection.get("examples") or {}
+
         def setting(key: str, minimum: int) -> int:
             value = raw.get(key)
             if isinstance(value, bool) or not isinstance(value, int) or not minimum <= value <= 100:
@@ -183,6 +195,9 @@ class RuleSet:
             amount_name=_name(sections["amount"].get("name"), "context.amount"),
             amount_weight=_weight(sections["amount"].get("weight"), "context.amount"),
             amount_patterns=tuple(_compile(pattern, "context.amount") for pattern in amount_patterns),
+            injection_patterns=tuple(_compile(pattern, "injection_markers") for pattern in injection_patterns),
+            injection_positive=_strings(injection_examples.get("positive"), "injection_markers 的正例"),
+            injection_negative=_strings(injection_examples.get("negative"), "injection_markers 的反例"),
         )
 
     def category_scores(self, text: str) -> list[tuple[Category, int]]:
@@ -196,6 +211,11 @@ class RuleSet:
 
     def matched_category_ids(self, text: str) -> set[str]:
         return {category.id for category, _ in self.category_scores(prepare_text(text))}
+
+    def flags_injection(self, text: str) -> bool:
+        """訊息裡有要 AI 改變行為的文字（決策 D17）。不計分，只限制模型不能放行。"""
+        prepared = prepare_text(text)
+        return any(pattern.search(prepared) for pattern in self.injection_patterns)
 
 
 class FastFilter:

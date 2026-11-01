@@ -3,6 +3,7 @@
 `python -m guardian.data_165 --update` 會把 165 開放資料下載到這裡（來源設定在 `config.yaml` 的 `data_165`）：
 
 - `<來源 id>.csv`：只有 `domain` 一欄，已經轉小寫、拿掉 `www.`。
-- `meta.json`：每個來源的下載時間、網域數和下載網址。
+- `rumors.csv`：165 詐騙闢謠專區，`title`、`content` 兩欄，給查證 Worker 的 `search_165_rumors` 用。
+- `meta.json`：每個來源的下載時間、筆數和下載網址。
 
 超過 7 天才會重新下載；下載失敗會沿用舊檔案。資料是政府開放資料（政府資料開放授權第 1 版），可以一起放進版控，讓 Colab 重現實驗。

@@ -162,3 +162,54 @@ def test_missing_or_wrong_title_raises(title):
     payload = json.dumps({"result": {"title": title, "distribution": []}}).encode("utf-8")
     with pytest.raises(data_165.Data165Error):
         resolve_download_url(SOURCE, FakeFetch({API_URL: payload}))
+
+
+# ---------------------------------------------------------------- 165 闢謠專區（決策 D14）
+
+RUMOR_SOURCE = Source(id="rumors", name="165 詐騙闢謠專區", dataset_id="38262", expect_title="闢謠", kind="rumors")
+RUMOR_CSV = (
+    "編號,標題,發佈時間,發佈內容\n"
+    "1,假投資群組老師帶單,2026-01-01,<p>投資群組老師帶單&nbsp;都是常見手法</p>\n"
+    "2,颱風假消息,2026-01-02,停班停課請看官方公告\n"
+    "2,颱風假消息,2026-01-02,重複的標題\n"
+)
+RUMOR_PAGES = {
+    "https://data.gov.tw/api/v2/rest/dataset/38262": (
+        '{"result":{"title":"165反詐騙諮詢專線－詐騙闢謠專區","distribution":'
+        '[{"resourceFormat":"CSV","resourceDownloadUrl":"https://opdadm.example/rumors"}]}}'
+    ),
+    "https://opdadm.example/rumors": RUMOR_CSV,
+}
+
+
+def test_parse_rumors_cleans_html_and_duplicates():
+    assert data_165.parse_rumors(RUMOR_CSV) == [
+        ("假投資群組老師帶單", "投資群組老師帶單 都是常見手法"),
+        ("颱風假消息", "停班停課請看官方公告"),
+    ]
+    assert data_165.parse_rumors("a,b\n1,2\n") == []
+
+
+def test_update_downloads_rumors_and_index_reads_them_back(tmp_path):
+    results = data_165.update(tmp_path, [RUMOR_SOURCE], fetch=lambda url: RUMOR_PAGES[url].encode("utf-8"))
+    assert [(r.status, r.domains) for r in results] == [("updated", 2)]
+    index = data_165.RumorIndex.from_cache(tmp_path, RUMOR_SOURCE)
+    assert len(index) == 2 and "2 篇" in index.describe()
+    assert index.search("老師帶單的投資群組")[0]["title"] == "假投資群組老師帶單"
+
+
+def test_update_rejects_a_rumor_file_without_articles(tmp_path):
+    pages = {**RUMOR_PAGES, "https://opdadm.example/rumors": "a,b\n1,2\n"}
+    results = data_165.update(tmp_path, [RUMOR_SOURCE], fetch=lambda url: pages[url].encode("utf-8"))
+    assert results[0].status == "failed" and "文章" in results[0].message
+    assert len(data_165.RumorIndex.from_cache(tmp_path, RUMOR_SOURCE)) == 0
+
+
+def test_rumor_search_is_stable_limited_and_ignores_weak_matches():
+    index = data_165.RumorIndex([(f"投資詐騙第{n}篇", "老師帶單保證獲利") for n in range(5)] + [("颱風", "停班停課")])
+    first = index.search("老師帶單保證獲利")
+    assert first == index.search("老師帶單保證獲利")
+    assert len(first) == 2 and all(len(item["snippet"]) <= 80 for item in first)
+    assert index.search("完全無關的句子") == []
+    assert data_165.RumorIndex().search("老師帶單") == []
+    assert "尚未下載" in data_165.RumorIndex().describe()

@@ -39,3 +39,10 @@ def test_url_host_normalizes():
 def test_domain_suffixes_strip_www_and_stop_before_tld():
     assert domain_suffixes("www.login.bad.example") == ["login.bad.example", "bad.example"]
     assert domain_suffixes("bad.example") == ["bad.example"]
+
+
+def test_strip_urls_replaces_links_and_keeps_the_rest():
+    from guardian.urls import strip_urls
+
+    assert strip_urls("看 https://bad.example/a?x=1，還有 www.bad.example。") == "看 ＜網址＞，還有 ＜網址＞。"
+    assert strip_urls("沒有網址") == "沒有網址"

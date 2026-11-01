@@ -118,16 +118,53 @@ def extract_json(text: str) -> Any:
 
 
 _EVENT_ID = re.compile(r'"event_id"\s*:\s*"([^"]+)"')
+OFFLINE_REPLY = "這則訊息有詐騙常見的特徵。請先不要點連結、不要轉帳，打 165 查證，或問問家人。"
+
+
+def _prompt_data(user_prompt: str) -> dict[str, Any]:
+    try:
+        data = json.loads(user_prompt)
+    except json.JSONDecodeError:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def _offline_verify(data: dict[str, Any]) -> str:
+    """有工具就先查一次；下結論只看規則結果，不看訊息文字，所以訊息裡的指令影響不了它。"""
+    signal = data["signal"]
+    if data["tools"]:
+        query = "、".join(signal["rules"]) or data["event"]["text"]
+        return json.dumps({"tool_calls": [{"name": data["tools"][0], "query": query}]}, ensure_ascii=False)
+    level = "high" if signal["score"] >= 50 else "medium" if signal["rules"] else "low"
+    return json.dumps({
+        "risk_level": level,
+        "reasons": signal["rules"] or ["沒有明顯特徵"],
+        "evidence": [],
+        "advice": ["先不要點連結、不要轉帳", "打 165 查證，或先問家人"],
+    }, ensure_ascii=False)
 
 
 def offline_responder(role: str, system_prompt: str, user_prompt: str) -> str:
-    """offline 模式的假模型：依角色回傳固定、符合 schema 的內容。
+    """offline 模式的假模型：固定、符合 schema，讓劇本端到端跑出有意義的結果。
 
-    - router：替 user prompt 裡出現的每個 "event_id" 回一個 ignore 決策
-    - verifier：固定回 low
+    - router：候選事件一律 verify；起草發言回固定文字
+    - verifier：有工具先查一次，再依規則分數下結論（50 分以上 high）
     - reporter：固定一段文字
+    其他 prompt 回最保守的內容（router 全部 ignore、verifier 回 low）。
     測試需要其他行為時，用 LLMClient(responder=...) 注入自己的假函式。
     """
+    data = _prompt_data(user_prompt)
+    task = data.get("task")
+    if role == "router" and task in ("draft_reply", "rewrite_reply"):
+        return OFFLINE_REPLY
+    if role == "router" and task == "route":
+        decisions = [
+            {"event_id": event["event_id"], "action": "verify", "reason": "規則分數達到候選門檻"}
+            for event in data["events"]
+        ]
+        return json.dumps({"decisions": decisions}, ensure_ascii=False)
+    if role == "verifier" and task == "verify":
+        return _offline_verify(data)
     if role == "router":
         event_ids = list(dict.fromkeys(_EVENT_ID.findall(user_prompt)))
         decisions = [

@@ -94,6 +94,18 @@ def extract_urls(text: str) -> list[str]:
     return result
 
 
+def strip_urls(text: str, placeholder: str = "＜網址＞") -> str:
+    """把文字裡的網址換成佔位字（模型寫的文字要給家人看之前用）。"""
+    text = normalize_width(text)
+    pieces: list[str] = []
+    last = 0
+    for start, end in find_urls(text):
+        pieces += [text[last:start], placeholder]
+        last = end
+    pieces.append(text[last:])
+    return "".join(pieces)
+
+
 def url_host(value: str) -> str | None:
     """網址或網域 → 正規化的網域。"""
     value = value.strip()

@@ -22,6 +22,8 @@ def test_default_config_is_valid():
     assert config.speaking_mode == "silent"  # 預設不在群組發言
     assert config.max_reply_chars == 100
     assert config.thread_ttl_hours == 24
+    assert config.router_latency_seconds == 20
+    assert (config.data_165.rumors.dataset_id, config.data_165.rumors.kind) == ("38262", "rumors")
     assert config.record_retention_days == 30
     assert config.hash_salt_env == "GUARDIAN_HASH_SALT"
     assert config.replay_cache_write is True  # 模擬資料用；LINE 伺服器會強制關閉（決策 D2）

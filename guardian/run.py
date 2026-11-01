@@ -12,20 +12,31 @@ import argparse
 import dataclasses
 import sys
 
-from .config import ConfigError, load_config, load_env_file
+from .config import SPEAKING_MODES, ConfigError, load_config, load_env_file
 from .engine import DEMO_SALT, Engine, RunSummary
 from .llm import MODES, LLMClient, LLMError, safe_error
-from .models import BAND_LABELS, BANDS, KIND_LABELS, SchemaError
+from .models import BAND_LABELS, BANDS, KIND_LABELS, RISK_LABELS, SchemaError
 from .rules import FastFilter, RulesError
 from .scenario import Scenario, ScenarioError, load_scenario
 
-STAGE_LABELS = {"normalize": "正規化", "fast_path": "快速過濾"}
+STAGE_LABELS = {
+    "normalize": "正規化",
+    "fast_path": "快速過濾",
+    "thread": "Thread",
+    "router": "Router",
+    "verifier": "查證",
+    "early_action": "提前行動",
+    "reflection": "發言前自檢",
+    "speak": "發言",
+    "reporter": "回報",
+}
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="python -m guardian.run", description="用模擬劇本跑一次顧家貓引擎")
     parser.add_argument("scenario", help="劇本檔，例如 scenarios/demo_family.yaml")
     parser.add_argument("--mode", choices=MODES, help="覆蓋 config.yaml 的 llm_mode")
+    parser.add_argument("--speaking", choices=SPEAKING_MODES, help="覆蓋 config.yaml 的發言模式")
     parser.add_argument("--config", default=None, help="設定檔路徑（預設是專案根目錄的 config.yaml）")
     parser.add_argument("--trace", action="store_true", help="逐則印出決策紀錄")
     return parser
@@ -49,15 +60,20 @@ def print_summary(summary: RunSummary, scenario: Scenario, engine: Engine) -> No
     bands = "｜".join(f"{BAND_LABELS[band]} {summary.by_band[band]}" for band in BANDS)
     calls = "｜".join(f"{role} {count}" for role, count in llm["calls"].items())
     print(f"顧家貓 · {scenario.name}")
-    print(f"模式：{config.llm_mode}　事件：{summary.events} 則　發言模式：{config.speaking_mode}")
+    print(f"模式：{config.llm_mode}　事件：{summary.events} 則　發言模式：{engine.speaking_mode}")
     print(f"事件種類：{kinds}")
     print(f"快速過濾：{bands}（門檻：觀察 ≥ {config.thresholds.watch}，候選 ≥ {config.thresholds.candidate}）")
-    print(f"候選佇列：{summary.candidates} 則　風險事件紀錄：{summary.records} 筆")
+    print(f"候選佇列：進過 {summary.candidates} 則，還留 {summary.pending} 則，Router 跑 {summary.router_rounds} 輪")
+    print(f"風險事件紀錄：{summary.records} 筆　守護人報告：{summary.reports} 則　群組回覆：{summary.replies} 則")
     print(f"模型呼叫：{llm['total_calls']} 次（{calls}）　錯誤：{llm['total_errors']} 次")
     if isinstance(engine.fast_filter, FastFilter):
         print(f"165 名單：{engine.fast_filter.blocklist.describe()}")
-    print()
-    print("※ Router 和 Worker 在 Phase 3 接上；目前候選和觀察事件只登記，不會呼叫模型。")
+    print(f"165 闢謠專區：{engine.verifier.rumors.describe()}")
+    for report in engine.reports:
+        level = RISK_LABELS.get(report.risk_level, "查證失敗")
+        print(f"報告 {report.event_id}：{level}{'（即時）' if report.push else ''}｜{'、'.join(report.rules)}")
+    for reply in engine.replies:
+        print(f"回覆 {reply.event_id}（{reply.source}）：{reply.text}")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -67,6 +83,8 @@ def main(argv: list[str] | None = None) -> int:
         config = load_config(args.config)
         if args.mode:
             config = dataclasses.replace(config, llm_mode=args.mode)
+        if args.speaking:
+            config = dataclasses.replace(config, speaking_mode=args.speaking)
         scenario = load_scenario(args.scenario)
         engine = Engine(config, salt=DEMO_SALT, llm_client=LLMClient.from_config(config))
         summary = engine.run(scenario.raw_events())

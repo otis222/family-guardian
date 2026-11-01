@@ -144,3 +144,14 @@ def write_rules(tmp_path, mutate):
 def test_invalid_rules_file_is_rejected(tmp_path, mutate):
     with pytest.raises(RulesError):
         RuleSet.load(write_rules(tmp_path, mutate))
+
+
+# ---------------------------------------------------------------- 夾帶給 AI 的指令（決策 D17）
+
+def test_injection_examples_are_flagged_and_lookalikes_are_not():
+    rules = RuleSet.load()
+    assert len(rules.injection_positive) >= 3 and len(rules.injection_negative) >= 3
+    for text in rules.injection_positive:
+        assert rules.flags_injection(text), text
+    for text in rules.injection_negative:
+        assert not rules.flags_injection(text), text

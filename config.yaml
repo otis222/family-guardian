@@ -42,8 +42,14 @@ data_165:
       expect_title: 假投資
     - id: suspended_sites
       name: 遭停止解析涉詐網站
-      dataset_id: "176455"     # 待確認：第一次下載時會比對標題，不含「停止解析」就跳過
+      dataset_id: "176455"
       expect_title: 停止解析
+  # 查證 Worker 的 search_165_rumors 用
+  rumors:
+    id: rumors
+    name: 165 詐騙闢謠專區
+    dataset_id: "38262"
+    expect_title: 闢謠
 
 # 發言模式（SPEC 第 4 節）
 speaking:
@@ -52,6 +58,9 @@ speaking:
 
 # Thread 存活時間（SPEC 3-5）
 thread_ttl_hours: 24
+
+# Router 的模擬推理時間（決策 D15）：這段期間積壓的候選事件，下一輪合併成一次呼叫
+router_latency_seconds: 20
 
 # 隱私（SPEC 第 7 節）
 privacy:

@@ -26,6 +26,7 @@ KIND_LABELS = {
     "mention": "提及顧家貓",
 }
 BAND_LABELS = {"ignore": "不處理", "watch": "觀察", "candidate": "候選"}
+RISK_LABELS = {"low": "低", "medium": "中", "high": "高"}
 
 # 風險事件的最小紀錄只能有這些欄位（SPEC 第 7 節）
 RECORD_FIELDS = ("event_id", "time", "sender_hash", "rules", "risk_level", "outcome")
@@ -305,10 +306,35 @@ class EventRecord:
 
 
 @dataclass
-class TraceEntry:
-    """決策紀錄的一行（Gradio 中欄、命令列 --trace）。只在記憶體裡，也不放訊息原文。"""
+class GroupReply:
+    """顧家貓要在群組說的話（SPEC 第 4 節）。source：model｜rewrite｜template。圖卡在 Phase 4 加入。"""
 
     event_id: str
-    stage: str  # normalize、fast_path；Phase 3 起加 router、verifier、reporter 等
+    text: str
+    source: str
+
+
+@dataclass
+class GuardianReport:
+    """給守護人的結構化報告（SPEC 3-4）。不含訊息內容和網址；只有 high 才即時推播（SPEC 第 10 節）。"""
+
+    event_id: str
+    time: datetime
+    sender_hash: str
+    risk_level: str | None  # 查證失敗時是 None
+    rules: list[str]
+    reasons: list[str]
+    evidence: list[str]
+    advice: list[str]
+    summary: str
+    push: bool = False
+
+
+@dataclass
+class TraceEntry:
+    """決策紀錄的一行（Gradio 中欄、命令列 --trace）。只在記憶體裡，也不放訊息原文和模型的文字。"""
+
+    event_id: str
+    stage: str  # normalize、fast_path、thread、router、verifier、early_action、reflection、speak、reporter
     message: str
     data: dict[str, Any] = field(default_factory=dict)

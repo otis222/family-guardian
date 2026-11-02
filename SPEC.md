@@ -317,6 +317,7 @@ flowchart TD
 | D50 | 11/02 | LINE 伺服器只接受 `live`，測通道時可以用 `offline`；`replay` 拒絕啟動。`live` 缺模型金鑰也拒絕啟動（第 8 節） | 真實訊息不用 replay；啟動時就知道比第一則訊息才失敗好 |
 | D51 | 11/02 | 關掉供應商 SDK 的自動重試（`max_retries=0`）。Groq SDK 預設遇到 429、5xx 會自己再試兩次（CLAUDE.md） | 失敗要交給上層處理；不關的話，錯誤訊息寫「未自動重試」其實試了三次 |
 | D53 | 11/02 | 錄製時模型給不出能用的回覆（空白，或想呼叫工具被 Groq 擋下）最多問 3 次；還是不行就記下這個結果繼續錄，回放時重現成同樣的失敗，算進「錯誤」欄（修正 D36）。金鑰、額度這類失敗照樣停下來。正式執行不重問，照失敗的路徑走（CLAUDE.md） | gpt-oss-120b 大約每 160 次會有一次只有推理、沒有內容，再問一次就有；gpt-oss-20b 當查證員時常想呼叫工具。這是模型本身的表現，模型比較要看得到，不該讓整個錄製停住 |
+| D57 | 11/02 | 官方帳號的「聊天」也要關掉（第 10 節沒寫） | LINE 的 FAQ 說聊天開著時可能自動回覆，這不受 `silent` 模式控制。實測時聊天被不小心打開，`GET /v2/bot/info` 的 `chatMode` 從 `bot` 變成 `chat`，關掉後變回 `bot` |
 | D56 | 11/02 | LINE 伺服器的模型模式另外用 `LINE_LLM_MODE`，不用 `GUARDIAN_LLM_MODE`（修正 D50） | `.env` 裡的 `GUARDIAN_LLM_MODE=live` 會讓模擬器和實驗也變成 live，不小心就花掉大量 token |
 | D55 | 11/02 | 第 10 節的申請流程要改：先申請 LINE 官方帳號，再從 LINE Official Account Manager 開通 Messaging API，channel 才會出現在 LINE Developers | LINE 從 2024/09/04 起不能在 LINE Developers 直接建 Messaging API channel（官方文件） |
 | D54 | 11/02 | 三個角色都用 `groq:openai/gpt-oss-120b`。模型比較（30 則）：查證員 gpt-oss-120b 準確率 90%、召回率 90%、精確率 87%；qwen3.8-27b 是 93%、80%、100%；gpt-oss-20b 是 70%、30%、86%，還有 13 次給不出回覆。Router 三個模型結果相同，qwen 省 17% token（第 8 節、11-1） | 防詐優先看召回率；30 則裡差一則就差 3%，qwen 的差距不足以換。Router 省的不多，換了也要重錄。帳號用不到 llama，比不了 |

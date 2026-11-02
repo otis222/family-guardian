@@ -14,7 +14,7 @@
 ## 目前進度（2026-11-02）
 - Phase 1 核心骨架、Phase 2 快速過濾、Phase 3 Router／Worker／Thread、Phase 4 圖卡與 Watchdog：完成。
 - Phase 5 Gradio 模擬器與實驗區：**回放錄好了**（735 筆，全新 clone 不帶金鑰跑得完），Colab 上實際跑要等 Phase 8 的 notebook。
-- Phase 6 LINE 伺服器：**程式完成，驗收還差 LINE channel**（見「下一步」）。`python -m pytest -q` 687 項全過。
+- Phase 6 LINE 伺服器：**完成**，2026-11-02 在只有守護人的測試群組驗收通過（見「下一步」）。`python -m pytest -q` 687 項全過。
 - 示範劇本 `scenarios/demo_family.yaml`（21 則）用 offline 跑：6 則風險事件（m03、m06、m08、m09、m14、m16）都判 `high` 並報告守護人；silent 模式只回覆被 @ 的 m09（附圖卡）；日常訊息 0 次模型呼叫。模型呼叫 24 次（router 6、verifier 12、reporter 6：有闢謠資料，offline 假模型每次查證都會多查一輪）。Watchdog 沒有動作。真實模型的回放（`python -m guardian.run scenarios/demo_family.yaml`）是 17 次，m16 判 `medium`，其他 `high`。
 
 | 檔案 | 內容 |
@@ -44,19 +44,21 @@
 | `guardian/tunnel.py`、`guardian/fileio.py` | 找 Quick Tunnel 的網址；寫檔（Windows 上換名失敗會多試幾次） |
 | `apps/line_server.py` | FastAPI、簽章驗證、line-bot-sdk 的轉接、背景執行緒、啟動檢查 |
 
-Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5 見 D33–D40 和 D51–D54，Phase 6 見 D41–D50。D10（Thread 直通只送有風險訊號的訊息）是使用者決定的；D24（Watchdog 通知不用 push）、D42（只處理允許的群組）等使用者確認；其他取捨都以 token 最少為準，改之前先看理由。
+Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5 見 D33–D40 和 D51–D54，Phase 6 見 D41–D50 和 D55–D57。D10（Thread 直通只送有風險訊號的訊息）是使用者決定的；D24（Watchdog 通知不用 push）、D42（只處理允許的群組）等使用者確認；其他取捨都以 token 最少為準，改之前先看理由。
 
-## 下一步：完成 Phase 6 的驗收，再做 Phase 7
+## 下一步：Phase 7 家庭試行（等使用者開口）
 
-### Phase 6：在只有守護人的測試群組裡，收到 silent 模式的報告
-程式用假的傳送層和本機的 LINE API 替身驗證過（簽章、reply、push、按鈕、webhook 更新、紀錄），也真的用 uvicorn 跑過一次。**還沒連過真的 LINE，也沒有跑過真的 cloudflared**：`/quicktunnel` 和 `isSelf` 是照文件寫的，第一次上線要特別看這兩個。
+### Phase 6 的驗收結果（2026-11-02，真的 LINE，`LINE_LLM_MODE=offline`）
+在只有守護人的測試群組裡通過：群組裡沒有回應，守護人收到私訊報告（沒有訊息原文），私訊「今日摘要」收到摘要。LINE 官方的推播計數和報告則數對得上（2 筆風險事件、2 則推播，本月額度 200 則）；`records/events.jsonl` 只有最小紀錄，查過沒有原文。步驟見 README「LINE 伺服器」一節。
 
-步驟（README「LINE 伺服器」一節有完整版）：
-1. 申請 LINE 官方帳號，在 LINE Official Account Manager 開通 Messaging API（決策 D55），開啟「Allow bot to join group chats」，關掉自動回應和加入好友的歡迎訊息。
-2. `.env` 填 `LINE_CHANNEL_SECRET`、`LINE_CHANNEL_ACCESS_TOKEN`、`GUARDIAN_HASH_SALT`、`GUARDIAN_LINE_USER_IDS`，先設 `LINE_LLM_MODE=offline` 測通道。
-3. 開 `uvicorn apps.line_server:app --port 8000` 和 `cloudflared tunnel --url http://localhost:8000`。
-4. 建一個只有守護人的測試群組，把官方帳號加進去。伺服器畫面會印出群組編號，填進 `GUARDIAN_GROUP_IDS` 再重新啟動。
-5. 在群組傳一則有詐騙特徵的訊息：群組裡應該沒有回應，守護人應該收到私訊報告；私訊「今日摘要」應該收到摘要。
+- **真的跑過：** 簽章驗證、cloudflared 的 `/quicktunnel` 和自動更新 webhook 網址、群組文字訊息、不在 `GUARDIAN_GROUP_IDS` 的群組被擋下並印出編號、push、reply。
+- **還沒在真的 LINE 上跑過，只用假的傳送層測過：** 被 @ 時的回答（`isSelf` 是照文件寫的）、圖卡（圖片網址要經過通道）、「查證中」按鈕和 postback、圖片訊息、允許的群組裡機器人入群和新成員入群。真的模型也還沒接上。
+- **官方帳號的設定（決策 D55、D57）：** 回應設定裡聊天、自動回應、歡迎訊息都要關，Webhook 開；這些只能在官方帳號後台改。實測時聊天被不小心打開過，要確認時看 `GET /v2/bot/info` 的 `chatMode`，應該是 `bot`；另外兩項 API 查不到，要看後台或實際傳訊息。
+
+### Phase 7 開始前要處理
+- `records/events.jsonl` 裡目前都是 Phase 6 的測試事件，開始統計 11-2 之前要清掉。
+- `GUARDIAN_GROUP_IDS` 現在是測試群組；換成家族群組前要全員同意。
+- 伺服器和 cloudflared 開在使用者的電腦上，要一直開著；Quick Tunnel 網址重開會變，伺服器會自動更新。
 
 ### Phase 5 的真實結果（2026-11-02，gpt-oss-120b）
 `python -m guardian.experiment` 不需要金鑰就能重現，完整表格在 `results/experiment.md`。模型比較的結論見決策 D54。
@@ -88,7 +90,8 @@ Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5
 - LINE 伺服器要用真實的 165 名單：每週跑一次 `python -m guardian.data_165 --update`（2026-11-02 跑過，115,589 個網域）。模擬和實驗用的是凍結的那一份，不受影響。
 - 「遭停止解析涉詐網站」的資料集編號 176455 已查過 API 確認標題相符，不用再確認。
 - 確認決策 D24（Watchdog 通知不用 push）、D31（截圖文字辨識先不做）和 D42（只處理允許的群組）。
-- Phase 6 要 LINE channel 和 cloudflared（步驟見「下一步」）；Phase 7 要家人同意。Groq 金鑰已經放在 `.env`。
+- LINE 在 2026/08 新增了「群組訊息被編輯」的 webhook 事件，規格沒寫。現在這種事件會被忽略，也就是編輯後的內容不會重新檢查；要不要處理等使用者決定。
+- Phase 7 要家人同意。Groq 金鑰和 LINE 的設定都已經放在 `.env`。官方帳號現在叫「橘貓bot」，要不要改成「顧家貓」由使用者決定（在官方帳號後台改）。
 - 這些都不要自己繞過：沒有金鑰就用 offline 模式寫完、測完，回報時列出還沒錄製的部分。
 
 ## 在這台電腦（Windows）上

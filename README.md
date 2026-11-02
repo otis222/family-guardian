@@ -8,10 +8,10 @@
 - [x] Phase 2 快速過濾：規則引擎、165 名單下載與快取、網址抽取、個資遮罩
 - [x] Phase 3 Router、Worker、Thread
 - [x] Phase 4 圖卡與 Watchdog
-- [ ] Phase 5 Gradio 模擬器與實驗區（回放已錄好；Colab 上實際跑等 Phase 8 的 notebook）
+- [ ] Phase 5 Gradio 模擬器與實驗區（回放已錄好，notebook 在全新環境跑過；Colab 實測等 repo 公開）
 - [x] Phase 6 LINE 伺服器（2026-11-02 在只有守護人的測試群組驗收通過，模型用 `offline`）
 - [ ] Phase 7 家庭試行
-- [ ] Phase 8 收尾
+- [ ] Phase 8 收尾（notebook 和報告草稿完成；等 repo 公開、截圖、影片）
 
 ## 快速開始
 ```bash
@@ -26,7 +26,10 @@ python -m guardian.data_165 --update   # 下載 165 涉詐網站名單和闢謠�
 python -m guardian.workers.card card.png   # 輸出警示圖卡來看
 python apps/gradio_app.py                  # 模擬器和實驗區，用錄好的回放，不需要金鑰
 python -m guardian.experiment              # 用命令列重現實驗表格，不需要金鑰
+jupytext --to ipynb notebooks/guardian_demo.py   # 改了 notebook 的 .py 之後重新轉出 .ipynb
 ```
+
+期末繳交的 notebook 是 `notebooks/guardian_demo.ipynb`，用 `replay` 模式，選「全部執行」就會自己安裝、下載程式、跑完實驗，不需要金鑰。要改內容請改 `notebooks/guardian_demo.py` 再轉出，`pytest` 會檢查兩邊同步、沒有輸出、沒有金鑰。
 
 - `--trace` 會逐則印出決策紀錄（只有分數、命中的規則名稱和處理結果，不印訊息原文）；`--speaking gentle` 可以切換發言模式；`--daily-summary` 會印出給守護人的今日摘要。
 - 顧家貓插畫和圖卡字型在 `assets/`，換插畫直接覆蓋 PNG 就好（見 `assets/README.md`）。

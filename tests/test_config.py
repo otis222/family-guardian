@@ -23,6 +23,8 @@ def test_default_config_is_valid():
     assert config.max_reply_chars == 100
     assert config.thread_ttl_hours == 24
     assert config.router_latency_seconds == 20
+    assert config.watchdog.push_quota_monthly == 200  # LINE 輕用量方案（SPEC 第 10 節）
+    assert config.watchdog.max_reminders_per_100 == 5
     assert (config.data_165.rumors.dataset_id, config.data_165.rumors.kind) == ("38262", "rumors")
     assert config.record_retention_days == 30
     assert config.hash_salt_env == "GUARDIAN_HASH_SALT"
@@ -69,6 +71,13 @@ def test_invalid_env_mode_is_rejected():
     lambda d: d["data_165"]["sources"][0].update(dataset_id=None),  # 沒有 dataset_id 也沒有 download_url
     lambda d: d["data_165"]["sources"][0].update(download_url="ftp://files.example/a.csv"),
     lambda d: d["data_165"].update(max_age_days=0),
+    lambda d: d.pop("watchdog"),
+    lambda d: d["watchdog"].pop("max_thread_verifies"),
+    lambda d: d["watchdog"].update(check_every_messages=0),
+    lambda d: d["watchdog"].update(max_reminders_per_100=-1),
+    lambda d: d["watchdog"].update(max_error_rate=1.5),
+    lambda d: d["watchdog"].update(push_warn_ratio=0),
+    lambda d: d["watchdog"].update(push_quota_monthly="很多"),
 ])
 def test_invalid_config_is_rejected(tmp_path, mutate):
     with pytest.raises(ConfigError):

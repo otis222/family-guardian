@@ -7,7 +7,7 @@
 - [x] Phase 1 核心骨架：資料模型、`call_llm`（offline／replay／live）、設定檔、測試框架
 - [x] Phase 2 快速過濾：規則引擎、165 名單下載與快取、網址抽取、個資遮罩
 - [x] Phase 3 Router、Worker、Thread
-- [ ] Phase 4 圖卡與 Watchdog
+- [x] Phase 4 圖卡與 Watchdog
 - [ ] Phase 5 Gradio 模擬器與實驗區
 - [ ] Phase 6 LINE 伺服器
 - [ ] Phase 7 家庭試行
@@ -23,9 +23,11 @@ cp .env.example .env               # 需要 live 模式時再填金鑰
 pytest -q
 python -m guardian.run scenarios/demo_family.yaml --mode offline --trace
 python -m guardian.data_165 --update   # 下載 165 涉詐網站名單和闢謠專區（每週一次）
+python -m guardian.workers.card card.png   # 輸出警示圖卡來看
 ```
 
-- `--trace` 會逐則印出決策紀錄（只有分數、命中的規則名稱和處理結果，不印訊息原文）；`--speaking gentle` 可以切換發言模式。
+- `--trace` 會逐則印出決策紀錄（只有分數、命中的規則名稱和處理結果，不印訊息原文）；`--speaking gentle` 可以切換發言模式；`--daily-summary` 會印出給守護人的今日摘要。
+- 顧家貓插畫和圖卡字型在 `assets/`，換插畫直接覆蓋 PNG 就好（見 `assets/README.md`）。
 - 規則的權重和正反例在 `guardian/rules.yaml`，改完跑 `pytest -q` 就知道有沒有改壞。
 - 規格沒寫清楚的地方怎麼決定的，記在 `SPEC.md` 第 16 節。
 

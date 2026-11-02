@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Iterator
 
 from .models import Thread, Trigger
 from .urls import domain_suffixes, url_host
@@ -20,9 +21,13 @@ class ThreadStore:
     def __init__(self, ttl_hours: int = 24) -> None:
         self.ttl_hours = ttl_hours
         self._threads: dict[tuple[str, str], Thread] = {}
+        self._blocked: dict[tuple[str, str], datetime] = {}  # 被 Watchdog 關掉的 Thread，到原本的過期時間前不重開
 
     def __len__(self) -> int:
         return len(self._threads)
+
+    def __iter__(self) -> Iterator[Thread]:
+        return iter(list(self._threads.values()))
 
     def open(self, trigger: Trigger) -> Thread | None:
         """替這則訊息開 Thread；已經有就沿用。不在群組裡的訊息不開。"""
@@ -31,6 +36,8 @@ class ThreadStore:
         domain = next(filter(None, map(_domain, trigger.urls)), None)
         value, key_type = (domain, "domain") if domain else (trigger.sender_hash, "sender")
         key = (trigger.group_id, value)
+        if key in self._blocked:
+            return None
         thread = self._threads.get(key)
         if thread is None:
             thread = Thread.open(group_id=trigger.group_id, value=value, key_type=key_type,
@@ -52,8 +59,12 @@ class ThreadStore:
         expired = [thread for thread in self._threads.values() if thread.is_expired(now)]
         for thread in expired:
             del self._threads[thread.key]
+        self._blocked = {key: until for key, until in self._blocked.items() if now < until}
         return expired
 
-    def close(self, key: tuple[str, str]) -> Thread | None:
-        """提前結束（Watchdog 判斷鬼打牆時用）。"""
-        return self._threads.pop(key, None)
+    def close(self, key: tuple[str, str], *, block: bool = False) -> Thread | None:
+        """提前結束。block：鬼打牆時用，不然下一則觀察區間的訊息又會把它開回來（決策 D27）。"""
+        thread = self._threads.pop(key, None)
+        if thread and block:
+            self._blocked[key] = thread.expires_at
+        return thread

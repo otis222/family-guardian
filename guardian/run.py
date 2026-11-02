@@ -2,6 +2,7 @@
 
     python -m guardian.run scenarios/demo_family.yaml --mode offline
     python -m guardian.run scenarios/demo_family.yaml --mode offline --trace
+    python -m guardian.run scenarios/demo_family.yaml --mode offline --daily-summary
 
 輸出只有決策和統計，不印訊息原文。
 """
@@ -27,8 +28,10 @@ STAGE_LABELS = {
     "verifier": "查證",
     "early_action": "提前行動",
     "reflection": "發言前自檢",
+    "card": "圖卡",
     "speak": "發言",
     "reporter": "回報",
+    "watchdog": "Watchdog",
 }
 
 
@@ -39,6 +42,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--speaking", choices=SPEAKING_MODES, help="覆蓋 config.yaml 的發言模式")
     parser.add_argument("--config", default=None, help="設定檔路徑（預設是專案根目錄的 config.yaml）")
     parser.add_argument("--trace", action="store_true", help="逐則印出決策紀錄")
+    parser.add_argument("--daily-summary", action="store_true", help="最後印出給守護人的今日摘要")
     return parser
 
 
@@ -69,14 +73,28 @@ def print_summary(summary: RunSummary, scenario: Scenario, engine: Engine) -> No
     if isinstance(engine.fast_filter, FastFilter):
         print(f"165 名單：{engine.fast_filter.blocklist.describe()}")
     print(f"165 闢謠專區：{engine.verifier.rumors.describe()}")
+    watch = engine.watchdog.snapshot()
+    state = f"模型暫停（{watch['pause_reason']}）" if watch["llm_paused"] else "模型正常"
+    print(f"Watchdog：檢查 {watch['checks']} 次｜通知 {summary.notices} 則｜{state}"
+          f"｜本月推播 {watch['push_used']}／{watch['push_quota']} 則")
     for report in engine.reports:
-        level = RISK_LABELS.get(report.risk_level, "查證失敗")
+        level = RISK_LABELS.get(report.risk_level, "查證未完成")
         print(f"報告 {report.event_id}：{level}{'（即時）' if report.push else ''}｜{'、'.join(report.rules)}")
     for reply in engine.replies:
-        print(f"回覆 {reply.event_id}（{reply.source}）：{reply.text}")
+        print(f"回覆 {reply.event_id}（{reply.source}{'＋圖卡' if reply.card else ''}）：{reply.text}")
+    for notice in engine.notices:
+        print(f"通知（{notice.time:%H:%M}）：{notice.message}")
+
+
+def _never_crash_on_encoding() -> None:
+    """轉存檔案時用的是系統編碼（例如 cp950），模型文字裡的符號可能編不出來；換成問號，不要整個中斷。"""
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(errors="replace")
 
 
 def main(argv: list[str] | None = None) -> int:
+    _never_crash_on_encoding()
     args = build_parser().parse_args(argv)
     load_env_file()
     try:
@@ -94,6 +112,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.trace:
         print_trace(engine, scenario)
     print_summary(summary, scenario, engine)
+    if args.daily_summary:
+        print()
+        print(engine.daily_summary())
     return 0
 
 

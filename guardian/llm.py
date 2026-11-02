@@ -60,6 +60,10 @@ class LLMCallError(LLMError):
     """live 呼叫失敗、回覆空白，或缺少金鑰、套件。"""
 
 
+class LLMPausedError(LLMError):
+    """Watchdog 暫停了模型呼叫（SPEC 3-7）。沒有真的呼叫，不算進統計。"""
+
+
 # ---------------------------------------------------------------- 工具函式
 
 _SECRET_PATTERNS = (
@@ -261,6 +265,7 @@ class LLMClient:
         self._live_client = live_client
         self._env = env  # None 代表每次都讀 os.environ
         self.write_cache = write_cache  # live 模式要不要寫回放快取；真實訊息一律 False（決策 D2）
+        self.paused = False  # Watchdog 超過預算時設成 True，所有呼叫都會被擋下
         self.stats = LLMStats()
 
     @classmethod
@@ -287,6 +292,8 @@ class LLMClient:
         model = self.models.get(role)
         if not model:
             raise ValueError(f"config.yaml 的 models 沒有設定 {role}")
+        if self.paused:
+            raise LLMPausedError(f"{role} 沒有呼叫：Watchdog 暫停了模型呼叫")
 
         self.stats.calls[role] += 1
         try:

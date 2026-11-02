@@ -5,7 +5,6 @@
 user_id 一進引擎就雜湊成 sender_hash，原始值不保存。
 
 決策紀錄只記程式控制的內容（動作、等級、工具名稱、問題類別、例外類別），模型的文字不進紀錄（決策 D21）。
-圖卡和 Watchdog 在 Phase 4 接上。
 """
 
 from __future__ import annotations
@@ -13,7 +12,7 @@ from __future__ import annotations
 import hashlib
 from collections import Counter
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import Any, Callable, Iterable, Mapping
 
 from .config import Config
@@ -27,6 +26,7 @@ from .models import (
     Decision,
     EventRecord,
     GroupReply,
+    GuardianNotice,
     GuardianReport,
     RiskSignal,
     SchemaError,
@@ -38,7 +38,9 @@ from .router import NEUTRAL_TEMPLATE, UNVERIFIED_TEMPLATE, Candidate, Router, sh
 from .rules import BLOCKLIST_REASON, FastFilter
 from .threads import ThreadStore
 from .urls import extract_urls as default_extract_urls
-from .workers.reporter import build_failure_report, build_report
+from .watchdog import Watchdog
+from .workers.card import warning_card_png
+from .workers.reporter import build_daily_summary, build_failure_report, build_report
 from .workers.verifier import Verifier
 
 # 模擬劇本固定用這個鹽，讓 replay 在任何電腦上都得到一樣的 prompt（決策 D4）。
@@ -47,6 +49,7 @@ DEMO_SALT = "guardian-demo-salt"
 
 RAW_KINDS = ("text", "image", "join", "member_joined")
 TEXT_KINDS = ("text", "mention")
+UNVERIFIED_REASONS = {"paused": "模型暫停中", "router_failed": "Router 一直失敗"}
 
 
 def hash_sender(user_id: str, salt: str) -> str:
@@ -77,6 +80,7 @@ class RunSummary:
     records: int
     reports: int
     replies: int
+    notices: int
     llm: dict[str, Any]
 
 
@@ -112,9 +116,11 @@ class Engine:
         self.records: list[EventRecord] = []
         self.reports: list[GuardianReport] = []
         self.replies: list[GroupReply] = []
+        self.notices: list[GuardianNotice] = []
         self.decisions: list[Decision] = []  # 含模型的理由，只留在記憶體、不進決策紀錄
         self.candidate_queue: list[Candidate] = []
         self.counts: Counter[str] = Counter()
+        self.watchdog = Watchdog(self, config.watchdog)
         self._records_by_id: dict[str, EventRecord] = {}
         self._queue_has_new = False  # 佇列裡有還沒試過的事件；失敗過的事件不會因為之後的閒聊被重試（決策 D16）
         self._router_busy_until: datetime | None = None
@@ -167,13 +173,14 @@ class Engine:
         self._trace(trigger, "normalize", f"收到事件（{KIND_LABELS[trigger.kind]}）",
                     kind=trigger.kind, is_mention=trigger.is_mention, url_count=len(trigger.urls))
         self.threads.expire(trigger.time)
+        self.watchdog.on_event(trigger)
         self._run_router_if_due(trigger.time)
         observe = getattr(self.fast_filter, "observe", None)
         if callable(observe):
             observe(trigger)  # 例如記住新成員入群的時間
 
         if trigger.kind not in TEXT_KINDS:
-            # 圖片在 Phase 4 加入文字辨識
+            # 截圖文字辨識是可選項目，還沒做（決策 D31）
             self._trace(trigger, "fast_path", "不是文字訊息，只計數")
             return trigger
 
@@ -194,6 +201,9 @@ class Engine:
         return trigger
 
     def _route(self, trigger: Trigger, signal: RiskSignal, band: str) -> None:
+        if self.llm.paused and BLOCKLIST_REASON not in signal.reasons:  # 165 命中不用模型，照常處理
+            self._route_paused(trigger, signal, band)
+            return
         thread = self.threads.find(trigger)
         # 直通跳過 Router，但只送有風險訊號的訊息：0 分的閒聊不送模型（決策 D10）
         if thread and (thread.key_type == "domain" or signal.score > 0):
@@ -220,6 +230,20 @@ class Engine:
             if trigger.is_mention:
                 self._reply_template(trigger, NEUTRAL_TEMPLATE)
 
+    def _route_paused(self, trigger: Trigger, signal: RiskSignal, band: str) -> None:
+        """模型暫停中（決策 D26）：只用規則結果。候選照樣報告守護人，觀察區間跳過，被 @ 回模板。"""
+        if band == "ignore":
+            if trigger.is_mention:
+                self._reply_template(trigger, NEUTRAL_TEMPLATE)
+            return
+        self._trace(trigger, "watchdog", "模型暫停中，只用規則結果", band=band)
+        if band == "candidate":
+            self._report_unverified(trigger, signal, "paused")
+        else:
+            self._finish(trigger, signal, None, "paused")
+        if trigger.is_mention:
+            self._reply_template(trigger, UNVERIFIED_TEMPLATE)
+
     def run(self, raw_events: Iterable[Mapping[str, Any]]) -> RunSummary:
         for raw in raw_events:
             self.process(raw)
@@ -243,8 +267,50 @@ class Engine:
             records=len(self.records),
             reports=len(self.reports),
             replies=len(self.replies),
+            notices=len(self.notices),
             llm=self.llm.stats.as_dict(),
         )
+
+    def daily_summary(self, day: date | None = None) -> str:
+        """今日摘要（SPEC 3-7）。day 省略時用最後一則事件的日期。還沒看過的 Watchdog 通知會一起帶出，之後不再重複。"""
+        day = day or (self._last_time.date() if self._last_time else date.today())
+        unread = [notice for notice in self.notices if not notice.delivered]
+        text = build_daily_summary(
+            day, self.records, unread, self.watchdog.usage_on(day),
+            mode=self.speaking_mode, pause_reason=self.watchdog.pause_reason,
+            push_used=self.watchdog.push_used, push_quota=self.config.watchdog.push_quota_monthly,
+        )
+        for notice in unread:
+            notice.delivered = True
+        return text
+
+    # -------------------------------------------------------------- Watchdog 的介面
+
+    def has_untried_candidates(self) -> bool:
+        return self._queue_has_new
+
+    def retry_candidates(self) -> None:
+        """讓佇列裡失敗過的候選再送一次 Router（決策 D16、D29）。"""
+        self._queue_has_new = True
+
+    def release_candidates(self, outcome: str) -> int:
+        """佇列裡的候選不再等 Router，改用規則結果報告守護人。"""
+        batch, self.candidate_queue = self.candidate_queue, []
+        self._queue_has_new = False
+        for item in batch:
+            self._trace(item.trigger, "watchdog", f"不再等 Router，改用規則結果（{outcome}）", outcome=outcome)
+            self._report_unverified(item.trigger, item.signal, outcome)
+            if item.trigger.is_mention:
+                self._reply_template(item.trigger, UNVERIFIED_TEMPLATE)
+        return len(batch)
+
+    def add_notice(self, event_id: str, notice: GuardianNotice) -> None:
+        self.notices.append(notice)
+        self.counts["watchdog:" + notice.kind] += 1
+        self.trace_event(event_id, "watchdog", notice.message, kind=notice.kind)
+
+    def trace_event(self, event_id: str, stage: str, message: str, **data: Any) -> None:
+        self.trace.append(TraceEntry(event_id=event_id, stage=stage, message=message, data=data))
 
     # -------------------------------------------------------------- Router（批次處理，決策 D15）
 
@@ -338,20 +404,38 @@ class Engine:
             reply, notes = self.router.compose_reply(trigger.id, level, list(signal.reasons))
             for note in notes:
                 self._trace(trigger, "reflection", note)
+            self._attach_card(trigger, reply)
             self._add_reply(trigger, reply)
         else:
             self._trace(trigger, "speak", f"{self.speaking_mode} 模式，不在群組發言", mode=self.speaking_mode)
         self._finish(trigger, signal, level, "reported_replied" if speak else "reported")
 
+    def _report_unverified(self, trigger: Trigger, signal: RiskSignal, outcome: str) -> None:
+        self._finish(trigger, signal, None, outcome)
+        self._add_report(trigger, build_failure_report(trigger, signal, reason=UNVERIFIED_REASONS[outcome]))
+
     def _add_report(self, trigger: Trigger, report: GuardianReport) -> None:
+        if report.push:
+            report.push = self.watchdog.claim_push(report.risk_level, trigger.time)
         self.reports.append(report)
         self._trace(trigger, "reporter", "報告守護人（即時）" if report.push else "報告守護人（等每日摘要）",
                     push=report.push, risk_level=report.risk_level)
 
+    def _attach_card(self, trigger: Trigger, reply: GroupReply) -> None:
+        """風險提醒附圖卡（SPEC 第 4 節）。素材有問題時只送文字，提醒不能因此送不出去。"""
+        try:
+            reply.card = warning_card_png()
+        except (OSError, ValueError) as exc:
+            self.counts["errors:card"] += 1
+            self._trace(trigger, "card", f"圖卡失敗（{type(exc).__name__}），只送文字", error=type(exc).__name__)
+        else:
+            self._trace(trigger, "card", "附上警示圖卡", size=len(reply.card))
+
     def _add_reply(self, trigger: Trigger, reply: GroupReply) -> None:
         self.replies.append(reply)
+        self.watchdog.on_reply(proactive=not trigger.is_mention)
         self._trace(trigger, "speak", f"群組回覆（{reply.source}，{len(reply.text)} 字）",
-                    source=reply.source, length=len(reply.text))
+                    source=reply.source, length=len(reply.text), card=reply.card is not None)
 
     def _reply_template(self, trigger: Trigger, text: str) -> None:
         self._add_reply(trigger, GroupReply(trigger.id, text, "template"))

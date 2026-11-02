@@ -10,7 +10,7 @@ import re
 from dataclasses import dataclass
 from typing import Iterable
 
-from .llm import LLMClient, LLMError, call_llm, extract_json
+from .llm import LLMClient, LLMError, LLMPausedError, call_llm, extract_json
 from .models import Decision, GroupReply, RiskSignal, Trigger, parse_decisions
 from .prompts import ROUTER_SYSTEM, SPEAKER_SYSTEM, draft_prompt, rewrite_prompt, router_prompt
 from .urls import extract_urls
@@ -99,6 +99,8 @@ class Router:
                 notes.append("改寫後合格")
                 return GroupReply(event_id, rewrite, "rewrite"), notes
             notes.append(f"改寫仍不合格：{'、'.join(problems)}，改用模板")
+        except LLMPausedError:
+            notes.append("模型暫停中，改用模板")
         except LLMError as exc:
             notes.append(f"模型失敗（{type(exc).__name__}），改用模板，未重試")
         return GroupReply(event_id, REPLY_TEMPLATE, "template"), notes

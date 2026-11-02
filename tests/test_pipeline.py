@@ -323,7 +323,8 @@ def test_trace_follows_the_pipeline_order(config):
     engine = make_engine(config, Scripted(verifier=verify_json("high")), scores={"q": 80})
     engine.run([event("q", 0, mention=True)])
     stages = [e.stage for e in engine.trace if e.event_id == "q"]
-    assert stages == ["normalize", "fast_path", "router", "router", "verifier", "reporter", "reflection", "speak"]
+    assert stages == ["normalize", "fast_path", "router", "router", "verifier", "reporter", "reflection", "card",
+                      "speak"]
     assert record_of(engine, "q").outcome == "reported_replied"
 
 

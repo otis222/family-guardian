@@ -42,6 +42,20 @@ class Data165Settings:
 
 
 @dataclass(frozen=True)
+class WatchdogSettings:
+    check_every_messages: int
+    check_every_minutes: int
+    max_reminders_per_100: int
+    max_llm_calls_per_day: int
+    max_tokens_per_day: int
+    max_error_rate: float
+    min_calls_for_error_rate: int
+    max_thread_verifies: int
+    push_quota_monthly: int
+    push_warn_ratio: float
+
+
+@dataclass(frozen=True)
 class Config:
     models: dict[str, str]
     llm_mode: str
@@ -54,6 +68,7 @@ class Config:
     max_reply_chars: int
     thread_ttl_hours: int
     router_latency_seconds: int
+    watchdog: WatchdogSettings
     record_retention_days: int
     hash_salt_env: str
 
@@ -82,6 +97,12 @@ def _int(value: Any, name: str, minimum: int, maximum: int | None = None) -> int
         upper = f"、不大於 {maximum}" if maximum is not None else ""
         raise ConfigError(f"{name} 必須不小於 {minimum}{upper}，收到：{value}")
     return value
+
+
+def _ratio(value: Any, name: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not 0 < value <= 1:
+        raise ConfigError(f"{name} 必須是大於 0、不大於 1 的數字，收到：{value!r}")
+    return float(value)
 
 
 def _choice(value: Any, name: str, choices: tuple[str, ...]) -> str:
@@ -134,6 +155,26 @@ def _sources(value: Any) -> tuple[Source, ...]:
         sources.append(Source(id=source_id, name=name.strip(), dataset_id=dataset_id,
                               download_url=download_url, expect_title=expect_title))
     return tuple(sources)
+
+
+def _watchdog(value: Any) -> WatchdogSettings:
+    data = _mapping(value, "watchdog")
+
+    def count(key: str, minimum: int = 1) -> int:
+        return _int(_get(data, key, "watchdog"), f"watchdog.{key}", minimum)
+
+    return WatchdogSettings(
+        check_every_messages=count("check_every_messages"),
+        check_every_minutes=count("check_every_minutes"),
+        max_reminders_per_100=count("max_reminders_per_100", 0),
+        max_llm_calls_per_day=count("max_llm_calls_per_day"),
+        max_tokens_per_day=count("max_tokens_per_day"),
+        max_error_rate=_ratio(_get(data, "max_error_rate", "watchdog"), "watchdog.max_error_rate"),
+        min_calls_for_error_rate=count("min_calls_for_error_rate"),
+        max_thread_verifies=count("max_thread_verifies"),
+        push_quota_monthly=count("push_quota_monthly"),
+        push_warn_ratio=_ratio(_get(data, "push_warn_ratio", "watchdog"), "watchdog.push_warn_ratio"),
+    )
 
 
 def load_config(path: str | Path | None = None, env: Mapping[str, str] | None = None) -> Config:
@@ -204,6 +245,7 @@ def load_config(path: str | Path | None = None, env: Mapping[str, str] | None = 
         max_reply_chars=_int(_get(speaking, "max_reply_chars", "speaking"), "speaking.max_reply_chars", 1),
         thread_ttl_hours=_int(_get(raw, "thread_ttl_hours", where), "thread_ttl_hours", 1),
         router_latency_seconds=_int(_get(raw, "router_latency_seconds", where), "router_latency_seconds", 0),
+        watchdog=_watchdog(_get(raw, "watchdog", where)),
         record_retention_days=_int(
             _get(privacy, "record_retention_days", "privacy"), "privacy.record_retention_days", 1
         ),

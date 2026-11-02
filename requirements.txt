@@ -6,6 +6,7 @@ gradio==6.30.0
 # 本專案
 PyYAML>=6.0
 python-dotenv>=1.0
+Pillow>=10
 
 # 開發與測試
 pytest>=8

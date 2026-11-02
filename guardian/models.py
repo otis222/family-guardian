@@ -307,11 +307,12 @@ class EventRecord:
 
 @dataclass
 class GroupReply:
-    """顧家貓要在群組說的話（SPEC 第 4 節）。source：model｜rewrite｜template。圖卡在 Phase 4 加入。"""
+    """顧家貓要在群組說的話（SPEC 第 4 節）。source：model｜rewrite｜template。card 是警示圖卡的 PNG。"""
 
     event_id: str
     text: str
     source: str
+    card: bytes | None = field(default=None, repr=False)
 
 
 @dataclass
@@ -331,10 +332,20 @@ class GuardianReport:
 
 
 @dataclass
+class GuardianNotice:
+    """Watchdog 給守護人的通知（SPEC 3-7）。不推播，由今日摘要帶出（決策 D24）。不含訊息內容、網域或發送者。"""
+
+    time: datetime
+    kind: str
+    message: str
+    delivered: bool = False
+
+
+@dataclass
 class TraceEntry:
     """決策紀錄的一行（Gradio 中欄、命令列 --trace）。只在記憶體裡，也不放訊息原文和模型的文字。"""
 
     event_id: str
-    stage: str  # normalize、fast_path、thread、router、verifier、early_action、reflection、speak、reporter
+    stage: str  # normalize、fast_path、thread、router、verifier、early_action、reflection、card、speak、reporter、watchdog
     message: str
     data: dict[str, Any] = field(default_factory=dict)

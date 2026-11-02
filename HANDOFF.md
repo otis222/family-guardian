@@ -14,7 +14,7 @@
 ## 目前進度（2026-11-02）
 - Phase 1 核心骨架、Phase 2 快速過濾、Phase 3 Router／Worker／Thread、Phase 4 圖卡與 Watchdog：完成。
 - Phase 5 Gradio 模擬器與實驗區：**回放錄好了**（735 筆，全新 clone 不帶金鑰跑得完），Colab 上實際跑要等 Phase 8 的 notebook。
-- Phase 6 LINE 伺服器：**完成**，2026-11-02 在只有守護人的測試群組驗收通過（見「下一步」）。`python -m pytest -q` 687 項全過。
+- Phase 6 LINE 伺服器：**完成**，2026-11-02 在只有守護人的測試群組驗收通過（見「下一步」）。`python -m pytest -q` 692 項全過。
 - 示範劇本 `scenarios/demo_family.yaml`（21 則）用 offline 跑：6 則風險事件（m03、m06、m08、m09、m14、m16）都判 `high` 並報告守護人；silent 模式只回覆被 @ 的 m09（附圖卡）；日常訊息 0 次模型呼叫。模型呼叫 24 次（router 6、verifier 12、reporter 6：有闢謠資料，offline 假模型每次查證都會多查一輪）。Watchdog 沒有動作。真實模型的回放（`python -m guardian.run scenarios/demo_family.yaml`）是 17 次，m16 判 `medium`，其他 `high`。
 
 | 檔案 | 內容 |
@@ -44,7 +44,7 @@
 | `guardian/tunnel.py`、`guardian/fileio.py` | 找 Quick Tunnel 的網址；寫檔（Windows 上換名失敗會多試幾次） |
 | `apps/line_server.py` | FastAPI、簽章驗證、line-bot-sdk 的轉接、背景執行緒、啟動檢查 |
 
-Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5 見 D33–D40 和 D51–D54，Phase 6 見 D41–D50 和 D55–D57。D10（Thread 直通只送有風險訊號的訊息）是使用者決定的；D24（Watchdog 通知不用 push）、D42（只處理允許的群組）等使用者確認；其他取捨都以 token 最少為準，改之前先看理由。
+Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5 見 D33–D40 和 D51–D54，Phase 6 見 D41–D50 和 D55–D59。D10（Thread 直通只送有風險訊號的訊息）是使用者決定的；D24（Watchdog 通知不用 push）、D31（截圖文字辨識先不做）、D42（只處理允許的群組）、D59（被編輯的訊息要再檢查）是使用者 11/02 授權我自行選擇的；其他取捨都以 token 最少為準，改之前先看理由。
 
 ## 下一步：Phase 7 家庭試行（等使用者開口）
 
@@ -52,7 +52,8 @@ Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5
 在只有守護人的測試群組裡通過：群組裡沒有回應，守護人收到私訊報告（沒有訊息原文），私訊「今日摘要」收到摘要。LINE 官方的推播計數和報告則數對得上（2 筆風險事件、2 則推播，本月額度 200 則）；`records/events.jsonl` 只有最小紀錄，查過沒有原文。步驟見 README「LINE 伺服器」一節。
 
 - **真的跑過：** 簽章驗證、cloudflared 的 `/quicktunnel` 和自動更新 webhook 網址、群組文字訊息、不在 `GUARDIAN_GROUP_IDS` 的群組被擋下並印出編號、push、reply。
-- **還沒在真的 LINE 上跑過，只用假的傳送層測過：** 被 @ 時的回答（`isSelf` 是照文件寫的）、圖卡（圖片網址要經過通道）、「查證中」按鈕和 postback、圖片訊息、允許的群組裡機器人入群和新成員入群。真的模型也還沒接上。
+- **只檢查過格式：** 提醒文字＋圖卡、「查證中」按鈕、4900 字的摘要，都通過 LINE 官方的訊息驗證 API（`/v2/bot/message/validate/reply`、`/push`，只檢查不發送、不佔額度）；圖卡網址經過通道讀得到（200、217 KB）。
+- **還沒在真的 LINE 上跑過，只用假的傳送層測過：** 被 @ 時的回答（`isSelf` 是照文件寫的）、圖卡實際顯示、「查證中」按鈕和 postback、圖片訊息、允許的群組裡機器人入群和新成員入群、被編輯的訊息（`messageEdited`）。真的模型也還沒接上。
 - **官方帳號的設定（決策 D55、D57）：** 回應設定裡聊天、自動回應、歡迎訊息都要關，Webhook 開；這些只能在官方帳號後台改。實測時聊天被不小心打開過，要確認時看 `GET /v2/bot/info` 的 `chatMode`，應該是 `bot`；另外兩項 API 查不到，要看後台或實際傳訊息。
 
 ### Phase 7 開始前要處理
@@ -89,9 +90,8 @@ Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5
 ## 要等使用者的事
 - LINE 伺服器要用真實的 165 名單：每週跑一次 `python -m guardian.data_165 --update`（2026-11-02 跑過，115,589 個網域）。模擬和實驗用的是凍結的那一份，不受影響。
 - 「遭停止解析涉詐網站」的資料集編號 176455 已查過 API 確認標題相符，不用再確認。
-- 確認決策 D24（Watchdog 通知不用 push）、D31（截圖文字辨識先不做）和 D42（只處理允許的群組）。
-- LINE 在 2026/08 新增了「群組訊息被編輯」的 webhook 事件，規格沒寫。現在這種事件會被忽略，也就是編輯後的內容不會重新檢查；要不要處理等使用者決定。
-- Phase 7 要家人同意。Groq 金鑰和 LINE 的設定都已經放在 `.env`。官方帳號現在叫「橘貓bot」，要不要改成「顧家貓」由使用者決定（在官方帳號後台改）。
+- 在群組打 @ 選官方帳號，再傳一則有詐騙特徵的訊息：確認 `isSelf` 和圖卡實際顯示（會用掉 1 則推播）。
+- Phase 7 要家人同意。Groq 金鑰和 LINE 的設定都已經放在 `.env`。官方帳號現在叫「橘貓bot」，建議加進家族群組前改成「顧家貓」（只能在官方帳號後台改）。
 - 這些都不要自己繞過：沒有金鑰就用 offline 模式寫完、測完，回報時列出還沒錄製的部分。
 
 ## 在這台電腦（Windows）上

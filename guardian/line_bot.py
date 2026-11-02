@@ -42,6 +42,7 @@ POSTBACK_PREFIX = "result:"
 MAX_SEEN_EVENTS = 2000
 MAX_ID_SECONDS = 1000
 UNKNOWN_SENDER = "unknown-sender"  # LINE 有時不給發送者：這些訊息都算同一個人
+MESSAGE_EVENTS = ("message", "messageEdited")  # 被編輯的文字當成新訊息再檢查一次（決策 D59）
 
 CHECKING_TEXT = "顧家貓還在查證，點下面的按鈕看結果。"
 CHECKING_LABEL = "看結果"
@@ -237,7 +238,7 @@ class LineBot:
             members = (event.get("joined") or {}).get("members") or []
             return [self._group_item(self._raw(when, group_id, member.get("userId") or UNKNOWN_SENDER, "member_joined"))
                     for member in members]
-        if kind != "message":
+        if kind not in MESSAGE_EVENTS:
             return []
         message = event.get("message") or {}
         user_id = source.get("userId") or UNKNOWN_SENDER

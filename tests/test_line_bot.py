@@ -60,6 +60,45 @@ def test_silent_mode_reports_to_the_guardian_and_stays_quiet_in_the_group(tmp_pa
     assert h.engine.watchdog.push_used == 1
 
 
+def edited(event):
+    return {**event, "type": "messageEdited"}
+
+
+def test_text_edited_into_something_risky_is_reported(tmp_path):
+    h = high(tmp_path)
+    h.send(h.group_text(CHAT))
+    assert h.transport.pushes == []
+    h.send(edited(h.group_text(CANDIDATE)))  # 先傳無害的內容，再改成可疑的內容
+    (to, messages), = h.transport.pushes
+    assert to == GUARDIAN and "風險高" in messages[0].text
+    assert h.transport.replies == []
+
+
+def test_harmless_edit_costs_nothing(harness):
+    harness.send(edited(harness.group_text(CHAT)))
+    assert harness.llm.calls == [] and harness.transport.pushes == []
+
+
+def test_edit_may_arrive_without_a_reply_token(tmp_path):
+    h = high(tmp_path)
+    event = edited(h.group_text(CANDIDATE))
+    del event["replyToken"]
+    h.send(event)
+    assert h.transport.replies == [] and len(h.transport.pushes) == 1
+
+
+def test_mention_added_by_editing_gets_an_answer(tmp_path):
+    h = high(tmp_path)
+    h.send(edited(h.group_text(CANDIDATE, mention=True, token="edit-token")))
+    (token, _), = h.transport.replies
+    assert token == "edit-token"
+
+
+def test_edit_in_a_group_that_is_not_allowed_is_ignored(harness):
+    harness.send(edited(harness.group_text(CANDIDATE, group=OTHER_GROUP)))
+    assert harness.llm.calls == [] and harness.engine.records == []
+
+
 def test_the_report_has_no_message_text_or_links(tmp_path):
     h = high(tmp_path)
     secret = "老師帶單保證獲利穩賺不賠快來 https://bad.example/join"

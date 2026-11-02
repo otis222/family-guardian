@@ -10,10 +10,10 @@
 - [x] Phase 2 快速過濾：規則引擎、165 名單下載與快取、網址抽取、個資遮罩
 - [x] Phase 3 Router、Worker、Thread
 - [x] Phase 4 圖卡與 Watchdog
-- [ ] Phase 5 Gradio 模擬器與實驗區（回放已錄好，notebook 在全新環境跑過；還差在 Colab 實際跑一次）
+- [x] Phase 5 Gradio 模擬器與實驗區（2026-11-02 在 Colab 跑通，不需要金鑰）
 - [x] Phase 6 LINE 伺服器（2026-11-02 在只有守護人的測試群組驗收通過，模型用 `offline`）
 - [ ] Phase 7 家庭試行
-- [ ] Phase 8 收尾（notebook 和報告草稿完成，repo 已公開；等 Colab 實測、截圖、影片）
+- [ ] Phase 8 收尾（notebook、報告草稿和截圖完成，repo 已公開；等影片）
 
 ## 快速開始
 ```bash

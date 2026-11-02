@@ -13,9 +13,9 @@
 
 ## 目前進度（2026-11-02）
 - Phase 1 核心骨架、Phase 2 快速過濾、Phase 3 Router／Worker／Thread、Phase 4 圖卡與 Watchdog：完成。
-- Phase 5 Gradio 模擬器與實驗區：**回放錄好了**（735 筆，全新 clone 不帶金鑰跑得完），notebook 在全新環境跑過；Colab 上實際跑要等 repo 公開。
+- Phase 5 Gradio 模擬器與實驗區：**完成**。回放錄好了（735 筆），2026-11-02 在真的 Colab 上「全部執行」通過驗收，不需要金鑰。
 - Phase 6 LINE 伺服器：**完成**，2026-11-02 在只有守護人的測試群組驗收通過（見「下一步」）。`python -m pytest -q` 700 項全過，約 80 秒（這台電腦同時跑別的東西時會慢好幾倍）。
-- Phase 8 收尾：**notebook 和報告草稿完成**，還差公開 repo、Colab 實測、截圖和影片（見「下一步」）。使用者決定先做 Phase 8，Phase 7 可以同時進行。
+- Phase 8 收尾：**notebook、報告草稿和重點截圖完成，repo 已公開**；還差影片，也要請使用者核對 notebook 第一格（見「下一步」）。使用者決定先做 Phase 8，Phase 7 可以同時進行。
 - 示範劇本 `scenarios/demo_family.yaml`（21 則）用 offline 跑：6 則風險事件（m03、m06、m08、m09、m14、m16）都判 `high` 並報告守護人；silent 模式只回覆被 @ 的 m09（附圖卡）；日常訊息 0 次模型呼叫。模型呼叫 24 次（router 6、verifier 12、reporter 6：有闢謠資料，offline 假模型每次查證都會多查一輪）。Watchdog 沒有動作。真實模型的回放（`python -m guardian.run scenarios/demo_family.yaml`）是 17 次，m16 判 `medium`，其他 `high`。
 
 | 檔案 | 內容 |
@@ -51,13 +51,12 @@ Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5
 ## 下一步：Phase 8 收尾，Phase 7 等使用者開口
 
 ### Phase 8 目前的狀態（2026-11-02）
-- **notebook：** 在全新的 Python 環境、全新 clone、沒有金鑰的情況下，從第一格跑到最後一格，含安裝 67 秒；實驗表格和 `results/experiment.md` 完全相同。用 LF 換行的 clone（和 Linux 一樣）也重現了相同結果，回放沒有對不上。公開後又在沒有 git 設定和憑證的環境，從 GitHub 下載 notebook 和程式跑完一次，Colab 也打得開連結。這些都是在 Windows 上跑的，真的 Linux（Colab）還沒執行過。
-- **報告：** 草稿在 [Claude 文件](https://claude.ai/artifact/KbKLKuTN6LzG4fYMiiCAJb)，不放進 repo（決策 D62）。裡面有試行結果的空白表格、繳交對應、截圖清單和影片腳本。
+- **notebook：** 在真的 Colab（Python 3）選「全部執行」，含連線和安裝約 1 分鐘跑完，11 個程式格都沒有錯誤，實驗表格和模型比較表都和 `results/experiment.md` 相同。模擬器從 Colab 產生的公開網址也能用：自動播放跑完 21 則，模型呼叫 17 次，圖卡正常，實驗區的按鈕也正常。Colab 的執行環境是暫時的，公開網址會跟著失效，要展示時重新「全部執行」。
+- **報告：** 草稿在 [Claude 文件](https://claude.ai/artifact/KbKLKuTN6LzG4fYMiiCAJb)，不放進 repo（決策 D62）。裡面有試行結果的空白表格、繳交對應、重點截圖和影片腳本。
 - **GitHub：** repo 已公開在 <https://github.com/otis222/family-guardian>（決策 D63），只推 `main`，其他分支留在本機。Commit 信箱已換成 GitHub 的代用信箱，這個 repo 的 `user.email` 也設好了。**這份 HANDOFF 和 SPEC 都是公開的：不要寫進個資、金鑰或試行結果；`git push` 前先想清楚。**
 - **還要做：**
-  1. 請使用者在 Colab 跑一次「全部執行」，這也是 Phase 5 的驗收。連結在 README 最上面。Colab 要登入 Google，會跳「不是由 Google 撰寫」的警告，選「仍要執行」。
-  2. 使用者核對 notebook 第一格和老師的安裝指令（決策 D60）。
-  3. 使用者截圖、錄影片。錄手機那段時，要把伺服器和 cloudflared 打開。
+  1. 使用者核對 notebook 第一格和老師的安裝指令（決策 D60）。
+  2. 使用者錄影片，腳本在報告裡。錄手機那段時，要把伺服器和 cloudflared 打開。
 
 ### Phase 6 的驗收結果（2026-11-02，真的 LINE，`LINE_LLM_MODE=offline`）
 在只有守護人的測試群組裡通過：群組裡沒有回應，守護人收到私訊報告（沒有訊息原文），私訊「今日摘要」收到摘要。LINE 官方的推播計數和報告則數對得上（3 筆風險事件、3 則推播，本月額度 200 則）；`records/events.jsonl` 只有最小紀錄，查過沒有原文。步驟見 README「LINE 伺服器」一節。

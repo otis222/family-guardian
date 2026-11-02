@@ -12,4 +12,7 @@ Pillow>=10
 pytest>=8
 jupytext>=1.16
 
-# Phase 6（LINE 伺服器）會再加入：fastapi、uvicorn、line-bot-sdk
+# LINE 伺服器（Colab 上的模擬器用不到）
+fastapi>=0.110
+uvicorn>=0.29
+line-bot-sdk>=3,<4

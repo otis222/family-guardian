@@ -21,6 +21,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Mapping
 
+from .fileio import write_text_atomic
 from .models import SchemaError
 
 if TYPE_CHECKING:
@@ -395,9 +396,7 @@ class LLMClient:
         }
         try:
             path.parent.mkdir(parents=True, exist_ok=True)
-            temp = path.with_suffix(".tmp")
-            temp.write_text(json.dumps(entry, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-            temp.replace(path)
+            write_text_atomic(path, json.dumps(entry, ensure_ascii=False, indent=2) + "\n")
         except OSError as exc:
             raise LLMCallError(f"已取得 {role} 的回應，但寫入回放快取失敗：{safe_error(exc)}") from None
         self.stats.cache_writes += 1

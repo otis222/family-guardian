@@ -91,6 +91,14 @@ experiment:
       - {model: "groq:openai/gpt-oss-20b"}
       - {model: "groq:llama-3.3-70b-versatile", params: {reasoning_effort: null}}
 
+# LINE 伺服器（SPEC 第 10 節）。金鑰、守護人和群組編號都放 .env
+line:
+  reply_deadline_seconds: 45  # 被 @ 卻查證到這個時候還沒好，就先回「查證中」按鈕
+  reply_token_seconds: 55     # replyToken 約 60 秒有效，超過這個時間就不再用它
+  result_keep_hours: 24       # 按鈕的查證結果留多久
+  tick_seconds: 5             # 沒有新訊息時多久檢查一次（積壓的候選、換日、Watchdog）
+  records_dir: records        # 風險事件的最小紀錄，已列在 .gitignore
+
 # 隱私（SPEC 第 7 節）
 privacy:
   record_retention_days: 30

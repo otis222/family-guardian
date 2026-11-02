@@ -70,6 +70,15 @@ class ExperimentSettings:
 
 
 @dataclass(frozen=True)
+class LineSettings:
+    reply_deadline_seconds: int
+    reply_token_seconds: int
+    result_keep_hours: int
+    tick_seconds: int
+    records_dir: Path
+
+
+@dataclass(frozen=True)
 class Config:
     models: dict[str, str]
     llm_mode: str
@@ -84,6 +93,7 @@ class Config:
     router_latency_seconds: int
     watchdog: WatchdogSettings
     experiment: ExperimentSettings
+    line: LineSettings
     record_retention_days: int
     hash_salt_env: str
 
@@ -192,6 +202,24 @@ def _watchdog(value: Any) -> WatchdogSettings:
     )
 
 
+def _line(value: Any, config_path: Path) -> LineSettings:
+    data = _mapping(value, "line")
+
+    def count(key: str) -> int:
+        return _int(_get(data, key, "line"), f"line.{key}", 1)
+
+    deadline, token = count("reply_deadline_seconds"), count("reply_token_seconds")
+    if deadline >= token:
+        raise ConfigError("line.reply_deadline_seconds 必須小於 line.reply_token_seconds")
+    return LineSettings(
+        reply_deadline_seconds=deadline,
+        reply_token_seconds=token,
+        result_keep_hours=count("result_keep_hours"),
+        tick_seconds=count("tick_seconds"),
+        records_dir=_path(_get(data, "records_dir", "line"), "line.records_dir", config_path),
+    )
+
+
 def _model_string(value: Any, name: str) -> str:
     provider, _, model = str(value).partition(":") if isinstance(value, str) else ("", "", "")
     if not provider or not model:
@@ -293,6 +321,7 @@ def load_config(path: str | Path | None = None, env: Mapping[str, str] | None = 
         router_latency_seconds=_int(_get(raw, "router_latency_seconds", where), "router_latency_seconds", 0),
         watchdog=_watchdog(_get(raw, "watchdog", where)),
         experiment=_experiment(_get(raw, "experiment", where), config_path),
+        line=_line(_get(raw, "line", where), config_path),
         record_retention_days=_int(
             _get(privacy, "record_retention_days", "privacy"), "privacy.record_retention_days", 1
         ),

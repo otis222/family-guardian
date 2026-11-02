@@ -96,6 +96,7 @@ class Engine:
         fast_filter: Callable[[Trigger], RiskSignal] | None = None,
         rumors: RumorIndex | None = None,
         early_action: bool = True,
+        push_recipients: int = 1,
     ) -> None:
         if not isinstance(salt, str) or not salt:
             raise ValueError("Engine 需要雜湊用的鹽：模擬劇本用 DEMO_SALT，LINE 伺服器用 .env 的 GUARDIAN_HASH_SALT")
@@ -113,6 +114,8 @@ class Engine:
         self.router = Router(self.llm, config.max_reply_chars)
         self.threads = ThreadStore(config.thread_ttl_hours)
         self.early_action = early_action  # 消融實驗才會關掉（SPEC 11-1）
+        self.push_recipients = push_recipients  # 守護人人數：推一次報告就佔這麼多則額度
+        self.false_positives: set[str] = set()  # 守護人標記的誤報（SPEC 第 5 節）
         self.speaking_mode = config.speaking_mode
         self.trace: list[TraceEntry] = []
         self.records: list[EventRecord] = []
@@ -126,6 +129,7 @@ class Engine:
         self._records_by_id: dict[str, EventRecord] = {}
         self._queue_has_new = False  # 佇列裡有還沒試過的事件；失敗過的事件不會因為之後的閒聊被重試（決策 D16）
         self._router_busy_until: datetime | None = None
+        self._hold_router = False
         self._last_time: datetime | None = None
 
     # -------------------------------------------------------------- 正規化
@@ -264,6 +268,55 @@ class Engine:
         if self._queue_has_new and self._last_time is not None:
             self._run_router_round(self._last_time)
 
+    # -------------------------------------------------------------- 真實伺服器用（決策 D41）
+
+    def process_batch(self, raw_events: Iterable[Mapping[str, Any]]) -> None:
+        """推理期間積壓的事件一起處理，候選合併成一次 Router 呼叫（SPEC 3-3）。格式不對的事件只計數，不影響其他事件。"""
+        last_time = None
+        self._hold_router = True
+        try:
+            for raw in raw_events:
+                try:
+                    last_time = self.process(raw).time
+                except SchemaError:
+                    self.counts["errors:schema"] += 1
+        finally:
+            self._hold_router = False
+        if last_time is not None:
+            self._run_router_if_due(last_time)
+
+    def tick(self, now: datetime) -> None:
+        """沒有新訊息時也要往前走：Thread 過期、換日、Watchdog 定時檢查、送出積壓的候選。"""
+        self.threads.expire(now)
+        self.watchdog.on_tick(now)
+        self._run_router_if_due(now)
+
+    def risk_level_of(self, event_id: str) -> str | None:
+        record = self._records_by_id.get(event_id)
+        return record.risk_level if record else None
+
+    def mark_false_positive(self, event_id: str) -> bool:
+        """找不到這個事件時回傳 False。"""
+        if event_id not in self._records_by_id:
+            return False
+        self.false_positives.add(event_id)
+        return True
+
+    def restore_records(self, records: Iterable[EventRecord], false_positives: Iterable[str]) -> None:
+        """重新啟動時讀回最小紀錄，今日摘要和「誤報」才接得上。"""
+        self.records = list(records)
+        self._records_by_id = {record.event_id: record for record in self.records}
+        self.false_positives = set(false_positives) & set(self._records_by_id)
+
+    def forget_before(self, cutoff: datetime) -> None:
+        """超過保留期限的紀錄不留（SPEC 第 7 節）。"""
+        self.restore_records((record for record in self.records if record.time >= cutoff), self.false_positives)
+
+    def trim_memory(self, keep_trace: int = 500) -> None:
+        """長時間執行時不讓記憶體一直長大。Decision 含模型的理由，用完就丟。"""
+        del self.trace[:-keep_trace]
+        self.decisions.clear()
+
     def summary(self) -> RunSummary:
         by_kind = {key.split(":", 1)[1]: value for key, value in self.counts.items() if key.startswith("kind:")}
         return RunSummary(
@@ -288,6 +341,7 @@ class Engine:
             day, self.records, unread, self.watchdog.usage_on(day),
             mode=self.speaking_mode, pause_reason=self.watchdog.pause_reason,
             push_used=self.watchdog.push_used, push_quota=self.config.watchdog.push_quota_monthly,
+            false_positives=self.false_positives,
         )
         for notice in unread:
             notice.delivered = True
@@ -324,6 +378,8 @@ class Engine:
     # -------------------------------------------------------------- Router（批次處理，決策 D15）
 
     def _run_router_if_due(self, now: datetime) -> None:
+        if self._hold_router:
+            return
         if self._queue_has_new and (self._router_busy_until is None or now >= self._router_busy_until):
             self._run_router_round(now)
 
@@ -425,7 +481,7 @@ class Engine:
 
     def _add_report(self, trigger: Trigger, report: GuardianReport) -> None:
         if report.push:
-            report.push = self.watchdog.claim_push(report.risk_level, trigger.time)
+            report.push = self.watchdog.claim_push(report.risk_level, trigger.time, count=self.push_recipients)
         self.reports.append(report)
         self._trace(trigger, "reporter", "報告守護人（即時）" if report.push else "報告守護人（等每日摘要）",
                     push=report.push, risk_level=report.risk_level)

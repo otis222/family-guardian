@@ -13,7 +13,7 @@
 
 ## 目前進度（2026-11-02）
 - Phase 1 核心骨架、Phase 2 快速過濾、Phase 3 Router／Worker／Thread、Phase 4 圖卡與 Watchdog：完成。
-- Phase 5 Gradio 模擬器與實驗區：**程式完成，驗收還差錄製**（見「下一步」）。`python -m pytest -q` 507 項全過。
+- Phase 5 Gradio 模擬器與實驗區、Phase 6 LINE 伺服器：**程式完成，驗收還差金鑰和 LINE channel**（見「下一步」）。`python -m pytest -q` 664 項全過。
 - 示範劇本 `scenarios/demo_family.yaml`（21 則）用 offline 跑：6 則風險事件（m03、m06、m08、m09、m14、m16）都判 `high` 並報告守護人；silent 模式只回覆被 @ 的 m09（附圖卡）；日常訊息 0 次模型呼叫。模型呼叫 18 次（router 6、verifier 6、reporter 6）。Watchdog 沒有動作。
 
 | 檔案 | 內容 |
@@ -38,10 +38,27 @@
 | `guardian/simulation.py` | `Simulation`：一則一則跑劇本，各欄的文字 |
 | `apps/gradio_app.py` | 三欄模擬器和實驗區；邏輯都在 `guardian/` |
 | `scenarios/experiment.yaml` | 實驗劇本：200 則，20 則詐騙（5 種手法）、10 則注入，`compare: true` 標出模型比較的 30 則 |
+| `guardian/line_bot.py` | `LineBot`：webhook 事件轉給引擎、reply／按鈕／push 的決定、管理指令。不依賴 line-bot-sdk |
+| `guardian/records.py` | `RecordStore`：`records/` 裡的最小紀錄、誤報、狀態，保留期限 |
+| `guardian/tunnel.py`、`guardian/fileio.py` | 找 Quick Tunnel 的網址；寫檔（Windows 上換名失敗會多試幾次） |
+| `apps/line_server.py` | FastAPI、簽章驗證、line-bot-sdk 的轉接、背景執行緒、啟動檢查 |
 
-Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5 見 D33–D40。D10（Thread 直通只送有風險訊號的訊息）是使用者決定的；D24（Watchdog 通知不用 push）等使用者確認；其他取捨都以 token 最少為準，改之前先看理由。
+Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5 見 D33–D40，Phase 6 見 D41–D50。D10（Thread 直通只送有風險訊號的訊息）是使用者決定的；D24（Watchdog 通知不用 push）、D42（只處理允許的群組）等使用者確認；其他取捨都以 token 最少為準，改之前先看理由。
 
-## 下一步：錄製回放，完成 Phase 5 的驗收
+## 下一步：完成 Phase 5、6 的驗收，再做 Phase 7
+兩個驗收都要使用者本人準備，互不影響。
+
+### Phase 6：在只有守護人的測試群組裡，收到 silent 模式的報告
+程式用假的傳送層和本機的 LINE API 替身驗證過（簽章、reply、push、按鈕、webhook 更新、紀錄），也真的用 uvicorn 跑過一次。**還沒連過真的 LINE，也沒有跑過真的 cloudflared**：`/quicktunnel` 和 `isSelf` 是照文件寫的，第一次上線要特別看這兩個。
+
+步驟（README「LINE 伺服器」一節有完整版）：
+1. 建 Messaging API channel，開啟「Allow bot to join group chats」，在 LINE Official Account Manager 關掉自動回應和加入好友的歡迎訊息。
+2. `.env` 填 `LINE_CHANNEL_SECRET`、`LINE_CHANNEL_ACCESS_TOKEN`、`GUARDIAN_HASH_SALT`、`GUARDIAN_LINE_USER_IDS`，先設 `GUARDIAN_LLM_MODE=offline` 測通道。
+3. 開 `uvicorn apps.line_server:app --port 8000` 和 `cloudflared tunnel --url http://localhost:8000`。
+4. 建一個只有守護人的測試群組，把官方帳號加進去。伺服器畫面會印出群組編號，填進 `GUARDIAN_GROUP_IDS` 再重新啟動。
+5. 在群組傳一則有詐騙特徵的訊息：群組裡應該沒有回應，守護人應該收到私訊報告；私訊「今日摘要」應該收到摘要。
+
+### Phase 5：錄製回放
 驗收是「Colab 在 `replay` 模式下不需金鑰就能跑完整個實驗」。程式和流程都驗證過了（用假的 aisuite 錄製再回放，結果一致、不需要金鑰，模擬器每種組合都不缺），但**還沒有真實模型的回應**，所以現在的實驗數字都不算數，Colab 上也還沒實際跑過。
 
 要金鑰之後的步驟：
@@ -59,18 +76,14 @@ Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5
 - 模型比較的候選在 `config.yaml`，模型名稱查過 Groq 文件，但還沒實際呼叫過；`reasoning_effort: null` 是推測 llama 不支援這個參數。
 
 ## 之後的 Phase（細節見 SPEC 第 12 節）
-- Phase 6 LINE 伺服器：FastAPI＋line-bot-sdk v3、簽章驗證、reply 和 push 的零成本規則、Cloudflare Tunnel。啟動時強制 `replay_cache_write=false`（決策 D2），沒有 `GUARDIAN_HASH_SALT` 就拒絕啟動（決策 D4）。
-  - 引擎產生的報告已經過 `claim_push()`，`report.push` 是 True 才推播。其他 push（例如 reply 來不及時）也要先問它。用官方額度 API 校正 `watchdog.push_used`；每多一位守護人，一次推播就多算一則。
-  - 圖卡要有 HTTPS 網址才能當 LINE 圖片訊息送出：由伺服器提供 `warning_card_png()` 的內容。
-  - 管理指令：`今日摘要` 用 `engine.daily_summary(今天的日期)`，`模式 ...` 改 `engine.speaking_mode`；`誤報` 的統計還沒做（SPEC 第 5 節）。
-  - Watchdog 通知可以搭 `high` 的推播順便送，不多花額度（決策 D24）。
-- Phase 7 家庭試行（需要使用者本人）、Phase 8 收尾（notebook、報告、影片）。
+- Phase 7 家庭試行（需要使用者本人）：真實訊息要用 `live`，開啟 Groq 的 Zero Data Retention，取得全員同意（SPEC 第 8、14 節）。`records/` 的紀錄就是 11-2 要統計的資料，統計工具還沒做。
+- Phase 8 收尾（notebook、報告、影片）。
 
 ## 要等使用者的事
 - 在自己電腦跑一次 `python -m guardian.data_165 --update`。現在也會下載闢謠專區（資料集 38262）；模擬和實驗用的是錄製時凍結的那一份，沒有的話查證不提供 `search_165_rumors`，每則只呼叫模型 1 次。
 - 「遭停止解析涉詐網站」的資料集編號 176455 已查過 API 確認標題相符，不用再確認。
-- 確認決策 D24（Watchdog 通知不用 push）和 D31（截圖文字辨識先不做）。
-- Phase 5 錄回放要 Groq 金鑰（放 `.env`，步驟見「下一步」）；Phase 6 要 LINE channel；Phase 7 要家人同意。
+- 確認決策 D24（Watchdog 通知不用 push）、D31（截圖文字辨識先不做）和 D42（只處理允許的群組）。
+- Phase 5 錄回放要 Groq 金鑰（放 `.env`）；Phase 6 要 LINE channel 和 cloudflared（步驟見「下一步」）；Phase 7 要家人同意。
 - 這些都不要自己繞過：沒有金鑰就用 offline 模式寫完、測完，回報時列出還沒錄製的部分。
 
 ## 在這台電腦（Windows）上

@@ -27,6 +27,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Iterable, Iterator
 
+from .fileio import write_text_atomic
 from .urls import domain_suffixes, normalize_width, url_host
 
 DATASET_API = "https://data.gov.tw/api/v2/rest/dataset/{dataset_id}"
@@ -212,12 +213,6 @@ def read_meta(cache_dir: Path) -> dict[str, Any]:
     return data if isinstance(data, dict) else {}
 
 
-def _write_atomic(path: Path, text: str) -> None:
-    temp = path.with_suffix(path.suffix + ".tmp")
-    temp.write_text(text, encoding="utf-8")
-    temp.replace(path)
-
-
 def is_stale(entry: Any, now: datetime, max_age_days: int) -> bool:
     if not isinstance(entry, dict) or "downloaded_at" not in entry:
         return True
@@ -267,7 +262,7 @@ def update(
             message = f"{source.name}：{type(exc).__name__}: {exc}"
             results.append(UpdateResult(source.id, "failed", old_count, message[:300]))
             continue
-        _write_atomic(cache_dir / f"{source.id}.csv", content)
+        write_text_atomic(cache_dir / f"{source.id}.csv", content)
         meta[source.id] = {
             "name": source.name,
             "dataset_id": source.dataset_id,
@@ -276,7 +271,7 @@ def update(
             "domains": count,
         }
         results.append(UpdateResult(source.id, "updated", count))
-    _write_atomic(cache_dir / META_FILE, json.dumps(meta, ensure_ascii=False, indent=2) + "\n")
+    write_text_atomic(cache_dir / META_FILE, json.dumps(meta, ensure_ascii=False, indent=2) + "\n")
     return results
 
 

@@ -7,7 +7,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Mapping
+from typing import Collection, Mapping
 
 from ..llm import LLMClient, LLMError, call_llm
 from ..models import RISK_LABELS, EventRecord, GuardianNotice, GuardianReport, RiskSignal, Trigger, VerifyResult
@@ -49,6 +49,19 @@ def build_failure_report(trigger: Trigger, signal: RiskSignal, *, reason: str = 
     return GuardianReport(trigger.id, trigger.time, trigger.sender_hash, None, rules, [], [], [], summary, push=False)
 
 
+def format_report(report: GuardianReport) -> str:
+    """推給守護人的文字（SPEC 3-4）。不含訊息內容和網址；最後一行方便標記誤報。"""
+    level = f"風險{RISK_LABELS[report.risk_level]}" if report.risk_level else "查證未完成"
+    lines = [f"顧家貓報告（{report.time:%m/%d %H:%M}）｜{level}",
+             f"規則：{'、'.join(report.rules) or '無'}", f"摘要：{report.summary}"]
+    if report.reasons:
+        lines.append(f"理由：{'；'.join(report.reasons)}")
+    if report.advice:
+        lines.append(f"建議：{'；'.join(report.advice)}")
+    lines.append(f"事件編號：{report.event_id}（誤報請傳「誤報 {report.event_id}」）")
+    return "\n".join(lines)[:MAX_DAILY_SUMMARY_CHARS]
+
+
 def _event_lines(title: str, records: list[EventRecord]) -> list[str]:
     if not records:
         return []
@@ -70,6 +83,7 @@ def build_daily_summary(
     pause_reason: str | None,
     push_used: int,
     push_quota: int,
+    false_positives: Collection[str] = (),
 ) -> str:
     """今日摘要（SPEC 3-7、第 10 節，決策 D30）：程式組的文字，不呼叫模型。只有規則名稱和統計，不含訊息內容和網址。"""
     today = [record for record in records if record.time.date() == day]
@@ -86,6 +100,9 @@ def build_daily_summary(
         f"模型呼叫 {usage['llm_calls']} 次、{usage['tokens']} token、錯誤 {usage['llm_errors']} 次；"
         f"本月推播 {push_used}／{push_quota} 則",
     ]
+    marked = sum(1 for record in today if record.event_id in false_positives)
+    if marked:
+        lines.append(f"守護人標記誤報 {marked} 則")
     if pause_reason:
         lines.append(f"模型暫停中：{pause_reason}")
     if notices:

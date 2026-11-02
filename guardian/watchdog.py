@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 
 MESSAGE_KINDS = ("text", "mention", "image")  # 機器人和新成員入群不算訊息
 REMINDER_WINDOW = 100
+TICK_EVENT_ID = "tick"  # 不是因為某則訊息而做的檢查，決策紀錄用這個編號
 
 
 @dataclass
@@ -54,7 +55,7 @@ class Watchdog:
 
     def on_event(self, trigger: Trigger) -> None:
         """引擎每收到一則事件呼叫一次；換日就重算預算，到了檢查時間就檢查。"""
-        self._roll_day(trigger)
+        self._roll_day(trigger.id, trigger.time)
         if trigger.kind in MESSAGE_KINDS:
             self._messages += 1
             self._day.messages += 1
@@ -65,6 +66,14 @@ class Watchdog:
                 or trigger.time - self._last_check >= timedelta(minutes=self.settings.check_every_minutes)):
             self.check(trigger.id, trigger.time)
 
+    def on_tick(self, now: datetime) -> None:
+        """沒有新訊息時也要換日和定時檢查（LINE 伺服器定期呼叫）。"""
+        self._roll_day(TICK_EVENT_ID, now)
+        if self._last_check is None:
+            self._last_check = now
+        if now - self._last_check >= timedelta(minutes=self.settings.check_every_minutes):
+            self.check(TICK_EVENT_ID, now)
+
     def on_reply(self, *, proactive: bool) -> None:
         """被 @ 的回應是家人主動問的，不算打擾；主動提醒才算（決策 D25）。"""
         if self._day is not None:
@@ -73,13 +82,20 @@ class Watchdog:
         if proactive:
             self._reminder_marks.append(self._messages)
 
-    def claim_push(self, level: str | None, now: datetime) -> bool:
-        """push 的唯一閘門（SPEC 第 10 節）：只給 high；額度用完就不送，等今日摘要（決策 D28）。"""
+    def claim_push(self, level: str | None, now: datetime, count: int = 1) -> bool:
+        """push 的唯一閘門（SPEC 第 10 節）：只給 high；額度不夠就不送，等今日摘要（決策 D28）。
+
+        count 是收到的人數：LINE 依收件人計算，推給群組要算群組人數。
+        """
         self._roll_month(now)
-        if level != "high" or self.push_used >= self.settings.push_quota_monthly:
+        if level != "high" or self.push_used + count > self.settings.push_quota_monthly:
             return False
-        self.push_used += 1
+        self.push_used += count
         return True
+
+    def sync_push_usage(self, used: int) -> None:
+        """用官方額度 API 校正。官方的數字可能還沒算到最新幾則，所以取比較大的。"""
+        self.push_used = max(self.push_used, used)
 
     # -------------------------------------------------------------- 檢查
 
@@ -158,8 +174,8 @@ class Watchdog:
 
     # -------------------------------------------------------------- 視窗
 
-    def _roll_day(self, trigger: Trigger) -> None:
-        today = trigger.time.date()
+    def _roll_day(self, event_id: str, when: datetime) -> None:
+        today = when.date()
         previous = self._day
         if previous is not None and previous.day == today:
             return
@@ -168,7 +184,7 @@ class Watchdog:
         if previous is not None and self.engine.llm.paused:
             self.engine.llm.paused = False
             self.pause_reason = None
-            self._act(trigger.id, trigger.time, "llm_resumed", "新的一天，預算重新計算，恢復呼叫模型。")
+            self._act(event_id, when, "llm_resumed", "新的一天，預算重新計算，恢復呼叫模型。")
 
     def _roll_month(self, now: datetime) -> None:
         month = (now.year, now.month)
@@ -219,4 +235,5 @@ class Watchdog:
             "push_used": self.push_used,
             "push_quota": settings.push_quota_monthly,
             "pending_candidates": len(self.engine.candidate_queue),
+            "false_positives": len(self.engine.false_positives),
         }

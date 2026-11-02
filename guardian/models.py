@@ -318,6 +318,15 @@ class EventRecord:
             "outcome": self.outcome,
         }
 
+    @classmethod
+    def from_dict(cls, data: Any) -> EventRecord:
+        data = _require_keys(data, RECORD_FIELDS, "風險事件紀錄")
+        try:
+            when = datetime.fromisoformat(data["time"])
+        except (TypeError, ValueError):
+            raise SchemaError("風險事件紀錄的 time 不是 ISO 8601 格式") from None
+        return cls(data["event_id"], when, data["sender_hash"], data["rules"], data["risk_level"], data["outcome"])
+
 
 @dataclass
 class GroupReply:

@@ -185,6 +185,21 @@ def test_replay_mode_is_refused_for_real_messages(config, transport):
         build_runtime(ENV, transport=transport, config=dataclasses.replace(config, llm_mode="replay"))
 
 
+def test_line_mode_setting_only_affects_the_server(config):
+    replay = dataclasses.replace(config, llm_mode="replay")
+    assert prepare_config(replay, {"LINE_LLM_MODE": "offline"}).llm_mode == "offline"
+    assert replay.llm_mode == "replay"  # 模擬器和實驗還是用回放，放在 .env 也不會意外花 token
+    with pytest.raises(StartupError, match="GROQ_API_KEY"):
+        prepare_config(replay, {"LINE_LLM_MODE": "live"})
+    assert prepare_config(replay, {"LINE_LLM_MODE": "live", "GROQ_API_KEY": "gsk_" + "x" * 24}).llm_mode == "live"
+
+
+@pytest.mark.parametrize("mode", ["replay", "online"])
+def test_line_mode_setting_refuses_anything_else(config, mode):
+    with pytest.raises(StartupError):
+        prepare_config(dataclasses.replace(config, llm_mode="replay"), {"LINE_LLM_MODE": mode})
+
+
 def test_live_mode_needs_the_model_key(config, transport):
     live = dataclasses.replace(config, llm_mode="live")
     with pytest.raises(StartupError, match="GROQ_API_KEY"):

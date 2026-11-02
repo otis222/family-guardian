@@ -39,13 +39,14 @@ from linebot.v3.messaging import (
 from guardian.config import Config, load_config, load_env_file
 from guardian.engine import Engine
 from guardian.line_bot import ButtonOut, ImageOut, LineBot, LineEnv, StartupError, TextOut, load_line_env, logger
-from guardian.llm import PROVIDER_KEY_ENV, LLMClient
+from guardian.llm import MODES, PROVIDER_KEY_ENV, LLMClient
 from guardian.records import RecordStore
 from guardian.run import never_crash_on_encoding
 from guardian.tunnel import find_quick_tunnel_url
 from guardian.workers.card import warning_card_png
 
 CALLBACK_PATH = "/callback"
+MODE_ENV = "LINE_LLM_MODE"
 MAX_BODY_BYTES = 1024 * 1024
 REQUEST_TIMEOUT_SECONDS = 10
 DEADLINE_CHECK_SECONDS = 2
@@ -97,9 +98,17 @@ class LineTransport:
 
 
 def prepare_config(config: Config, env: Mapping[str, str]) -> Config:
-    """真實訊息不寫快取、也不用 replay（SPEC 第 8 節）。批次由真實的推理時間決定，不用模擬延遲（決策 D41）。"""
+    """真實訊息不寫快取、也不用 replay（SPEC 第 8 節）。批次由真實的推理時間決定，不用模擬延遲（決策 D41）。
+
+    模式看 LINE_LLM_MODE（決策 D56）：放在 .env 也不會影響模擬器和實驗，它們還是用回放，不會意外花 token。
+    """
+    mode = (env.get(MODE_ENV) or "").strip()
+    if mode:
+        if mode not in MODES:
+            raise StartupError(f"{MODE_ENV} 必須是 live 或 offline，收到：{mode!r}")
+        config = dataclasses.replace(config, llm_mode=mode)
     if config.llm_mode == "replay":
-        raise StartupError("LINE 伺服器處理真實訊息，不能用 replay。請在 .env 設定 GUARDIAN_LLM_MODE=live（只測通道時可以用 offline）。")
+        raise StartupError(f"LINE 伺服器處理真實訊息，不能用 replay。請在 .env 設定 {MODE_ENV}=live（只測通道時可以用 offline）。")
     if config.llm_mode == "live":
         needed = {PROVIDER_KEY_ENV.get(model.split(":", 1)[0]) for model in config.models.values()} - {None}
         missing = sorted(name for name in needed if not env.get(name))

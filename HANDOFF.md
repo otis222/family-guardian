@@ -14,7 +14,7 @@
 ## 目前進度（2026-11-02）
 - Phase 1 核心骨架、Phase 2 快速過濾、Phase 3 Router／Worker／Thread、Phase 4 圖卡與 Watchdog：完成。
 - Phase 5 Gradio 模擬器與實驗區：**回放錄好了**（735 筆，全新 clone 不帶金鑰跑得完），Colab 上實際跑要等 Phase 8 的 notebook。
-- Phase 6 LINE 伺服器：**程式完成，驗收還差 LINE channel**（見「下一步」）。`python -m pytest -q` 684 項全過。
+- Phase 6 LINE 伺服器：**程式完成，驗收還差 LINE channel**（見「下一步」）。`python -m pytest -q` 687 項全過。
 - 示範劇本 `scenarios/demo_family.yaml`（21 則）用 offline 跑：6 則風險事件（m03、m06、m08、m09、m14、m16）都判 `high` 並報告守護人；silent 模式只回覆被 @ 的 m09（附圖卡）；日常訊息 0 次模型呼叫。模型呼叫 24 次（router 6、verifier 12、reporter 6：有闢謠資料，offline 假模型每次查證都會多查一輪）。Watchdog 沒有動作。真實模型的回放（`python -m guardian.run scenarios/demo_family.yaml`）是 17 次，m16 判 `medium`，其他 `high`。
 
 | 檔案 | 內容 |
@@ -53,7 +53,7 @@ Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5
 
 步驟（README「LINE 伺服器」一節有完整版）：
 1. 申請 LINE 官方帳號，在 LINE Official Account Manager 開通 Messaging API（決策 D55），開啟「Allow bot to join group chats」，關掉自動回應和加入好友的歡迎訊息。
-2. `.env` 填 `LINE_CHANNEL_SECRET`、`LINE_CHANNEL_ACCESS_TOKEN`、`GUARDIAN_HASH_SALT`、`GUARDIAN_LINE_USER_IDS`，先設 `GUARDIAN_LLM_MODE=offline` 測通道。
+2. `.env` 填 `LINE_CHANNEL_SECRET`、`LINE_CHANNEL_ACCESS_TOKEN`、`GUARDIAN_HASH_SALT`、`GUARDIAN_LINE_USER_IDS`，先設 `LINE_LLM_MODE=offline` 測通道。
 3. 開 `uvicorn apps.line_server:app --port 8000` 和 `cloudflared tunnel --url http://localhost:8000`。
 4. 建一個只有守護人的測試群組，把官方帳號加進去。伺服器畫面會印出群組編號，填進 `GUARDIAN_GROUP_IDS` 再重新啟動。
 5. 在群組傳一則有詐騙特徵的訊息：群組裡應該沒有回應，守護人應該收到私訊報告；私訊「今日摘要」應該收到摘要。

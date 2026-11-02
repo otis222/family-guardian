@@ -41,7 +41,7 @@ python -m guardian.experiment              # 用命令列重現實驗表格，�
 2. 開通 Messaging API：到 [LINE Official Account Manager](https://manager.line.biz/) 選這個帳號，在設定裡啟用 Messaging API，並選一個 provider（選了之後不能改）。LINE Developers 已經不能直接建 channel。同一個後台把自動回應和加入好友的歡迎訊息關掉，webhook 打開。
 3. 到 [LINE Developers Console](https://developers.line.biz/console/) 選 provider 和 channel：Messaging API 分頁開啟「Allow bot to join group chats」、發一個 channel access token（long-lived）；Basic settings 分頁有 channel secret 和 Your user ID。
 4. 安裝 cloudflared：`winget install Cloudflare.cloudflared`。
-5. 把 `.env.example` 複製成 `.env`，填這些值。先設 `GUARDIAN_LLM_MODE=offline` 測通道，它是假模型，不會把訊息送到外面。
+5. 把 `.env.example` 複製成 `.env`，填這些值。先設 `LINE_LLM_MODE=offline` 測通道，它是假模型，不會把訊息送到外面。
    - `LINE_CHANNEL_SECRET`、`LINE_CHANNEL_ACCESS_TOKEN`
    - `GUARDIAN_HASH_SALT`：自己編一串只有你知道的隨機字元
    - `GUARDIAN_LINE_USER_IDS`：你的 LINE 使用者編號，在 channel 的 Basic settings 最下面（Your user ID）
@@ -61,7 +61,7 @@ python -m guardian.experiment              # 用命令列重現實驗表格，�
 
 私訊官方帳號可以下這些指令：`今日摘要`、`暫停`、`恢復`、`模式 silent｜gentle｜on_mention`、`誤報 事件編號`。
 
-加進真實家族群組之前：取得全員同意（SPEC 第 14 節有公告範本），改成 `GUARDIAN_LLM_MODE=live`，並到 Groq 的 Data Controls 開啟 Zero Data Retention（SPEC 第 8 節）。
+加進真實家族群組之前：取得全員同意（SPEC 第 14 節有公告範本），改成 `LINE_LLM_MODE=live`，並到 Groq 的 Data Controls 開啟 Zero Data Retention（SPEC 第 8 節）。
 
 ## 接手開發（Claude Code）
 在這個資料夾開 Claude Code（終端機執行 `claude`，或桌面版 Claude 的 Code 分頁選這個資料夾），跟它說「做下一個 Phase」。

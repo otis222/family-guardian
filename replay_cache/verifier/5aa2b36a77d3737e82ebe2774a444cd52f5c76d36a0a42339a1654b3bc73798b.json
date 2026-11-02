@@ -1,0 +1,11 @@
+{
+  "key": "5aa2b36a77d3737e82ebe2774a444cd52f5c76d36a0a42339a1654b3bc73798b",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"tool_calls\":[{\"name\":\"search_165_rumors\",\"query\":\"老師帶單 保證獲利 投資詐騙\"}]}",
+  "usage": {
+    "prompt_tokens": 365,
+    "completion_tokens": 29
+  },
+  "recorded_at": "2026-11-02T04:02:15+00:00"
+}

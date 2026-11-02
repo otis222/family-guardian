@@ -1,0 +1,11 @@
+{
+  "key": "1cc85720efadbb7d38c0bd461cd062aec2e64e17a7bb1271d86720ed857435b8",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常對話\"],\n  \"evidence\": [\"提及驗證碼已收到，說明商品會到貨\"],\n  \"advice\": [\"此訊息屬於日常交流，無需特別防詐提醒\"]\n}",
+  "usage": {
+    "prompt_tokens": 351,
+    "completion_tokens": 113
+  },
+  "recorded_at": "2026-11-02T02:20:18+00:00"
+}

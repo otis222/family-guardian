@@ -1,0 +1,11 @@
+{
+  "key": "a796c80308a19063998acc5fa9af23867e24cf6c980cf5aea4ae8b8c24a557c7",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-20b",
+  "response": "{\"risk_level\":\"medium\",\"reasons\":[\"投資誘因或導流\"],\"evidence\":[\"訊息中提及朋友推廣群組，並邀請加入 LINE，暗示可能涉及投資或購買行為\"],\"advice\":[\"先確認該群組及其產品的真實性，避免直接加入或透露個人資訊。若有疑慮，可向可信賴的專業人士或官方渠道查證。\"]}",
+  "usage": {
+    "prompt_tokens": 472,
+    "completion_tokens": 184
+  },
+  "recorded_at": "2026-11-02T03:34:16+00:00"
+}

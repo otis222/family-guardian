@@ -1,0 +1,11 @@
+{
+  "key": "341b645abfcec5f8cde1056c68067d13c1488a02fd45cb46fb8bdafbda3cf654",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：要求轉帳或ATM操作，請勿提供帳號密碼，立即透過官方確認並聯絡銀行。",
+  "usage": {
+    "prompt_tokens": 300,
+    "completion_tokens": 300
+  },
+  "recorded_at": "2026-11-02T02:25:19+00:00"
+}

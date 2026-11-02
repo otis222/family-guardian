@@ -1,0 +1,11 @@
+{
+  "key": "c8cc10384e61ad8fefff29374ef377aa2e3cbb0bd9bd19dc6bb33ff448d46447",
+  "role": "router",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"decisions\": [\n    {\n      \"event_id\": \"e179\",\n      \"action\": \"verify\",\n      \"reason\": \"自殺風險\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 550,
+    "completion_tokens": 109
+  },
+  "recorded_at": "2026-11-02T03:19:16+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "bfad6ba64e6b207af9863297fc5416e823dc9bbbf0135865f1a736b60c2aeb27",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求立即點擊連結更新個人資訊\",\n    \"偽裝官方通知，使用緊迫感（今天內）\",\n    \"涉及包裹或領取資訊的常見詐騙手法\"\n  ],\n  \"evidence\": [\n    \"訊息內容提及「包裹地址不完整」並附上可疑網址\",\n    \"使用急迫語氣要求在限定時間內完成操作\"\n  ],\n  \"advice\": [\n    \"不要點擊訊息中的連結，亦不要提供任何個人或付款資訊\",\n    \"如有寄件需求，直接透過官方平台或客服確認\",\n    \"可將此訊息舉報給平台或相關單位\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 476,
+    "completion_tokens": 211
+  },
+  "recorded_at": "2026-11-02T02:59:37+00:00"
+}

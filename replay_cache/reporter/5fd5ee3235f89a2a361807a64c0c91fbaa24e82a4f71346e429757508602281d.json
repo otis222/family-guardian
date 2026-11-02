@@ -1,0 +1,11 @@
+{
+  "key": "5fd5ee3235f89a2a361807a64c0c91fbaa24e82a4f71346e429757508602281d",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒充檢察官、要求保密、索取金錢或驗證碼；立即掛斷並報警。",
+  "usage": {
+    "prompt_tokens": 339,
+    "completion_tokens": 61
+  },
+  "recorded_at": "2026-11-02T02:26:47+00:00"
+}

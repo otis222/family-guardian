@@ -1,0 +1,11 @@
+{
+  "key": "a3b80548a6712ea3fb5922783a8a3b2edc4fa95fa06e91f14d506a43992af93a",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求付款（運費）才能領取獎品\",\n    \"自稱中獎並提供包裹領取資訊\"\n  ],\n  \"evidence\": [\n    \"抽獎訊息中提到需自行支付運費才能寄出電鍋\",\n    \"符合「中獎或包裹待領」的詐騙特徵\"\n  ],\n  \"advice\": [\n    \"不要先行付款或提供個人金融資訊\",\n    \"確認抽獎主辦單位的真實性，必要時直接聯繫官方客服\",\n    \"若有疑慮，可向相關機構或平台投訴\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 472,
+    "completion_tokens": 222
+  },
+  "recorded_at": "2026-11-02T02:23:50+00:00"
+}

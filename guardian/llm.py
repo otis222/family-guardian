@@ -46,6 +46,8 @@ SECRET_ENV_NAMES = (
     "GUARDIAN_HASH_SALT",
 )
 
+TOOL_USE_FAILED = "tool_use_failed"  # Groq 的錯誤代碼：沒有提供工具，模型卻想呼叫
+
 Responder = Callable[[str, str, str], str]  # (role, system_prompt, user_prompt) -> 回覆文字
 
 
@@ -59,6 +61,14 @@ class ReplayMissError(LLMError):
 
 class LLMCallError(LLMError):
     """live 呼叫失敗、回覆空白，或缺少金鑰、套件。"""
+
+
+class LLMUnusableReplyError(LLMCallError):
+    """模型有回應但不能用：回覆空白（gpt-oss 偶爾只有推理、沒有內容），或想呼叫工具被供應商擋下。再問一次通常就好了。"""
+
+
+class LLMRecordedFailureError(LLMCallError):
+    """回放時重現錄製當時的失敗：模型連問幾次都給不出能用的回覆。"""
 
 
 class LLMPausedError(LLMError):
@@ -226,6 +236,7 @@ class LLMStats:
     cache_writes: int = 0
     prompt_tokens: int = 0
     completion_tokens: int = 0
+    replay_misses: int = 0
 
     @property
     def total_calls(self) -> int:
@@ -246,6 +257,7 @@ class LLMStats:
             "total_calls": self.total_calls,
             "errors": {role: self.errors.get(role, 0) for role in ROLES},
             "total_errors": self.total_errors,
+            "replay_misses": self.replay_misses,
             "cache_hits": self.cache_hits,
             "cache_writes": self.cache_writes,
             "prompt_tokens": self.prompt_tokens,
@@ -320,11 +332,14 @@ class LLMClient:
                 text = self._live(role, model, system_prompt, user_prompt)
             if not isinstance(text, str) or not text.strip():
                 raise LLMCallError(f"{role} 的模型回覆是空的（未自動重試）")
-        except LLMError:
+        except LLMError as exc:
             self.stats.errors[role] += 1
+            self.stats.replay_misses += isinstance(exc, ReplayMissError)
             raise
         except Exception as exc:  # 供應商的各種錯誤：遮掉金鑰後轉成 LLMCallError
             self.stats.errors[role] += 1
+            if TOOL_USE_FAILED in str(exc):  # 不放供應商的錯誤內容：裡面有模型的輸出，可能引用訊息原文
+                raise LLMUnusableReplyError(f"{role} 的模型想呼叫工具，被供應商擋下（未自動重試）") from None
             raise LLMCallError(f"{role} 呼叫失敗（未自動重試）：{safe_error(exc, env=self.env)}") from None
         return text
 
@@ -346,6 +361,8 @@ class LLMClient:
             entry = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as exc:
             raise ReplayMissError(f"回放快取檔損壞：{path.name}（{safe_error(exc)}）") from None
+        if isinstance(entry, dict) and entry.get("key") == key and entry.get("unusable") is True:
+            raise LLMRecordedFailureError(f"{role} 的模型在錄製時就沒有給出能用的回覆")
         if not isinstance(entry, dict) or entry.get("key") != key or not isinstance(entry.get("response"), str):
             raise ReplayMissError(f"回放快取檔內容不符：{path.name}")
         self.stats.cache_hits += 1
@@ -378,7 +395,7 @@ class LLMClient:
         )
         text = response.choices[0].message.content
         if not isinstance(text, str) or not text.strip():
-            raise LLMCallError(f"{role} 的模型回覆是空的（未自動重試）")
+            raise LLMUnusableReplyError(f"{role} 的模型回覆是空的（未自動重試）")
         usage = _usage_dict(getattr(response, "usage", None))
         self.stats.add_usage(usage)
         if self.write_cache:

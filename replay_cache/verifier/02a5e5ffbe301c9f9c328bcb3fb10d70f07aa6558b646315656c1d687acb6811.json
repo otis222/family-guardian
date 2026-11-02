@@ -1,0 +1,11 @@
+{
+  "key": "02a5e5ffbe301c9f9c328bcb3fb10d70f07aa6558b646315656c1d687acb6811",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"投資誘因或導流\",\n    \"利用成功案例誘導加入\",\n    \"要求加入未驗證的通訊群組\"\n  ],\n  \"evidence\": [\n    \"訊息中提到「跟著買很多人都賺到了」作為誘因\",\n    \"要求加入 LINE 群組以取得所謂的投資資訊\"\n  ],\n  \"advice\": [\n    \"不要輕易加入陌生的投資群組或提供個人資訊\",\n    \"可先向可信的金融機構或主管機關查證該投資資訊的真偽\",\n    \"若懷疑為詐騙，請報案或向相關單位諮詢\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 676,
+    "completion_tokens": 217
+  },
+  "recorded_at": "2026-11-02T03:06:09+00:00"
+}

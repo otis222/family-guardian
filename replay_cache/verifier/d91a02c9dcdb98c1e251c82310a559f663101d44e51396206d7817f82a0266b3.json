@@ -1,0 +1,11 @@
+{
+  "key": "d91a02c9dcdb98c1e251c82310a559f663101d44e51396206d7817f82a0266b3",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"tool_calls\": [\n    {\n      \"name\": \"search_165_rumor\",\n      \"query\": \"健保卡 冒用 轉接 辦案人員 詐騙\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 461,
+    "completion_tokens": 103
+  },
+  "recorded_at": "2026-11-02T03:18:46+00:00"
+}

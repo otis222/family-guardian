@@ -1,0 +1,11 @@
+{
+  "key": "b5854a5d72a86a571bfd31afc976f03d6a420af5cd6a2e50a56efa7f373b18c9",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"投資誘因或導流\",\n    \"含可疑連結\"\n  ],\n  \"evidence\": [\n    \"訊息聲稱保證獲利、穩賺不賠，並提供 LINE 加入連結\",\n    \"使用誘導性語句吸引用戶點擊或加入\"\n  ],\n  \"advice\": [\n    \"不要點擊或加入未知的投資群組連結\",\n    \"若已點擊，請立即檢查帳號安全並避免提供個人或金錢資訊\",\n    \"可向平台或相關機構通報此類訊息\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 498,
+    "completion_tokens": 187
+  },
+  "recorded_at": "2026-11-02T02:21:05+00:00"
+}

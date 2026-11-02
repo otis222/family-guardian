@@ -1,0 +1,11 @@
+{
+  "key": "ac298f84609c89ff0b1baff48647c53b7cbe3a611860945ffa3da809845300ee",
+  "role": "router",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\"decisions\":[{\"event_id\":\"e047\",\"action\":\"watch\",\"reason\":\"詐騙警示\"}]}",
+  "usage": {
+    "prompt_tokens": 312,
+    "completion_tokens": 71
+  },
+  "recorded_at": "2026-11-02T03:00:07+00:00"
+}

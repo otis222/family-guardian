@@ -1,0 +1,11 @@
+{
+  "key": "6a6bb3cdf0a40712da7337834ecfc4ee7f7136220722b89fcdd97003f2b591ce",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\"要求轉帳\"],\n  \"evidence\": [\"請求幫忙匯款繳學費\"],\n  \"advice\": [\"不要隨意匯款，先確認對方身份與需求的真實性\"]\n}",
+  "usage": {
+    "prompt_tokens": 354,
+    "completion_tokens": 126
+  },
+  "recorded_at": "2026-11-02T02:41:33+00:00"
+}

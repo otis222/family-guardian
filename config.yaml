@@ -3,9 +3,10 @@
 
 # 角色和模型的對應（SPEC 第 8 節）
 models:
-  router: "groq:openai/gpt-oss-120b"     # 輕量、快速
-  verifier: "groq:openai/gpt-oss-120b"   # 暫定；做完模型比較（SPEC 11-1）再決定
-  reporter: "groq:openai/gpt-oss-120b"   # 暫定，同上
+  # 模型比較（SPEC 11-1）後決定都用這個（決策 D54）。改模型就要重新錄製回放
+  router: "groq:openai/gpt-oss-120b"
+  verifier: "groq:openai/gpt-oss-120b"
+  reporter: "groq:openai/gpt-oss-120b"
 
 # offline：假模型，給測試用
 # replay：讀 replay_cache/ 裡錄好的回應，不需要金鑰（預設）
@@ -81,15 +82,16 @@ experiment:
   snapshot_dir: scenarios/snapshot_165  # 錄製時凍結的闢謠專區，回放才對得上
   pace_seconds: 5                       # 錄製時每次呼叫前等幾秒，避免超過每分鐘上限
   # 模型比較的候選。一次只換一個角色；不支援 reasoning_effort 的模型寫 null
+  # 寫這份設定時，帳號用得到的文字模型只有 gpt-oss 和 qwen（Groq 文件有列 llama，但帳號回 404）
   compare_models:
     router:
       - {model: "groq:openai/gpt-oss-120b"}
       - {model: "groq:openai/gpt-oss-20b"}
-      - {model: "groq:llama-3.1-8b-instant", params: {reasoning_effort: null}}
+      - {model: "groq:qwen/qwen3.8-27b", params: {reasoning_effort: null, reasoning_format: hidden}}
     verifier:
       - {model: "groq:openai/gpt-oss-120b"}
       - {model: "groq:openai/gpt-oss-20b"}
-      - {model: "groq:llama-3.3-70b-versatile", params: {reasoning_effort: null}}
+      - {model: "groq:qwen/qwen3.8-27b", params: {reasoning_effort: null, reasoning_format: hidden}}
 
 # LINE 伺服器（SPEC 第 10 節）。金鑰、守護人和群組編號都放 .env
 line:

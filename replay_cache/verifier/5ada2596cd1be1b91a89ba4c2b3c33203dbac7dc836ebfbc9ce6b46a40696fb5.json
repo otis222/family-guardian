@@ -1,0 +1,11 @@
+{
+  "key": "5ada2596cd1be1b91a89ba4c2b3c33203dbac7dc836ebfbc9ce6b46a40696fb5",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常對話\"],\n  \"evidence\": [],\n  \"advice\": [\"保持警覺，若收到要求金錢或個人資訊的訊息，請先確認來源。\"]\n}",
+  "usage": {
+    "prompt_tokens": 347,
+    "completion_tokens": 75
+  },
+  "recorded_at": "2026-11-02T02:47:49+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "e8dfa11799d0f6a532a4bdd025fbd3cf6e90e518a458c0bad1dc9e23cfc39055",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"包裹待領或地址不完整的緊急更新要求\",\n    \"訊息內含可疑連結\",\n    \"要求在限定時間內點擊完成操作\"\n  ],\n  \"evidence\": [\n    \"使用緊迫感（今天內）迫使使用者點擊\",\n    \"提供未驗證的網址以取得個人資料\"\n  ],\n  \"advice\": [\n    \"不要點擊訊息中的連結，直接透過官方渠道確認包裹狀態\",\n    \"若有疑慮，可聯繫寄件公司客服核實\",\n    \"提升警覺，避免在未確認身份前提供任何個人資訊\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 505,
+    "completion_tokens": 199
+  },
+  "recorded_at": "2026-11-02T02:17:30+00:00"
+}

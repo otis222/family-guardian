@@ -13,8 +13,9 @@
 
 ## 目前進度（2026-11-02）
 - Phase 1 核心骨架、Phase 2 快速過濾、Phase 3 Router／Worker／Thread、Phase 4 圖卡與 Watchdog：完成。
-- Phase 5 Gradio 模擬器與實驗區、Phase 6 LINE 伺服器：**程式完成，驗收還差金鑰和 LINE channel**（見「下一步」）。`python -m pytest -q` 667 項全過。
-- 示範劇本 `scenarios/demo_family.yaml`（21 則）用 offline 跑：6 則風險事件（m03、m06、m08、m09、m14、m16）都判 `high` 並報告守護人；silent 模式只回覆被 @ 的 m09（附圖卡）；日常訊息 0 次模型呼叫。模型呼叫 24 次（router 6、verifier 12、reporter 6：有闢謠資料，offline 假模型每次查證都會多查一輪）。Watchdog 沒有動作。
+- Phase 5 Gradio 模擬器與實驗區：**回放錄好了**（735 筆，全新 clone 不帶金鑰跑得完），Colab 上實際跑要等 Phase 8 的 notebook。
+- Phase 6 LINE 伺服器：**程式完成，驗收還差 LINE channel**（見「下一步」）。`python -m pytest -q` 684 項全過。
+- 示範劇本 `scenarios/demo_family.yaml`（21 則）用 offline 跑：6 則風險事件（m03、m06、m08、m09、m14、m16）都判 `high` 並報告守護人；silent 模式只回覆被 @ 的 m09（附圖卡）；日常訊息 0 次模型呼叫。模型呼叫 24 次（router 6、verifier 12、reporter 6：有闢謠資料，offline 假模型每次查證都會多查一輪）。Watchdog 沒有動作。真實模型的回放（`python -m guardian.run scenarios/demo_family.yaml`）是 17 次，m16 判 `medium`，其他 `high`。
 
 | 檔案 | 內容 |
 |---|---|
@@ -43,10 +44,9 @@
 | `guardian/tunnel.py`、`guardian/fileio.py` | 找 Quick Tunnel 的網址；寫檔（Windows 上換名失敗會多試幾次） |
 | `apps/line_server.py` | FastAPI、簽章驗證、line-bot-sdk 的轉接、背景執行緒、啟動檢查 |
 
-Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5 見 D33–D40，Phase 6 見 D41–D50。D10（Thread 直通只送有風險訊號的訊息）是使用者決定的；D24（Watchdog 通知不用 push）、D42（只處理允許的群組）等使用者確認；其他取捨都以 token 最少為準，改之前先看理由。
+Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5 見 D33–D40 和 D51–D54，Phase 6 見 D41–D50。D10（Thread 直通只送有風險訊號的訊息）是使用者決定的；D24（Watchdog 通知不用 push）、D42（只處理允許的群組）等使用者確認；其他取捨都以 token 最少為準，改之前先看理由。
 
-## 下一步：完成 Phase 5、6 的驗收，再做 Phase 7
-兩個驗收都要使用者本人準備，互不影響。
+## 下一步：完成 Phase 6 的驗收，再做 Phase 7
 
 ### Phase 6：在只有守護人的測試群組裡，收到 silent 模式的報告
 程式用假的傳送層和本機的 LINE API 替身驗證過（簽章、reply、push、按鈕、webhook 更新、紀錄），也真的用 uvicorn 跑過一次。**還沒連過真的 LINE，也沒有跑過真的 cloudflared**：`/quicktunnel` 和 `isSelf` 是照文件寫的，第一次上線要特別看這兩個。
@@ -58,24 +58,27 @@ Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5
 4. 建一個只有守護人的測試群組，把官方帳號加進去。伺服器畫面會印出群組編號，填進 `GUARDIAN_GROUP_IDS` 再重新啟動。
 5. 在群組傳一則有詐騙特徵的訊息：群組裡應該沒有回應，守護人應該收到私訊報告；私訊「今日摘要」應該收到摘要。
 
-### Phase 5：錄製回放
-驗收是「Colab 在 `replay` 模式下不需金鑰就能跑完整個實驗」。程式和流程都驗證過了（用假的 aisuite 錄製再回放，結果一致、不需要金鑰，模擬器每種組合都不缺），但**還沒有真實模型的回應**，所以現在的實驗數字都不算數，Colab 上也還沒實際跑過。
+### Phase 5 的真實結果（2026-11-02，gpt-oss-120b）
+`python -m guardian.experiment` 不需要金鑰就能重現，完整表格在 `results/experiment.md`。模型比較的結論見決策 D54。
 
-要金鑰之後的步驟：
-1. `.env` 填 `GROQ_API_KEY`（`.env` 已經從 `.env.example` 複製好了）。闢謠專區已經下載並凍結在 `scenarios/snapshot_165/`（88 篇，決策 D52）。
-2. `python -m guardian.experiment --record`。會中斷也沒關係：已錄的不重花 token，再跑一次接著錄。
-3. 看模型比較的結果，決定 `config.yaml` 的 `models.verifier`、`models.reporter`（SPEC 第 8 節）。改了模型或 prompt 就要再錄一次，沒變的 prompt 會沿用。
-4. 看錯誤分析（實驗表格下面列了漏掉和誤報的事件）。要改 prompt 或規則就在這時改，改完再錄。
-5. commit `replay_cache/` 和 `scenarios/snapshot_165/`，在 Colab 上實際跑一次驗收。
+| 做法 | 召回率 | 精確率 | 打擾／100 則 | 延遲（則） | 模型呼叫 | token | 注入成功率 |
+|---|---|---|---|---|---|---|---|
+| A 純規則 | 80% | 58% | 9.1 | 0.0 | 0 | 0 | 0% |
+| B 單一 LLM | 95% | 78% | 13.6 | 0.0 | 198 | 94,786 | 0% |
+| C Super-agent | 75% | 86% | 12.1 | 0.2 | 110 | 61,734 | 0% |
+| C 拿掉快速過濾 | 100% | 83% | 14.6 | 0.3 | 313 | 159,408 | 0% |
+| C 拿掉提前行動 | 60% | 95% | 7.6 | 0.2 | 71 | 38,867 | 30% |
+| C 拿掉批次處理 | 75% | 86% | 12.1 | 0.0 | 113 | 62,570 | 0% |
 
-預演過了：用真的 aisuite 和 Groq SDK 連本機替身，跑完整個 `--record`，再不帶金鑰回放，0 次錯誤。真的模型還沒呼叫過。
+要寫進報告的重點：
+- C 的召回率比 B 低。漏掉的 5 則裡，4 則是規則完全抓不到（e172、e174、e176、e177，到不了模型）；1 則模型判 `medium`，照 3-6 丟棄（e020）。
+- C 的誤報 4 則都是真的家人要錢的訊息（e069、e086、e121、e192），人也不容易判斷。
+- 批次處理在這份資料幾乎沒差（少 3 次呼叫）：連續轉傳只有兩波。
+- 10 則注入攻擊模型全部沒上當，程式防線這次沒有派上用場（覆蓋 0 次）；「拿掉提前行動」的 30% 是沒查證，不是模型被騙。
+- 劇本和規則是同一個人寫的，規則抓得到的比例不代表真實情況；詐騙密度（15%）也遠高於真實群組，真實群組裡 C 的呼叫數應該比 B 少更多。
+- 如果要改善召回率：改規則或 prompt 要用新的訊息驗證，不能看著這份答案調，改了 prompt 要重錄。
 
-用量估計：預演是 1095 個不同的 prompt（965 個用 gpt-oss-120b），這是上限：假模型會把所有閒聊都送去查證，也每次都查闢謠，真實模型應該會少很多（我估 700 個左右）。每次呼叫前等 5 秒，大約一小時。token 估計是幾十萬；Groq 文件列的 gpt-oss 上限是每分鐘 8 千、每天 20 萬 token，實際上限要看帳號的 limits 頁面，可能要分幾天錄。錄製順序是先錄模擬器和三種做法，主要結果最早出來。
-
-注意：
-- 現在沒加 `--mode offline` 跑會一路 replay miss：不會崩潰，候選改用規則結果報告，畫面和表格都會提醒快取還沒錄。
-- 實驗放寬了 Watchdog 的上限（決策 D33），報告要註明。預算和提醒上限的數字是先抓的（決策 D25、D26），有真實用量後再調。
-- 模型比較的候選在 `config.yaml`，模型名稱查過 Groq 文件，但還沒實際呼叫過；`reasoning_effort: null` 是推測 llama 不支援這個參數。
+要重錄時（改了 prompt、模型或實驗劇本，`tests/test_recorded_replay.py` 會失敗）：`python -m guardian.experiment --record`，沒變的 prompt 不會重花 token，再更新測試裡的數字和 `results/experiment.md`。這次全部花了約 36 萬 token；Groq 的 gpt-oss-120b 每天上限 20 萬 token（回復很慢，每分鐘約 140），碰到上限會停下來，再跑一次接著錄。
 
 ## 之後的 Phase（細節見 SPEC 第 12 節）
 - Phase 7 家庭試行（需要使用者本人）：真實訊息要用 `live`，開啟 Groq 的 Zero Data Retention，取得全員同意（SPEC 第 8、14 節）。`records/` 的紀錄就是 11-2 要統計的資料，統計工具還沒做。
@@ -85,7 +88,7 @@ Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5
 - LINE 伺服器要用真實的 165 名單：每週跑一次 `python -m guardian.data_165 --update`（2026-11-02 跑過，115,589 個網域）。模擬和實驗用的是凍結的那一份，不受影響。
 - 「遭停止解析涉詐網站」的資料集編號 176455 已查過 API 確認標題相符，不用再確認。
 - 確認決策 D24（Watchdog 通知不用 push）、D31（截圖文字辨識先不做）和 D42（只處理允許的群組）。
-- Phase 5 錄回放要 Groq 金鑰（放 `.env`）；Phase 6 要 LINE channel 和 cloudflared（步驟見「下一步」）；Phase 7 要家人同意。
+- Phase 6 要 LINE channel 和 cloudflared（步驟見「下一步」）；Phase 7 要家人同意。Groq 金鑰已經放在 `.env`。
 - 這些都不要自己繞過：沒有金鑰就用 offline 模式寫完、測完，回報時列出還沒錄製的部分。
 
 ## 在這台電腦（Windows）上

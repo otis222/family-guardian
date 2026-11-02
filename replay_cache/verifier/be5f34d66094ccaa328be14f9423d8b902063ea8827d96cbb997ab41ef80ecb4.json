@@ -1,0 +1,11 @@
+{
+  "key": "be5f34d66094ccaa328be14f9423d8b902063ea8827d96cbb997ab41ef80ecb4",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求先支付驗證費\",\n    \"承諾高價獎品以換取個人資料\",\n    \"使用誘因（第一百萬訪客）製造緊迫感\"\n  ],\n  \"evidence\": [\n    \"詐騙常見以金錢或禮物為誘因，要求先付款或提供驗證碼\",\n    \"類似手法在165闢謠資料中屬於高風險詐騙\"\n  ],\n  \"advice\": [\n    \"不要點擊或提供任何個人資訊\",\n    \"不要先行付款或輸入驗證碼\",\n    \"如有疑慮可向官方或消費者保護機構查證\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 457,
+    "completion_tokens": 250
+  },
+  "recorded_at": "2026-11-02T03:18:29+00:00"
+}

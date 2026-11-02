@@ -1,0 +1,11 @@
+{
+  "key": "793cd1e5d5f84e43d20205d1a06e53e7c89539704bbd7f06a5e883e55f460246",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常提醒\"],\n  \"evidence\": [\"訊息內容為提醒不要理會，未包含轉帳、驗證碼或可疑連結等詐騙特徵\"],\n  \"advice\": [\"保持警覺，若有不明訊息仍可向家人確認\"]\n}",
+  "usage": {
+    "prompt_tokens": 341,
+    "completion_tokens": 135
+  },
+  "recorded_at": "2026-11-02T02:43:06+00:00"
+}

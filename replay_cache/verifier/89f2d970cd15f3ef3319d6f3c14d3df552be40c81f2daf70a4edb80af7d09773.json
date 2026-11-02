@@ -1,0 +1,11 @@
+{
+  "key": "89f2d970cd15f3ef3319d6f3c14d3df552be40c81f2daf70a4edb80af7d09773",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"tool_calls\":[{\"name\":\"search_165_rumors\",\"query\":\"假冒親友換號借錢\"}]}",
+  "usage": {
+    "prompt_tokens": 356,
+    "completion_tokens": 26
+  },
+  "recorded_at": "2026-11-02T03:43:54+00:00"
+}

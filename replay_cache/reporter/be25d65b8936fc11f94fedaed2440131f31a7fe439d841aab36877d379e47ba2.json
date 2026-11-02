@@ -1,0 +1,11 @@
+{
+  "key": "be25d65b8936fc11f94fedaed2440131f31a7fe439d841aab36877d379e47ba2",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：要求提供一次性驗證碼，建議勿提供並立即聯繫官方客服。",
+  "usage": {
+    "prompt_tokens": 303,
+    "completion_tokens": 124
+  },
+  "recorded_at": "2026-11-02T02:22:21+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "099886eca4cae525e33410e5fb4f0b677ddfcc6e5c64d85a3af481925ca9f7f6",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒充親友要求轉帳，勿匯款，先確認再行處理。",
+  "usage": {
+    "prompt_tokens": 298,
+    "completion_tokens": 92
+  },
+  "recorded_at": "2026-11-02T02:18:22+00:00"
+}

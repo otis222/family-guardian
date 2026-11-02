@@ -1,0 +1,11 @@
+{
+  "key": "de91547d7181bc3bf64f188fbc4badc4cd5abe218e8ba807021ee9457e656a3f",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-20b",
+  "response": "{\"risk_level\":\"high\",\"reasons\":[\"投資誘因或導流\",\"轉傳訊息含網址\"],\"evidence\":[\"訊息宣稱保證獲利、穩賺不賠\",\"提供可點擊的外部連結\"],\"advice\":[\"請勿點擊連結或加入此群組，先核實來源並尋求可信賴的投資建議。\"]}",
+  "usage": {
+    "prompt_tokens": 498,
+    "completion_tokens": 115
+  },
+  "recorded_at": "2026-11-02T03:28:47+00:00"
+}

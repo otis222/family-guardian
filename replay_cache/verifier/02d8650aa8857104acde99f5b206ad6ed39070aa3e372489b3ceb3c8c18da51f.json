@@ -1,0 +1,11 @@
+{
+  "key": "02d8650aa8857104acde99f5b206ad6ed39070aa3e372489b3ceb3c8c18da51f",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"risk_level\":\"low\",\"reasons\":[\"日常對話\",\"家人提醒\"],\"evidence\":[\"提及銀行官方立場\",\"提醒不要回傳驗證碼\"],\"advice\":[\"保持警覺\",\"繼續提醒家人不要提供個資\"]}",
+  "usage": {
+    "prompt_tokens": 342,
+    "completion_tokens": 46
+  },
+  "recorded_at": "2026-11-02T03:55:27+00:00"
+}

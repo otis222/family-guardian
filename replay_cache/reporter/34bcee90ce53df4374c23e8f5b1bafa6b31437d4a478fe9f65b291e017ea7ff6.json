@@ -1,0 +1,11 @@
+{
+  "key": "34bcee90ce53df4374c23e8f5b1bafa6b31437d4a478fe9f65b291e017ea7ff6",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：含投資誘因、保證獲利與可疑連結，建議勿點擊、勿加入陌生渠道，並以官方管道核實資訊。",
+  "usage": {
+    "prompt_tokens": 321,
+    "completion_tokens": 71
+  },
+  "recorded_at": "2026-11-02T03:43:43+00:00"
+}

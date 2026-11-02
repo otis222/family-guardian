@@ -1,0 +1,11 @@
+{
+  "key": "e4c3c35c027d954af1a4ff4ed38e1c46631fc759ede94ca621715c650ebe50d4",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常對話\"],\n  \"evidence\": [\"內容僅提及火鍋好吃，無要求轉帳、驗證碼或可疑連結\"],\n  \"advice\": [\"保持警覺，勿隨意點擊不明連結或提供個人資訊\"]\n}",
+  "usage": {
+    "prompt_tokens": 338,
+    "completion_tokens": 136
+  },
+  "recorded_at": "2026-11-02T02:47:37+00:00"
+}

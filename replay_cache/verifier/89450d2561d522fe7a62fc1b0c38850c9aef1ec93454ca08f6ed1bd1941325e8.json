@@ -1,0 +1,11 @@
+{
+  "key": "89450d2561d522fe7a62fc1b0c38850c9aef1ec93454ca08f6ed1bd1941325e8",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"risk_level\":\"high\",\"reasons\":[\"假冒公務員\",\"要求保密\",\"監管帳戶\"],\"evidence\":[\"165 闢謠資料指出檢警不會監管帳戶\",\"165 闢謠資料指出檢警不會要求保密\"],\"advice\":[\"切勿相信電話中的指控\",\"不要進行任何轉帳或提供個資\",\"直接掛斷並撥打 165 或 110 查證\"]}",
+  "usage": {
+    "prompt_tokens": 520,
+    "completion_tokens": 94
+  },
+  "recorded_at": "2026-11-02T04:08:10+00:00"
+}

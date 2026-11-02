@@ -1,0 +1,11 @@
+{
+  "key": "20a560bcfa710148da4f1192871c818d750c2d3bc192ae8a2e2b7b74f2f1ce36",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"tool_calls\": [\n    {\n      \"name\": \"search_165_rumors\",\n      \"query\": \"換手機號碼 私訊 詐騙\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 463,
+    "completion_tokens": 118
+  },
+  "recorded_at": "2026-11-02T02:27:10+00:00"
+}

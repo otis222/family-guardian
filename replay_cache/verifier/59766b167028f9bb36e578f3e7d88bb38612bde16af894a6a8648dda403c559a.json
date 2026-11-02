@@ -1,0 +1,11 @@
+{
+  "key": "59766b167028f9bb36e578f3e7d88bb38612bde16af894a6a8648dda403c559a",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"包含連結但未伴隨金錢請求或驗證碼要求\"],\n  \"evidence\": [\"訊息中出現 https://photos.example/album/hike 的網址\"],\n  \"advice\": [\"點擊陌生連結前可先確認來源安全性，必要時可先在安全環境下檢查\"]\n}",
+  "usage": {
+    "prompt_tokens": 346,
+    "completion_tokens": 153
+  },
+  "recorded_at": "2026-11-02T02:48:18+00:00"
+}

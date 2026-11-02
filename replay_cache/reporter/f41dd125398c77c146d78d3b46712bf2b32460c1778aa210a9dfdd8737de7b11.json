@@ -1,0 +1,11 @@
+{
+  "key": "f41dd125398c77c146d78d3b46712bf2b32460c1778aa210a9dfdd8737de7b11",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：假冒包裹通知，含可疑連結，限時點擊；請勿點擊，透過官方渠道核實。",
+  "usage": {
+    "prompt_tokens": 338,
+    "completion_tokens": 229
+  },
+  "recorded_at": "2026-11-02T02:17:36+00:00"
+}

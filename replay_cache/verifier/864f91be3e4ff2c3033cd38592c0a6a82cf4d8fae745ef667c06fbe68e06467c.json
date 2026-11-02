@@ -1,0 +1,11 @@
+{
+  "key": "864f91be3e4ff2c3033cd38592c0a6a82cf4d8fae745ef667c06fbe68e06467c",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常提醒\"],\n  \"evidence\": [\"提醒不要回應電話\"],\n  \"advice\": [\"保持警惕，若有疑慮可自行確認資訊來源\"]\n}",
+  "usage": {
+    "prompt_tokens": 347,
+    "completion_tokens": 95
+  },
+  "recorded_at": "2026-11-02T02:38:20+00:00"
+}

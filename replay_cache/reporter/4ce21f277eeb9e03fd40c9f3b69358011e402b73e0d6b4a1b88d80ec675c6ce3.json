@@ -1,0 +1,11 @@
+{
+  "key": "4ce21f277eeb9e03fd40c9f3b69358011e402b73e0d6b4a1b88d80ec675c6ce3",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：要求轉帳或ATM操作，建議核實身份、勿匯款。",
+  "usage": {
+    "prompt_tokens": 294,
+    "completion_tokens": 110
+  },
+  "recorded_at": "2026-11-02T03:10:21+00:00"
+}

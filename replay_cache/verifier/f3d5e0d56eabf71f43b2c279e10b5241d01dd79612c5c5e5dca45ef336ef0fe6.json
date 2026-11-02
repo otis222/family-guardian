@@ -1,0 +1,11 @@
+{
+  "key": "f3d5e0d56eabf71f43b2c279e10b5241d01dd79612c5c5e5dca45ef336ef0fe6",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-20b",
+  "response": "{\"risk_level\":\"high\",\"reasons\":[\"投資誘因或導流\"],\"evidence\":[\"事件中包含投資獲利保證與導流至外部連結\"],\"advice\":[\"此訊息具備多項詐騙常見特徵，請勿點擊連結或提供個人資訊。\"]}",
+  "usage": {
+    "prompt_tokens": 484,
+    "completion_tokens": 105
+  },
+  "recorded_at": "2026-11-02T03:35:13+00:00"
+}

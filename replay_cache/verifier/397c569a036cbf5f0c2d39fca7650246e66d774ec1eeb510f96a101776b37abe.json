@@ -1,0 +1,11 @@
+{
+  "key": "397c569a036cbf5f0c2d39fca7650246e66d774ec1eeb510f96a101776b37abe",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"risk_level\":\"high\",\"reasons\":[\"假冒公務員\",\"監管帳戶或要求保密\",\"要求配合調查\"],\"evidence\":[\"自稱警察\",\"帳戶涉案\",\"要求配合調查\"],\"advice\":[\"切勿相信對方說法\",\"不要提供任何個資或轉帳\",\"立即撥打 165 或 110 查證\"]}",
+  "usage": {
+    "prompt_tokens": 520,
+    "completion_tokens": 71
+  },
+  "recorded_at": "2026-11-02T03:56:32+00:00"
+}

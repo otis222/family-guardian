@@ -1,0 +1,11 @@
+{
+  "key": "824f1869719658bf61e8e1dafad81c6bf8a1b3f7d56c5b66a7180e2872967717",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"投資誘因或導流\",\n    \"提供可疑下載連結\",\n    \"使用獎勵或送金作為誘因\"\n  ],\n  \"evidence\": [\n    \"訊息中要求下載 App 並開始投資\",\n    \"提供未經驗證的網址\",\n    \"以送金作為吸引\"\n  ],\n  \"advice\": [\n    \"不要點擊或下載訊息中的連結\",\n    \"勿依照訊息指示進行任何金錢交易或轉帳\",\n    \"如有疑慮，可自行查證平台真偽或向相關機構諮詢\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 467,
+    "completion_tokens": 195
+  },
+  "recorded_at": "2026-11-02T03:21:02+00:00"
+}

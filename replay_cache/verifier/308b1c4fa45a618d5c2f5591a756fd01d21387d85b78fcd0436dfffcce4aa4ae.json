@@ -1,0 +1,11 @@
+{
+  "key": "308b1c4fa45a618d5c2f5591a756fd01d21387d85b78fcd0436dfffcce4aa4ae",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-20b",
+  "response": "{\"tool_calls\":[{\"name\":\"search_165_rumors\",\"query\":\"165 保證獲利 穩賺不賠\"}]}",
+  "usage": {
+    "prompt_tokens": 467,
+    "completion_tokens": 51
+  },
+  "recorded_at": "2026-11-02T03:31:35+00:00"
+}

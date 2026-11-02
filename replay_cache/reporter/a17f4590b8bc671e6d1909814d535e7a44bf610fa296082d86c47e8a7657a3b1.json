@@ -1,0 +1,11 @@
+{
+  "key": "a17f4590b8bc671e6d1909814d535e7a44bf610fa296082d86c47e8a7657a3b1",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：要求轉帳或 ATM 操作，建議先核實收款人身份及付款方式。",
+  "usage": {
+    "prompt_tokens": 270,
+    "completion_tokens": 113
+  },
+  "recorded_at": "2026-11-02T02:25:36+00:00"
+}

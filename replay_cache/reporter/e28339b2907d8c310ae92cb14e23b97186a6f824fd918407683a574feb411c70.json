@@ -1,0 +1,11 @@
+{
+  "key": "e28339b2907d8c310ae92cb14e23b97186a6f824fd918407683a574feb411c70",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：要求先付運費領獎，建議核實主辦單位並勿付款。",
+  "usage": {
+    "prompt_tokens": 305,
+    "completion_tokens": 122
+  },
+  "recorded_at": "2026-11-02T02:23:56+00:00"
+}

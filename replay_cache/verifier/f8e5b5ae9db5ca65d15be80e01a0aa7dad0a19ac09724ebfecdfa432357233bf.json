@@ -1,0 +1,11 @@
+{
+  "key": "f8e5b5ae9db5ca65d15be80e01a0aa7dad0a19ac09724ebfecdfa432357233bf",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"tool_calls\": [\n    {\n      \"name\": \"search_165_rumors\",\n      \"query\": \"老師 群組 報明牌 LINE 投資 詐騙\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 464,
+    "completion_tokens": 98
+  },
+  "recorded_at": "2026-11-02T03:06:02+00:00"
+}

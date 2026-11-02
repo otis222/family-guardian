@@ -1,0 +1,11 @@
+{
+  "key": "adcf3985635018b7eb6dba8d74c7515b268edfd5eb30d99a8997b7e684e758d5",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒充官方要求補繳運費、包裹無法配送。建議勿付款、勿提供個資，自行至官方平台查詢或聯絡客服。",
+  "usage": {
+    "prompt_tokens": 286,
+    "completion_tokens": 362
+  },
+  "recorded_at": "2026-11-02T03:13:10+00:00"
+}

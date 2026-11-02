@@ -1,0 +1,11 @@
+{
+  "key": "6a8d56bdea98bca21021540cc1aff4e9cb40c274161664693c16b519e52e8812",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\"要求轉帳\"],\n  \"evidence\": [\"請把這次聚餐的錢匯款到這個帳戶\"],\n  \"advice\": [\"不要隨意匯款，先確認對方身份與需求的真實性\"]\n}",
+  "usage": {
+    "prompt_tokens": 358,
+    "completion_tokens": 131
+  },
+  "recorded_at": "2026-11-02T02:46:38+00:00"
+}

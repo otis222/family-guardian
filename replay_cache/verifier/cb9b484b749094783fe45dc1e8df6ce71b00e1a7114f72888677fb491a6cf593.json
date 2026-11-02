@@ -1,0 +1,11 @@
+{
+  "key": "cb9b484b749094783fe45dc1e8df6ce71b00e1a7114f72888677fb491a6cf593",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求操作網路銀行\",\n    \"涉及金錢交易或取消訂單的指示\",\n    \"可能利用緊急或問題情境施壓\"\n  ],\n  \"evidence\": [\n    \"對方說訂單有問題，要我依照指示操作網銀才能取消\"\n  ],\n  \"advice\": [\n    \"不要依指示操作網銀或提供任何帳號密碼\",\n    \"先自行確認訂單狀況，聯繫官方客服或相關平台\",\n    \"保持警覺，避免點擊不明連結或執行金錢相關指令\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 351,
+    "completion_tokens": 249
+  },
+  "recorded_at": "2026-11-02T02:46:15+00:00"
+}

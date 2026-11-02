@@ -1,0 +1,11 @@
+{
+  "key": "cfa88884e98ca6c36a6b5fbab0160b0e66cf4a79d5998531d8ff26219b79f907",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\"要求轉帳或操作ATM\", \"偽裝系統通知\"],\n  \"evidence\": [\"提及網購訂單誤設分期付款\", \"要求依客服指示到 ATM 操作解除\"],\n  \"advice\": [\"不要依指示操作ATM或提供個人資訊\", \"可直接聯繫官方客服確認\", \"保持警惕，避免點擊可疑連結或提供驗證碼\"]\n}",
+  "usage": {
+    "prompt_tokens": 382,
+    "completion_tokens": 139
+  },
+  "recorded_at": "2026-11-02T02:45:22+00:00"
+}

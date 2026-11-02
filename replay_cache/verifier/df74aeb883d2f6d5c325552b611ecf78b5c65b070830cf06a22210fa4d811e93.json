@@ -1,0 +1,11 @@
+{
+  "key": "df74aeb883d2f6d5c325552b611ecf78b5c65b070830cf06a22210fa4d811e93",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"急迫要求立即點擊連結\",\n    \"要求提供或更新個人資料\",\n    \"包含可疑的外部連結\"\n  ],\n  \"evidence\": [\n    \"訊息中提到「請在今天內點連結更新資料」\",\n    \"提供了看似官方但實際未知的 URL\"\n  ],\n  \"advice\": [\n    \"不要點擊或輸入任何個人資訊於該連結\",\n    \"先向正式的物流公司或相關平台確認包裹狀態\",\n    \"若有疑慮，可直接聯繫客服或使用官方渠道查詢\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 371,
+    "completion_tokens": 223
+  },
+  "recorded_at": "2026-11-02T02:19:26+00:00"
+}

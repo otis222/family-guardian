@@ -1,0 +1,11 @@
+{
+  "key": "09a39b56bfbbbf4b72356d16ae5ec57d7960096222bfb96e7ce16cfa0b171e0c",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"tool_calls\": [\n    {\n      \"name\": \"search_165_rumors\",\n      \"query\": \"解除分期 假 電話 詐騙\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 458,
+    "completion_tokens": 93
+  },
+  "recorded_at": "2026-11-02T03:24:01+00:00"
+}

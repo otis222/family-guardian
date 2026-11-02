@@ -1,0 +1,11 @@
+{
+  "key": "9e00c70427df114db4edeb01f55b50abb9d813bb51a6ad77af498f4fd1533134",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：索取驗證碼及個人帳號資訊，建議勿提供，立即報案。",
+  "usage": {
+    "prompt_tokens": 305,
+    "completion_tokens": 127
+  },
+  "recorded_at": "2026-11-02T03:14:22+00:00"
+}

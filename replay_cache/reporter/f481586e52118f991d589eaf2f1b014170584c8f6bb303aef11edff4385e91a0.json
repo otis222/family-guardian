@@ -1,0 +1,11 @@
+{
+  "key": "f481586e52118f991d589eaf2f1b014170584c8f6bb303aef11edff4385e91a0",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：要求提供驗證碼，可能詐騙，勿透露，直接聯繫官方客服。",
+  "usage": {
+    "prompt_tokens": 300,
+    "completion_tokens": 127
+  },
+  "recorded_at": "2026-11-02T02:28:38+00:00"
+}

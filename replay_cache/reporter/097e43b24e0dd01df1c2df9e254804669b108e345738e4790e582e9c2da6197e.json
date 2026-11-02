@@ -1,0 +1,11 @@
+{
+  "key": "097e43b24e0dd01df1c2df9e254804669b108e345738e4790e582e9c2da6197e",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒充客服索取驗證碼，請勿提供資訊，立即聯繫官方客服並凍結帳戶。",
+  "usage": {
+    "prompt_tokens": 278,
+    "completion_tokens": 236
+  },
+  "recorded_at": "2026-11-02T04:19:10+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "b1f36a1da9b92dbce4318b0d7e3ad1af9556b827f62caaf78aad059f4bcef4ff",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常對話\"],\n  \"evidence\": [\"提醒不要相信保證獲利的說法\"],\n  \"advice\": [\"保持警覺，對此類訊息不需特別處理\"]\n}",
+  "usage": {
+    "prompt_tokens": 356,
+    "completion_tokens": 118
+  },
+  "recorded_at": "2026-11-02T02:35:45+00:00"
+}

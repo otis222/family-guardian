@@ -1,0 +1,11 @@
+{
+  "key": "1720d55736fe9a9101f72d6dbb463ba9fabcb02a27bb909bf67dacd3eb33704b",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常對話\"],\n  \"evidence\": [\"詢問帳號狀況\"],\n  \"advice\": [\"保持警覺，若有異常請自行檢查帳號安全\"]\n}",
+  "usage": {
+    "prompt_tokens": 342,
+    "completion_tokens": 100
+  },
+  "recorded_at": "2026-11-02T02:47:02+00:00"
+}

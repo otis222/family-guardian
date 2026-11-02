@@ -1,0 +1,11 @@
+{
+  "key": "ea630ff2b0aa468bab033bb1dfc83c0c1d4e0ea6097f8d468951beef6c00dbfb",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"tool_calls\": [\n    {\n      \"name\": \"search_165_rumors\",\n      \"query\": \"假冒親友換號借錢\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 463,
+    "completion_tokens": 90
+  },
+  "recorded_at": "2026-11-02T02:56:44+00:00"
+}

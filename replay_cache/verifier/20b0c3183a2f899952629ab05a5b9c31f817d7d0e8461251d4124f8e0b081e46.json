@@ -1,0 +1,11 @@
+{
+  "key": "20b0c3183a2f899952629ab05a5b9c31f817d7d0e8461251d4124f8e0b081e46",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常提醒\"],\n  \"evidence\": [\"提醒大家不要相信類似詐騙手法\"],\n  \"advice\": [\"保持警覺，若有可疑訊息請自行核實後再行處理\"]\n}",
+  "usage": {
+    "prompt_tokens": 354,
+    "completion_tokens": 95
+  },
+  "recorded_at": "2026-11-02T02:43:59+00:00"
+}

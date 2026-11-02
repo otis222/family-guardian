@@ -1,0 +1,6 @@
+{
+  "key": "c0735366af7a2c340fa711567e008a79c69e023eff6a4b772ef4d0e702a36925",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-20b",
+  "unusable": true
+}

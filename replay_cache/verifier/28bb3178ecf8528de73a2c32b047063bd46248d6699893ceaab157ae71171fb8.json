@@ -1,0 +1,11 @@
+{
+  "key": "28bb3178ecf8528de73a2c32b047063bd46248d6699893ceaab157ae71171fb8",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"tool_calls\":[{\"name\":\"search_165_rumors\",\"query\":\"抽中週年慶大獎 手續費\"}]}",
+  "usage": {
+    "prompt_tokens": 359,
+    "completion_tokens": 29
+  },
+  "recorded_at": "2026-11-02T03:55:38+00:00"
+}

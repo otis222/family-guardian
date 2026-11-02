@@ -1,0 +1,11 @@
+{
+  "key": "4b8a5543ef78ad47eec75492bf0a76c1fdeff73c95f806720a04faa59bc98d45",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"tool_calls\":[{\"name\":\"search_165_rumors\",\"query\":\"自稱警察 帳戶涉案 配合調查\"}]}",
+  "usage": {
+    "prompt_tokens": 345,
+    "completion_tokens": 29
+  },
+  "recorded_at": "2026-11-02T03:56:27+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "29625dc99e10a5759e2be93678151e2651518eb824a88717db9edecf00581bc2",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"tool_calls\": [\n    {\n      \"name\": \"search_165_rumors\",\n      \"query\": \"盜帳號 詐騙\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 438,
+    "completion_tokens": 82
+  },
+  "recorded_at": "2026-11-02T03:11:03+00:00"
+}

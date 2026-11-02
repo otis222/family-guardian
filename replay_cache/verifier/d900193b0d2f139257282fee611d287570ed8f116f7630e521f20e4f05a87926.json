@@ -1,0 +1,11 @@
+{
+  "key": "d900193b0d2f139257282fee611d287570ed8f116f7630e521f20e4f05a87926",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求轉帳或 ATM 操作\"\n  ],\n  \"evidence\": [\n    \"訊息要求依照指示操作網銀才能取消訂單\"\n  ],\n  \"advice\": [\n    \"不要依指示操作網銀或提供任何帳號資訊\",\n    \"直接聯絡官方客服確認訂單狀況\",\n    \"若已提供資訊，立即檢查帳戶並考慮更改密碼\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 454,
+    "completion_tokens": 196
+  },
+  "recorded_at": "2026-11-02T03:09:45+00:00"
+}

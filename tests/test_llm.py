@@ -11,6 +11,7 @@ from guardian.llm import (
     LLMCallError,
     LLMClient,
     LLMError,
+    LLMUnusableReplyError,
     ReplayMissError,
     cache_key,
     call_llm,
@@ -260,6 +261,9 @@ class FakeGroqApi(http.server.BaseHTTPRequestHandler):
                        "choices": [{"index": 0, "finish_reason": "stop",
                                     "message": {"role": "assistant", "content": "回覆內容"}}],
                        "usage": {"prompt_tokens": 123, "completion_tokens": 45, "total_tokens": 168}}
+        elif type(self).status == 400:
+            payload = {"error": {"message": "Tool choice is none, but model called a tool", "code": "tool_use_failed",
+                                 "failed_generation": "模型的輸出，可能引用訊息原文"}}
         else:
             payload = {"error": {"message": "rate limit", "type": "tokens", "code": "rate_limit_exceeded"}}
         data = json.dumps(payload).encode()
@@ -309,3 +313,12 @@ def test_real_sdk_does_not_retry_on_its_own(groq_api, tmp_path, status):
     assert len(groq_api.requests) == 1  # SDK 預設會再試兩次
     assert FAKE_KEY not in str(error.value)
     assert client.stats.total_errors == 1 and not list(tmp_path.rglob("*.json"))
+
+
+def test_model_trying_to_call_a_tool_is_an_unusable_reply_and_hides_its_output(groq_api, tmp_path):
+    groq_api.status = 400
+    client = LLMClient("live", MODELS, cache_dir=tmp_path)
+    with pytest.raises(LLMUnusableReplyError) as error:
+        client.call("verifier", "系統提示", "使用者內容")
+    assert "訊息原文" not in str(error.value)
+    assert client.stats.total_errors == 1

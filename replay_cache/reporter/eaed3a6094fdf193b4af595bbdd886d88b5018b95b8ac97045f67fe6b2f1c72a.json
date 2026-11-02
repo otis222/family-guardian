@@ -1,0 +1,11 @@
+{
+  "key": "eaed3a6094fdf193b4af595bbdd886d88b5018b95b8ac97045f67fe6b2f1c72a",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：包裹待領、地址不完整、限時點擊連結；建議勿點連結，直接至官方查詢。",
+  "usage": {
+    "prompt_tokens": 310,
+    "completion_tokens": 158
+  },
+  "recorded_at": "2026-11-02T03:49:48+00:00"
+}

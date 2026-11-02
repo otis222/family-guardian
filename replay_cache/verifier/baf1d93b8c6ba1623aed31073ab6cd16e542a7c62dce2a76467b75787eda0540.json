@@ -1,0 +1,11 @@
+{
+  "key": "baf1d93b8c6ba1623aed31073ab6cd16e542a7c62dce2a76467b75787eda0540",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"tool_calls\":[{\"name\":\"search_165_rumors\",\"query\":\"網購訂單 誤設分期付款 ATM 操作 解除\"}]}",
+  "usage": {
+    "prompt_tokens": 375,
+    "completion_tokens": 32
+  },
+  "recorded_at": "2026-11-02T03:56:44+00:00"
+}

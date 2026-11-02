@@ -1,0 +1,11 @@
+{
+  "key": "bba379a0471db394ca7d0e5c0fe607762da9fcd11fc1c05e7e2acfe4154193b4",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\"要求付款/手續費\", \"獎金詐騙\"],\n  \"evidence\": [\"訊息要求先付手續費才能領取獎品\"],\n  \"advice\": [\n    \"不要依指示付款或提供金錢\",\n    \"核實訊息來源，勿點不明連結\",\n    \"保護個人資訊，若有疑慮可向官方或家人確認\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 363,
+    "completion_tokens": 199
+  },
+  "recorded_at": "2026-11-02T02:20:12+00:00"
+}

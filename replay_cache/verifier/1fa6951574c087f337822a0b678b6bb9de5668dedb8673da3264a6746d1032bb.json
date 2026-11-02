@@ -1,0 +1,11 @@
+{
+  "key": "1fa6951574c087f337822a0b678b6bb9de5668dedb8673da3264a6746d1032bb",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求轉帳或 ATM 操作\"\n  ],\n  \"evidence\": [\n    \"訊息內容要求收款人將聚餐費用匯款至指定帳戶\"\n  ],\n  \"advice\": [\n    \"不要直接匯款，先確認付款方式與收款人身份，必要時透過官方渠道或直接與餐廳聯繫確認付款流程\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 469,
+    "completion_tokens": 135
+  },
+  "recorded_at": "2026-11-02T02:25:30+00:00"
+}

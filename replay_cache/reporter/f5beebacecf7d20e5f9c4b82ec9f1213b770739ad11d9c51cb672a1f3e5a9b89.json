@@ -1,0 +1,11 @@
+{
+  "key": "f5beebacecf7d20e5f9c4b82ec9f1213b770739ad11d9c51cb672a1f3e5a9b89",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒充公務員、要求保密、監管帳戶，切勿轉帳或提供個資，掛斷後撥 165/110 查證。",
+  "usage": {
+    "prompt_tokens": 278,
+    "completion_tokens": 308
+  },
+  "recorded_at": "2026-11-02T04:08:16+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "7c120bead520955736c1dd68b29ec5c587ba5c774c35fb58773944c71194349b",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：偽裝包裹通知急迫點擊網址；勿點連結，官方查詢，點後即檢查安全並更密碼。",
+  "usage": {
+    "prompt_tokens": 334,
+    "completion_tokens": 66
+  },
+  "recorded_at": "2026-11-02T03:23:25+00:00"
+}

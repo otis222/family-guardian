@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import dataclasses
+import json
 import shutil
 import sys
 import time
@@ -26,7 +27,17 @@ from typing import Any, Callable, Mapping
 from .approaches import APPROACH_LABELS, build_engine
 from .config import Config, ConfigError, ModelCandidate, load_config, load_env_file
 from .engine import Engine
-from .llm import MODES, ROLES, LLMClient, LLMError, cache_key, safe_error
+from .fileio import write_text_atomic
+from .llm import (
+    MODES,
+    ROLES,
+    LLMClient,
+    LLMError,
+    LLMRecordedFailureError,
+    LLMUnusableReplyError,
+    cache_key,
+    safe_error,
+)
 from .router import NEUTRAL_TEMPLATE, UNVERIFIED_TEMPLATE
 from .rules import RulesError
 from .scenario import Scenario, ScenarioError, load_scenario
@@ -35,6 +46,7 @@ RUN_KEYS = ("A", "B", "C", "C-no-filter", "C-no-early", "C-no-batch")
 ALERT_LEVELS = ("medium", "high")
 NOT_ALERTS = (NEUTRAL_TEMPLATE, UNVERIFIED_TEMPLATE)
 UNLIMITED = 10 ** 12
+UNUSABLE_REPLY_ATTEMPTS = 3  # 錄製時，同一個 prompt 回覆不能用最多問幾次（決策 D53）
 EXPERIMENT_NOTE = (
     "跑實驗時發言模式固定 gentle，並放寬 Watchdog 的上限：實驗資料的詐騙密度遠高於真實群組，不放寬會中途切回 silent 或暫停模型。\n"
     "警示＝守護人收到 medium 以上的報告，或群組提醒。召回率只算 scam；精確率的分子含 injection（都夾帶詐騙內容）。"
@@ -60,6 +72,7 @@ class RunResult:
     llm_calls: int = 0
     tokens: int = 0
     errors: int = 0
+    replay_misses: int = 0
     missed_scams: list[str] = field(default_factory=list)
     missed_injections: list[str] = field(default_factory=list)
     false_alarms: list[str] = field(default_factory=list)
@@ -125,6 +138,7 @@ def evaluate(engine: Engine, scenario: Scenario, key: str) -> RunResult:
         key, APPROACH_LABELS.get(key, key),
         interruptions=sum(1 for reply in engine.replies if reply.event_id not in mentions),
         llm_calls=stats.total_calls, tokens=stats.prompt_tokens + stats.completion_tokens, errors=stats.total_errors,
+        replay_misses=stats.replay_misses,
     )
     for index, message in enumerate(messages):
         if message.kind != "text":
@@ -249,12 +263,14 @@ def mode_notice(config: Config) -> str:
     return f"目前是 replay：用錄好的 {count} 筆回應重現結果，不需要金鑰。"
 
 
-def _error_notice(config: Config, errors: int) -> str:
-    if not errors:
-        return ""
-    if config.llm_mode == "replay":
-        return f"\n\n**有 {errors} 次模型呼叫失敗，回放快取不完整，上面的數字不能當結果。**"
-    return f"\n\n**有 {errors} 次模型呼叫失敗，上面的數字不完整。**"
+def _error_notice(results: list[RunResult]) -> str:
+    misses = sum(result.replay_misses for result in results)
+    if misses:
+        return f"\n\n**有 {misses} 次回放快取找不到，還沒錄完，上面的數字不能當結果。**"
+    errors = sum(result.errors for result in results)
+    if errors:
+        return f"\n\n錯誤欄：模型有 {errors} 次給不出能用的回覆，這些事件照查證失敗的路徑處理，已經反映在數字裡。"
+    return ""
 
 
 def experiment_report(config: Config, make_client: ClientFactory | None = None) -> str:
@@ -264,7 +280,7 @@ def experiment_report(config: Config, make_client: ClientFactory | None = None) 
     parts = [f"### 三種做法和消融實驗（{scenario.name}：{len(scenario.messages)} 則，{counts}）",
              mode_notice(config), format_results(results), EXPERIMENT_NOTE,
              "#### 漏掉和誤報的事件", format_details(results)]
-    return "\n\n".join(parts) + _error_notice(config, sum(r.errors for r in results))
+    return "\n\n".join(parts) + _error_notice(results)
 
 
 def compare_report(config: Config, make_client: ClientFactory | None = None) -> str:
@@ -272,7 +288,7 @@ def compare_report(config: Config, make_client: ClientFactory | None = None) -> 
     rows = compare_models(config, scenario, make_client)
     parts = [f"### 模型比較（{sum(m.compare for m in scenario.messages)} 則）", mode_notice(config),
              format_compare(rows), "一次只換一個角色的模型，其他維持 config.yaml 的設定。"]
-    return "\n\n".join(parts) + _error_notice(config, sum(row.result.errors for row in rows))
+    return "\n\n".join(parts) + _error_notice([row.result for row in rows])
 
 
 # ---------------------------------------------------------------- 錄製
@@ -282,7 +298,11 @@ class RecordingStopped(RuntimeError):
 
 
 class RecordingLLM(LLMClient):
-    """錄製用（決策 D36）：已經錄過的 prompt 直接讀快取，不再花 token；失敗就停，再跑一次會接著錄。"""
+    """錄製用（決策 D36、D53）：已經錄過的 prompt 直接讀快取，不再花 token；失敗就停，再跑一次會接著錄。
+
+    只有模型給不出能用的回覆是例外（空白、想呼叫工具）：最多問幾次，還是不行就把這個結果記下來繼續錄，
+    回放時會重現成同樣的失敗。這是模型本身的表現，模型比較要看得到，也不該讓整個錄製停住。
+    """
 
     def __init__(self, mode: str, models: Mapping[str, str], *, pace_seconds: float = 0.0,
                  sleep: Callable[[float], None] = time.sleep, **kwargs: Any) -> None:
@@ -291,19 +311,42 @@ class RecordingLLM(LLMClient):
         self._sleep = sleep
         self.recorded = 0
         self.reused = 0
+        self.unusable_replies = 0
+        self.gave_up = 0
+        self.new_tokens = 0  # 這次真的花掉的；stats 裡的 token 含沿用快取的
 
     def call(self, role: str, system_prompt: str, user_prompt: str) -> str:
-        try:
-            return super().call(role, system_prompt, user_prompt)
-        except LLMError as exc:
-            raise RecordingStopped(str(exc)) from None
+        for attempt in range(UNUSABLE_REPLY_ATTEMPTS):
+            try:
+                return super().call(role, system_prompt, user_prompt)
+            except LLMRecordedFailureError:
+                raise
+            except LLMUnusableReplyError:
+                self.unusable_replies += 1
+                if attempt == UNUSABLE_REPLY_ATTEMPTS - 1:
+                    self.gave_up += 1
+                    self._write_unusable(role, system_prompt, user_prompt)
+                    raise
+            except LLMError as exc:
+                raise RecordingStopped(str(exc)) from None
+        raise AssertionError("不會走到這裡")
+
+    def _write_unusable(self, role: str, system_prompt: str, user_prompt: str) -> None:
+        model = self.models[role]
+        key = cache_key(role, model, system_prompt, user_prompt)
+        path = self._cache_path(role, key)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        write_text_atomic(path, json.dumps({"key": key, "role": role, "model": model, "unusable": True},
+                                           ensure_ascii=False, indent=2) + "\n")
 
     def _live(self, role: str, model: str, system_prompt: str, user_prompt: str) -> str:
         if self._cache_path(role, cache_key(role, model, system_prompt, user_prompt)).is_file():
             self.reused += 1
             return self._replay(role, model, system_prompt, user_prompt)
         self._sleep(self.pace_seconds)  # 避免超過供應商的每分鐘上限；失敗時不自動重試
+        before = self.stats.prompt_tokens + self.stats.completion_tokens
         text = super()._live(role, model, system_prompt, user_prompt)
+        self.new_tokens += self.stats.prompt_tokens + self.stats.completion_tokens - before
         self.recorded += 1
         return text
 
@@ -333,7 +376,7 @@ def record_all(config: Config, *, log: Callable[[str], None] = print, **client_o
     """錄下模擬器和實驗會用到的所有呼叫。發言模式用 gentle：silent 和 on_mention 的呼叫都是它的子集。"""
     log(freeze_rumors(config))
     settings = experiment_config(config)
-    totals = {"recorded": 0, "reused": 0, "tokens": 0}
+    totals = {"recorded": 0, "reused": 0, "tokens": 0, "unusable_replies": 0, "gave_up": 0}
     clients: list[RecordingLLM] = []
 
     def make(**overrides: Any) -> RecordingLLM:
@@ -346,11 +389,15 @@ def record_all(config: Config, *, log: Callable[[str], None] = print, **client_o
     def settle(name: str) -> None:
         recorded = sum(client.recorded for client in clients)
         reused = sum(client.reused for client in clients)
-        tokens = sum(client.stats.prompt_tokens + client.stats.completion_tokens for client in clients)
-        log(f"{name}：新錄 {recorded} 次，沿用 {reused} 次，{tokens} token")
+        tokens = sum(client.new_tokens for client in clients)
+        unusable = sum(client.unusable_replies for client in clients)
+        gave_up = sum(client.gave_up for client in clients)
+        log(f"{name}：新錄 {recorded} 次（{tokens} token），沿用 {reused} 次，回覆不能用 {unusable} 次，放棄 {gave_up} 次")
         totals["recorded"] += recorded
         totals["reused"] += reused
         totals["tokens"] += tokens
+        totals["unusable_replies"] += unusable
+        totals["gave_up"] += gave_up
         clients.clear()
 
     try:
@@ -390,7 +437,9 @@ def main(argv: list[str] | None = None) -> int:
             config = dataclasses.replace(config, llm_mode=args.mode)
         if args.record:
             totals = record_all(config, log=lambda line: print(line, flush=True))
-            print(f"錄製完成：新錄 {totals['recorded']} 次，共 {totals['tokens']} token。以下是用回放重現的結果。\n")
+            print(f"錄製完成：這次新錄 {totals['recorded']} 次，花了 {totals['tokens']} token，"
+                  f"回覆不能用 {totals['unusable_replies']} 次（重問後仍不行 {totals['gave_up']} 次）。"
+                  "以下是用回放重現的結果。\n")
             config = dataclasses.replace(config, llm_mode="replay")
         report = experiment_report(config)
         if not args.no_compare:

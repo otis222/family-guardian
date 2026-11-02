@@ -1,0 +1,11 @@
+{
+  "key": "45fdaf949ff49a0290ee77fa3225d2881cf05f803fe8957d2e7d380f37ca75a0",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"承諾保證獲利\",\n    \"要求加入外部聯絡平台\",\n    \"提供可疑連結\"\n  ],\n  \"evidence\": [\n    \"使用「保證獲利」的語句\",\n    \"要求加 LINE 帳號\",\n    \"附帶未知網址\"\n  ],\n  \"advice\": [\n    \"不要點擊或加入提供的連結或帳號\",\n    \"如有疑慮，向可信任的家人或官方管道確認\",\n    \"可將此訊息舉報給平台或相關單位\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 373,
+    "completion_tokens": 240
+  },
+  "recorded_at": "2026-11-02T02:45:57+00:00"
+}

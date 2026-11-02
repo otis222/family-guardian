@@ -1,0 +1,11 @@
+{
+  "key": "78dc100e06fe568581c913d59698b7114989c6f9c297408bd1f12dfc4fab9165",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常對話\"],\n  \"evidence\": [\"內容為健康狀況的分享，未涉及金錢、驗證碼或可疑連結\"],\n  \"advice\": [\"保持警覺，勿隨意點擊不明連結或提供個人資訊\"]\n}",
+  "usage": {
+    "prompt_tokens": 346,
+    "completion_tokens": 129
+  },
+  "recorded_at": "2026-11-02T02:44:59+00:00"
+}

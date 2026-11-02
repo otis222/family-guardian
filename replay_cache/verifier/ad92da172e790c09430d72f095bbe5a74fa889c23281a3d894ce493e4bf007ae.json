@@ -1,0 +1,11 @@
+{
+  "key": "ad92da172e790c09430d72f095bbe5a74fa889c23281a3d894ce493e4bf007ae",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"誘導投資平台\",\n    \"提供可疑連結\"\n  ],\n  \"evidence\": [\n    \"提及投資平台並邀請點擊連結\"\n  ],\n  \"advice\": [\n    \"不要點擊未知連結\",\n    \"先確認平台真實性與合法性\",\n    \"避免匯款或提供個人金融資訊\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 351,
+    "completion_tokens": 158
+  },
+  "recorded_at": "2026-11-02T02:52:25+00:00"
+}

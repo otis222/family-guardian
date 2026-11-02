@@ -1,0 +1,11 @@
+{
+  "key": "49f2d28be57552b058377d87c611ecbc617ffd028f8a74f5de367ef9f71b3309",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"medium\",\n  \"reasons\": [\"偽裝親屬身份\", \"提供包裹問題的說明\"],\n  \"evidence\": [\"提及包裹地址不完整被退回\", \"主動提出重新寄送\"],\n  \"advice\": [\"確認包裹資訊與寄送需求是否真實\", \"如需付款或提供個人資訊，先向家人核實再行動\"]\n}",
+  "usage": {
+    "prompt_tokens": 354,
+    "completion_tokens": 200
+  },
+  "recorded_at": "2026-11-02T02:43:35+00:00"
+}

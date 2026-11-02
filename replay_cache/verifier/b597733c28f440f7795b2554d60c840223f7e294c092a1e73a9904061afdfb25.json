@@ -1,0 +1,11 @@
+{
+  "key": "b597733c28f440f7795b2554d60c840223f7e294c092a1e73a9904061afdfb25",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常對話\"],\n  \"evidence\": [\"表達將前往銀行的計畫\"],\n  \"advice\": [\"保持正常溝通即可，無需特別警戒\"]\n}",
+  "usage": {
+    "prompt_tokens": 339,
+    "completion_tokens": 123
+  },
+  "recorded_at": "2026-11-02T02:41:38+00:00"
+}

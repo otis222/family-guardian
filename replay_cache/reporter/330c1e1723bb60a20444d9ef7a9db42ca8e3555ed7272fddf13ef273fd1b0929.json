@@ -1,0 +1,11 @@
+{
+  "key": "330c1e1723bb60a20444d9ef7a9db42ca8e3555ed7272fddf13ef273fd1b0929",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒充客服要求ATM操作，建議勿依指示，直接聯絡官方客服。",
+  "usage": {
+    "prompt_tokens": 271,
+    "completion_tokens": 246
+  },
+  "recorded_at": "2026-11-02T02:58:22+00:00"
+}

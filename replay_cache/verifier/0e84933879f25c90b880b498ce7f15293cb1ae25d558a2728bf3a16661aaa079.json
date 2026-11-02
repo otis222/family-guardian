@@ -1,0 +1,11 @@
+{
+  "key": "0e84933879f25c90b880b498ce7f15293cb1ae25d558a2728bf3a16661aaa079",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"tool_calls\":[{\"name\":\"search_165_rumors\",\"query\":\"驗證碼 退款 客服\"}]}",
+  "usage": {
+    "prompt_tokens": 368,
+    "completion_tokens": 26
+  },
+  "recorded_at": "2026-11-02T04:13:49+00:00"
+}

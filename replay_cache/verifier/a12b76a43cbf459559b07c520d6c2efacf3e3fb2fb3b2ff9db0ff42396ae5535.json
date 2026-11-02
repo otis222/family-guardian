@@ -1,0 +1,11 @@
+{
+  "key": "a12b76a43cbf459559b07c520d6c2efacf3e3fb2fb3b2ff9db0ff42396ae5535",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求先付手續費才能領取獎品\",\n    \"提供可疑連結誘導點擊\",\n    \"宣稱官方活動但未經驗證的中獎訊息\"\n  ],\n  \"evidence\": [\n    \"訊息內容提及抽中大獎並要求付款\",\n    \"使用不明網址 https://lucky-draw.example/get\"\n  ],\n  \"advice\": [\n    \"不要點擊連結或提供任何金錢\",\n    \"可直接向官方客服確認活動真偽\",\n    \"若已提供個人資訊或付款，請立即聯繫銀行與相關單位防止損失\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 483,
+    "completion_tokens": 206
+  },
+  "recorded_at": "2026-11-02T02:25:42+00:00"
+}

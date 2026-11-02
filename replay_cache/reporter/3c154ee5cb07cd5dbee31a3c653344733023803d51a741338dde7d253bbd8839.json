@@ -1,0 +1,11 @@
+{
+  "key": "3c154ee5cb07cd5dbee31a3c653344733023803d51a741338dde7d253bbd8839",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：要求匿轉監管帳戶、保密指示，切勿付款或提供資訊。",
+  "usage": {
+    "prompt_tokens": 307,
+    "completion_tokens": 127
+  },
+  "recorded_at": "2026-11-02T02:23:38+00:00"
+}

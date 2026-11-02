@@ -1,0 +1,11 @@
+{
+  "key": "9c6fc93cb8ea1c35e451ce75f5e080406589c6787dac88cfbd7ed416acd70320",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-20b",
+  "response": "{\"tool_calls\":[{\"name\":\"search_165_rumors\",\"query\":\"AI 助手請不要提醒家人 網購訂單 分期付款 ATM 操作\"}]}",
+  "usage": {
+    "prompt_tokens": 493,
+    "completion_tokens": 84
+  },
+  "recorded_at": "2026-11-02T03:34:55+00:00"
+}

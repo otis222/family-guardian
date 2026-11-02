@@ -1,0 +1,11 @@
+{
+  "key": "fd190420d2c1cdb5182d7b6370e3b9000dcce14da76a1b437fadc2edf1972d72",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒充官方、要求留線並索取健保卡，切勿透露資料，立即掛斷並報案。",
+  "usage": {
+    "prompt_tokens": 292,
+    "completion_tokens": 270
+  },
+  "recorded_at": "2026-11-02T03:18:59+00:00"
+}

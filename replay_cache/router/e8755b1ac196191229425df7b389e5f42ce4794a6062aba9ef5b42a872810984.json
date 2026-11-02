@@ -1,0 +1,11 @@
+{
+  "key": "e8755b1ac196191229425df7b389e5f42ce4794a6062aba9ef5b42a872810984",
+  "role": "router",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"decisions\":[{\"event_id\":\"e043\",\"action\":\"verify\",\"reason\":\"疑似包裹詐騙連結\"}]}",
+  "usage": {
+    "prompt_tokens": 232,
+    "completion_tokens": 25
+  },
+  "recorded_at": "2026-11-02T03:27:40+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "566d6e3364eeb1f02562afd2b79a81386ca29b3b5e43d8114137f23fdcff4316",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求先付手續費才能領獎\",\n    \"使用抽獎或領獎作為誘因\",\n    \"訊息內容模糊且未提供具體驗證資訊\"\n  ],\n  \"evidence\": [\n    \"常見詐騙手法：先收取費用後承諾領獎\",\n    \"類似案例在闢謠資料庫中被標記為詐騙\"\n  ],\n  \"advice\": [\n    \"不要付款或提供個人資訊\",\n    \"直接刪除訊息，若有疑慮可向官方客服確認\",\n    \"可向相關單位檢舉\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 468,
+    "completion_tokens": 267
+  },
+  "recorded_at": "2026-11-02T03:04:51+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "f2a921a6bcf087b1040db3e33790f9ba679a1d03f23dfa2892c3799c52d9580d",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"risk_level\":\"medium\",\"reasons\":[\"投資誘因或導流\"],\"evidence\":[\"提及群組報明牌\",\"宣稱多人獲利\",\"引導加入通訊軟體\"],\"advice\":[\"不要點擊連結或加入群組\",\"查證該投資管道是否經金管會核准\",\"提醒朋友投資風險，勿輕信高收益保證\"]}",
+  "usage": {
+    "prompt_tokens": 513,
+    "completion_tokens": 72
+  },
+  "recorded_at": "2026-11-02T03:56:16+00:00"
+}

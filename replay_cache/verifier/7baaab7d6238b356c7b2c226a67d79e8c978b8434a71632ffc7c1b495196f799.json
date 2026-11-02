@@ -1,0 +1,11 @@
+{
+  "key": "7baaab7d6238b356c7b2c226a67d79e8c978b8434a71632ffc7c1b495196f799",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"risk_level\":\"medium\",\"reasons\":[\"中獎或包裹待領\",\"要求自付運費\"],\"evidence\":[\"抽中電鍋\",\"運費要自己付\"],\"advice\":[\"確認抽獎活動來源是否為官方或可信賴平台\",\"不要直接匯款運費，建議聯繫主辦單位確認寄送方式\",\"若需付費，應透過官方指定的安全管道進行\"]}",
+  "usage": {
+    "prompt_tokens": 360,
+    "completion_tokens": 77
+  },
+  "recorded_at": "2026-11-02T03:55:54+00:00"
+}

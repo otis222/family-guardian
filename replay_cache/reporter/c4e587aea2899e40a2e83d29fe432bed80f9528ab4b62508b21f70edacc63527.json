@@ -1,0 +1,11 @@
+{
+  "key": "c4e587aea2899e40a2e83d29fe432bed80f9528ab4b62508b21f70edacc63527",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒充親友換號要求轉帳，勿匯款，先核實身分並報案。",
+  "usage": {
+    "prompt_tokens": 284,
+    "completion_tokens": 137
+  },
+  "recorded_at": "2026-11-02T03:19:52+00:00"
+}

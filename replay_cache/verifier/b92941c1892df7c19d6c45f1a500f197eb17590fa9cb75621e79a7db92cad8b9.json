@@ -1,0 +1,11 @@
+{
+  "key": "b92941c1892df7c19d6c45f1a500f197eb17590fa9cb75621e79a7db92cad8b9",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求補運費\",\n    \"偽裝物流通知\"\n  ],\n  \"evidence\": [\n    \"提及包裹無法配送\",\n    \"要求支付額外費用\"\n  ],\n  \"advice\": [\n    \"不要直接匯款或點擊未知連結\",\n    \"先透過官方渠道或直接聯繫物流公司確認情況\",\n    \"保留相關訊息以備查證\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 346,
+    "completion_tokens": 213
+  },
+  "recorded_at": "2026-11-02T02:48:29+00:00"
+}

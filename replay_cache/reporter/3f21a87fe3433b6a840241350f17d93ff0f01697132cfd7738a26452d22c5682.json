@@ -1,0 +1,11 @@
+{
+  "key": "3f21a87fe3433b6a840241350f17d93ff0f01697132cfd7738a26452d22c5682",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：要求金錢轉帳、冒充親友借款；建議勿匯款，另尋其他方式驗證身份。",
+  "usage": {
+    "prompt_tokens": 276,
+    "completion_tokens": 234
+  },
+  "recorded_at": "2026-11-02T03:21:43+00:00"
+}

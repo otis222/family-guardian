@@ -1,0 +1,11 @@
+{
+  "key": "847d6ab26831fa955f4b35fb53a39e51f52134a3b25761b5c91864f9a618479d",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"冒充官方機構\",\n    \"要求受害者留在電話線上不掛\",\n    \"涉及個人敏感資訊（健保卡）\"\n  ],\n  \"evidence\": [\n    \"詐騙常見以冒充健保署或檢警要求受害者配合指示\",\n    \"電話中要求受害者待在房間不要掛電話的指令\"\n  ],\n  \"advice\": [\n    \"切勿透露個人資料或遵從指示，立即掛斷電話並向官方機構確認\",\n    \"可撥打官方客服或警政單位防詐專線報案\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 687,
+    "completion_tokens": 198
+  },
+  "recorded_at": "2026-11-02T03:18:52+00:00"
+}

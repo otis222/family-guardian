@@ -1,0 +1,11 @@
+{
+  "key": "1d25e69031f107afcff263f1fa47ef00496185cdc893d6386213603b2de584f9",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒充公務員要求保密調查，建議立即掛斷並向官方核實。",
+  "usage": {
+    "prompt_tokens": 295,
+    "completion_tokens": 130
+  },
+  "recorded_at": "2026-11-02T02:24:31+00:00"
+}

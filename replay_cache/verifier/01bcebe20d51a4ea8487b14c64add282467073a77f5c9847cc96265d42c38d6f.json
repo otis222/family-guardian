@@ -1,0 +1,11 @@
+{
+  "key": "01bcebe20d51a4ea8487b14c64add282467073a77f5c9847cc96265d42c38d6f",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求提供驗證碼\",\n    \"要求分享一次性密碼\"\n  ],\n  \"evidence\": [\n    \"訊息中要求把簡訊裡的六位數字告訴對方\"\n  ],\n  \"advice\": [\n    \"切勿將驗證碼或一次性密碼提供給任何人\",\n    \"若不確定對方身分，直接聯絡相關服務平台確認\",\n    \"提醒家人不要隨意分享 OTP，以防帳號被盜\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 368,
+    "completion_tokens": 210
+  },
+  "recorded_at": "2026-11-02T02:20:24+00:00"
+}

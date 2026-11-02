@@ -1,0 +1,11 @@
+{
+  "key": "4a0eacb7f1a9e575891e144ae32451c3e7095552ebed597bfa1242aba95dfb58",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒充官方急迫更新資訊、要求點擊連結；建議勿點擊、勿提供資料，透過官方渠道確認。",
+  "usage": {
+    "prompt_tokens": 313,
+    "completion_tokens": 321
+  },
+  "recorded_at": "2026-11-02T02:59:44+00:00"
+}

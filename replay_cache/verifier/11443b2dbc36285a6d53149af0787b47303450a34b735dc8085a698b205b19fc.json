@@ -1,0 +1,11 @@
+{
+  "key": "11443b2dbc36285a6d53149af0787b47303450a34b735dc8085a698b205b19fc",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"緊急要求在限定時間內點擊連結\",\n    \"要求提供或更新個人資訊\",\n    \"包含可疑的外部連結\",\n    \"使用恐嚇語氣（逾期將退回）\"\n  ],\n  \"evidence\": [\n    \"訊息中提到「您的包裹地址不完整」\",\n    \"要求「在今天內點連結更新資料」\",\n    \"提供了 https://parcel-update.example/form 的網址\",\n    \"警告「逾期將退回」\"\n  ],\n  \"advice\": [\n    \"不要點擊訊息中的連結\",\n    \"直接透過官方渠道（如官方網站或客服）確認包裹狀態\",\n    \"若有疑慮，向家人或可信任的朋友求助\",\n    \"保持警惕，避免在未確認的網站上輸入個人資訊\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 371,
+    "completion_tokens": 290
+  },
+  "recorded_at": "2026-11-02T02:39:01+00:00"
+}

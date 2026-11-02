@@ -1,0 +1,11 @@
+{
+  "key": "126733259e264aa59fda7a5fdb7e43934e01f90b311faa89ffea70cc72fb2cec",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常提醒\"],\n  \"evidence\": [\"提醒大家不要相信假電話\"],\n  \"advice\": [\"保持警惕，若有疑慮可自行向官方確認\"]\n}",
+  "usage": {
+    "prompt_tokens": 348,
+    "completion_tokens": 88
+  },
+  "recorded_at": "2026-11-02T02:53:19+00:00"
+}

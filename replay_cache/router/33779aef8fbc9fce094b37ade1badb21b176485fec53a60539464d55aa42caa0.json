@@ -1,0 +1,11 @@
+{
+  "key": "33779aef8fbc9fce094b37ade1badb21b176485fec53a60539464d55aa42caa0",
+  "role": "router",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"decisions\": [\n    {\n      \"event_id\": \"e074\",\n      \"action\": \"verify\",\n      \"reason\": \"要求轉帳或 ATM 操作\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 322,
+    "completion_tokens": 100
+  },
+  "recorded_at": "2026-11-02T03:22:43+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "f30a358837d5b014a53be1c8f878385d94517d23f4da5f875636ad4515bc365a",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"tool_calls\": [\n    {\n      \"name\": \"search_165_rumors\",\n      \"query\": \"手機 中毒 詐騙\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 438,
+    "completion_tokens": 83
+  },
+  "recorded_at": "2026-11-02T03:20:45+00:00"
+}

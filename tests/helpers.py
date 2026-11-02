@@ -58,14 +58,15 @@ class Scripted:
 
 
 class RecordingAisuite:
-    """長得像 aisuite.Client，回應內容由 offline 假模型產生。fail_after：成功幾次之後開始失敗。"""
+    """長得像 aisuite.Client，回應內容由 offline 假模型產生。fail_after：成功幾次之後開始失敗；blanks：前幾次回空白。"""
 
     ROLES = {ROUTER_SYSTEM: "router", SPEAKER_SYSTEM: "router", VERIFIER_SYSTEM: "verifier", SINGLE_SYSTEM: "verifier"}
 
-    def __init__(self, fail_after=None):
+    def __init__(self, fail_after=None, blanks=0):
         self.chat = SimpleNamespace(completions=self)
         self.calls = 0
         self.fail_after = fail_after
+        self.blanks = blanks
 
     def create(self, model, messages, **kwargs):
         if self.fail_after is not None and self.calls >= self.fail_after:
@@ -73,6 +74,9 @@ class RecordingAisuite:
         self.calls += 1
         system, user = messages[0]["content"], messages[1]["content"]
         content = offline_responder(self.ROLES.get(system, "reporter"), system, user)
+        if self.blanks > 0:
+            self.blanks -= 1
+            content = ""
         usage = SimpleNamespace(prompt_tokens=10, completion_tokens=5)
         return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=content))], usage=usage)
 

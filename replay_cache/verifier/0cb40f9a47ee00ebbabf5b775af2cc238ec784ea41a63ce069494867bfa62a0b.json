@@ -1,0 +1,11 @@
+{
+  "key": "0cb40f9a47ee00ebbabf5b775af2cc238ec784ea41a63ce069494867bfa62a0b",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"tool_calls\": [\n    {\n      \"name\": \"search_165_rumors\",\n      \"query\": \"直接打 165 問，或是掛掉\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 440,
+    "completion_tokens": 109
+  },
+  "recorded_at": "2026-11-02T03:07:13+00:00"
+}

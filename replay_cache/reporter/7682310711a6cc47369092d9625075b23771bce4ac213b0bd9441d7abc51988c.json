@@ -1,0 +1,11 @@
+{
+  "key": "7682310711a6cc47369092d9625075b23771bce4ac213b0bd9441d7abc51988c",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：要求操作網銀或轉帳，疑似訂單取消詐騙，建議立即停止並聯繫銀行。",
+  "usage": {
+    "prompt_tokens": 258,
+    "completion_tokens": 152
+  },
+  "recorded_at": "2026-11-02T04:07:53+00:00"
+}

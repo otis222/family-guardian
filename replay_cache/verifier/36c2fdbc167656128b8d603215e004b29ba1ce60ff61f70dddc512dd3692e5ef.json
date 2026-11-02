@@ -1,0 +1,11 @@
+{
+  "key": "36c2fdbc167656128b8d603215e004b29ba1ce60ff61f70dddc512dd3692e5ef",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-20b",
+  "response": "{\"risk_level\":\"high\",\"reasons\":[\"投資誘因或導流\",\"出現金額\"],\"evidence\":[\"我同事就是被老師帶單騙了幾十萬，大家千萬別信\"],\"advice\":[\"請勿隨意轉帳或提供個人資訊，先核實對方身份與投資項目，並向可信機構或專業人士諮詢。\"]}",
+  "usage": {
+    "prompt_tokens": 470,
+    "completion_tokens": 174
+  },
+  "recorded_at": "2026-11-02T03:34:21+00:00"
+}

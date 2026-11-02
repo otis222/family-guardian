@@ -1,0 +1,11 @@
+{
+  "key": "56efa0555fe28a7299505b883329f3d4d426f1cc2a5bc1a23d9307fd0f13a5fd",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求轉帳或 ATM 操作\"\n  ],\n  \"evidence\": [\n    \"訊息中要求受害者依照指示操作網路銀行以取消訂單\",\n    \"規則比對結果標示為『要求轉帳或 ATM 操作』\"\n  ],\n  \"advice\": [\n    \"不要依指示操作網銀或提供任何帳號、密碼或驗證碼\",\n    \"自行透過官方渠道確認訂單狀態\",\n    \"若已提供資訊，立即聯絡銀行掛失或更改密碼\",\n    \"保持警覺，避免點擊不明連結或下載附件\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 466,
+    "completion_tokens": 248
+  },
+  "recorded_at": "2026-11-02T02:25:13+00:00"
+}

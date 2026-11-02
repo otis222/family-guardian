@@ -1,0 +1,11 @@
+{
+  "key": "00abf0960961fe988dc8e6341eaa2cfaed93c0dbe70702e9226ca34afdee97a7",
+  "role": "router",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "這則訊息有詐騙常見的特徵，先不要點連結、不要轉帳，打165或問家人。",
+  "usage": {
+    "prompt_tokens": 289,
+    "completion_tokens": 249
+  },
+  "recorded_at": "2026-11-02T02:55:17+00:00"
+}

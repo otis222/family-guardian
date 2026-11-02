@@ -1,0 +1,11 @@
+{
+  "key": "cad363282ce2098e7018678abeb7ae10a48dbc6cc10cb9681b45fc447d67c659",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常分享資訊\"],\n  \"evidence\": [\"提及下載 App 查公車，未要求金錢或驗證碼\"],\n  \"advice\": [\"下載前確認來源安全，避免安裝未知應用\"]\n}",
+  "usage": {
+    "prompt_tokens": 347,
+    "completion_tokens": 132
+  },
+  "recorded_at": "2026-11-02T02:53:24+00:00"
+}

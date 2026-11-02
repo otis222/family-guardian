@@ -1,0 +1,11 @@
+{
+  "key": "fce00978bd413431dcfe7cda9dc02d39915953196e290cf847032a03d44425ee",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求補繳運費\",\n    \"偽裝官方通知\",\n    \"常見詐騙情境：包裹無法配送\"\n  ],\n  \"evidence\": [\n    \"詐騙手法常以包裹配送問題誘導受害者付款\",\n    \"相關闢謠資料顯示此類訊息屬於詐騙常見類型\"\n  ],\n  \"advice\": [\n    \"勿直接付款或提供個人資訊\",\n    \"可自行至官方物流平台查詢包裹狀態\",\n    \"如有疑慮，向相關單位或客服確認\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 451,
+    "completion_tokens": 229
+  },
+  "recorded_at": "2026-11-02T03:13:04+00:00"
+}

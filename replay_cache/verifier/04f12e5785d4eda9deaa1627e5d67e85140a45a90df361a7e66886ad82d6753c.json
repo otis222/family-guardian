@@ -1,0 +1,11 @@
+{
+  "key": "04f12e5785d4eda9deaa1627e5d67e85140a45a90df361a7e66886ad82d6753c",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-20b",
+  "response": "{\"risk_level\":\"medium\",\"reasons\":[\"包裹待領\"],\"evidence\":[\"中獎或包裹待領\"],\"advice\":[\"保持警惕，確認寄件人身份與真實性，避免隨意提供個人資訊或付款\"]}",
+  "usage": {
+    "prompt_tokens": 469,
+    "completion_tokens": 173
+  },
+  "recorded_at": "2026-11-02T03:34:04+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "25dba787c64ea0c0cbb06897067755f522806c04d9dd8104aaf3b7a685afd158",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：承諾保證獲利、要求加入LINE群組，切勿點擊或提供個資。",
+  "usage": {
+    "prompt_tokens": 308,
+    "completion_tokens": 301
+  },
+  "recorded_at": "2026-11-02T03:15:45+00:00"
+}

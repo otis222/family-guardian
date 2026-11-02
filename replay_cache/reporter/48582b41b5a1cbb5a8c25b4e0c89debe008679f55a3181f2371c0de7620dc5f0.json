@@ -1,0 +1,11 @@
+{
+  "key": "48582b41b5a1cbb5a8c25b4e0c89debe008679f55a3181f2371c0de7620dc5f0",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒稱親屬要求轉帳、ATM 操作，建議核實身份、勿直接匯款。",
+  "usage": {
+    "prompt_tokens": 286,
+    "completion_tokens": 237
+  },
+  "recorded_at": "2026-11-02T03:02:46+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "09e1a10a049952fa99a7ec6137549c91f1a8cc948dfca779bc1bd1cdfe998d9f",
+  "role": "router",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"decisions\": [\n    {\n      \"event_id\": \"e074\",\n      \"action\": \"verify\",\n      \"reason\": \"金融詐騙\"\n    },\n    {\n      \"event_id\": \"e075\",\n      \"action\": \"verify\",\n      \"reason\": \"洗錢/資金監管詐騙\"\n    },\n    {\n      \"event_id\": \"e076\",\n      \"action\": \"ignore\",\n      \"reason\": \"無風險\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 437,
+    "completion_tokens": 239
+  },
+  "recorded_at": "2026-11-02T02:23:20+00:00"
+}

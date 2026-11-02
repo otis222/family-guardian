@@ -1,0 +1,11 @@
+{
+  "key": "14bafe781ed1039b3c76fcdf2c2f153ec6cf03fce3502cd325eaeaf3d25b8456",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：先付手續費領獎、可疑連結、未驗證中獎訊息；勿點擊、勿付款，立即聯絡客服與銀行。",
+  "usage": {
+    "prompt_tokens": 327,
+    "completion_tokens": 268
+  },
+  "recorded_at": "2026-11-02T02:25:48+00:00"
+}

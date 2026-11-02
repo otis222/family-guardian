@@ -1,0 +1,11 @@
+{
+  "key": "0f725662814a68958175a48da2f847c70b1da8d981e664b8718c01410fde5d04",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒充客服要求轉帳及特定回覆，請勿操作，直接聯繫官方。",
+  "usage": {
+    "prompt_tokens": 283,
+    "completion_tokens": 126
+  },
+  "recorded_at": "2026-11-02T03:20:16+00:00"
+}

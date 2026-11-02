@@ -1,0 +1,11 @@
+{
+  "key": "35da6ddd5b92681c0b6b663cc1030b12584f60dbec480bbf53635e0fc7ef0b8f",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"投資誘因或導流\",\n    \"保證獲利、穩賺不賠的承諾\",\n    \"要求加入 LINE 以取得資訊\"\n  ],\n  \"evidence\": [\n    \"使用保證獲利、穩賺不賠的語句\",\n    \"提供社群導流（LINE）作為聯繫渠道\"\n  ],\n  \"advice\": [\n    \"不要點擊或加入提供的 LINE 群組\",\n    \"勿提供任何個人或金融資訊\",\n    \"如有疑慮，可向金融監管機構或消費者保護單位查證\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 469,
+    "completion_tokens": 203
+  },
+  "recorded_at": "2026-11-02T03:15:38+00:00"
+}

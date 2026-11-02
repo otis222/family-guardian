@@ -1,0 +1,11 @@
+{
+  "key": "5c6ba7febb867527bc49048019b6c7fff81a26683b13a4a211cbba726b0b1865",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"tool_calls\": [\n    {\n      \"name\": \"search_165_rumors\",\n      \"query\": \"解除分期 社區公告 提醒\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 456,
+    "completion_tokens": 87
+  },
+  "recorded_at": "2026-11-02T02:31:58+00:00"
+}

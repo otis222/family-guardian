@@ -1,0 +1,11 @@
+{
+  "key": "843858ca9d0384254b5cca05c9d0b0d5d8123c5ac25c6ba253e2e434a5bc6ad9",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：訊息偽裝官方要求ATM轉帳，請勿操作，立即聯繫官方確認。",
+  "usage": {
+    "prompt_tokens": 314,
+    "completion_tokens": 132
+  },
+  "recorded_at": "2026-11-02T03:08:28+00:00"
+}

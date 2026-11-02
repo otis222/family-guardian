@@ -1,0 +1,11 @@
+{
+  "key": "666dccba87857aacfcfc1065972eb5321b37e9be4717d59589332af4bf0f95fb",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\"要求驗證碼\", \"請求轉交個人資訊\"],\n  \"evidence\": [\"訊息內容要求借手機收驗證碼並回傳\"],\n  \"advice\": [\"不要回傳驗證碼或任何個人資訊\", \"確認對方身分後再回應\", \"如有疑慮可直接聯繫對方確認\"]\n}",
+  "usage": {
+    "prompt_tokens": 358,
+    "completion_tokens": 122
+  },
+  "recorded_at": "2026-11-02T02:49:10+00:00"
+}

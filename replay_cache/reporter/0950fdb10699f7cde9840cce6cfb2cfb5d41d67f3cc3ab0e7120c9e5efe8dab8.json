@@ -1,0 +1,11 @@
+{
+  "key": "0950fdb10699f7cde9840cce6cfb2cfb5d41d67f3cc3ab0e7120c9e5efe8dab8",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：要求轉帳或ATM操作，勿依指示提供帳號，立即聯絡客服並檢查、更改密碼。",
+  "usage": {
+    "prompt_tokens": 273,
+    "completion_tokens": 236
+  },
+  "recorded_at": "2026-11-02T03:09:51+00:00"
+}

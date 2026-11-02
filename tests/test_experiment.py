@@ -25,7 +25,7 @@ from guardian.experiment import (
     run_experiment,
     scenario_paths,
 )
-from guardian.llm import LLMClient
+from guardian.llm import LLMClient, LLMError, LLMRecordedFailureError, LLMUnusableReplyError
 from guardian.scenario import load_scenario
 from guardian.simulation import Simulation
 
@@ -206,7 +206,7 @@ def test_replay_without_a_cache_warns_instead_of_crashing(sandbox):
     settings = dataclasses.replace(sandbox, llm_mode="replay")
     assert "還沒錄製" in mode_notice(settings)
     report = experiment_report(settings)
-    assert "回放快取不完整" in report and "不能當結果" in report
+    assert "還沒錄完" in report and "不能當結果" in report
 
 
 def test_mode_notice_says_where_results_come_from(sandbox):
@@ -225,6 +225,7 @@ def recorded(sandbox):
 def test_recording_then_replay_needs_no_key_and_gives_the_same_results(recorded):
     settings, aisuite, totals = recorded
     assert totals["recorded"] == aisuite.calls > 0
+    assert totals["tokens"] == aisuite.calls * 15  # 假的 aisuite 每次回報 15 token
     replay = dataclasses.replace(settings, llm_mode="replay")
     assert "不需要金鑰" in mode_notice(replay)
     scenario = load_scenario(settings.experiment.scenario)
@@ -258,6 +259,7 @@ def test_recording_twice_does_not_spend_tokens_again(recorded):
     again = RecordingAisuite()
     totals = record_all(settings, log=lambda line: None, live_client=again, env=GROQ_ENV, sleep=lambda seconds: None)
     assert again.calls == 0 and totals["recorded"] == 0 and totals["reused"] >= calls
+    assert totals["tokens"] == 0  # 沿用的不算這次花的
 
 
 def test_a_failure_stops_the_recording_and_the_next_run_picks_it_up(sandbox):
@@ -273,6 +275,59 @@ def test_a_failure_stops_the_recording_and_the_next_run_picks_it_up(sandbox):
     record_all(dataclasses.replace(sandbox, replay_cache_dir=sandbox.replay_cache_dir.parent / "other"),
                live_client=fresh, **options)
     assert second.calls == fresh.calls - 5  # 前面錄好的 5 次沒有再花一次
+
+
+def test_blank_replies_are_asked_again_and_counted(sandbox):
+    waits = []
+    client = RecordingLLM("live", sandbox.models, cache_dir=sandbox.replay_cache_dir,
+                          live_client=RecordingAisuite(blanks=2), env=GROQ_ENV, pace_seconds=5, sleep=waits.append)
+    prompt = '{"task":"summarize"}'
+    assert client.call("reporter", "系統", prompt)
+    assert client.unusable_replies == 2 and client.recorded == 1 and client.gave_up == 0
+    assert waits == [5, 5, 5]  # 重問也要等，不會超過每分鐘上限
+    assert len(list(sandbox.replay_cache_dir.rglob("*.json"))) == 1  # 只存有內容的那一次
+
+
+def test_a_prompt_that_stays_unusable_is_recorded_as_a_failure_and_replayed_the_same(sandbox):
+    aisuite = RecordingAisuite(blanks=99)
+    client = RecordingLLM("live", sandbox.models, cache_dir=sandbox.replay_cache_dir, live_client=aisuite, env=GROQ_ENV)
+    prompt = '{"task":"summarize"}'
+    with pytest.raises(LLMUnusableReplyError):
+        client.call("reporter", "系統", prompt)  # 不是 RecordingStopped：這是模型的結果，錄製要繼續
+    assert aisuite.calls == 3 and client.gave_up == 1
+
+    with pytest.raises(LLMRecordedFailureError):
+        client.call("reporter", "系統", prompt)  # 再錄一次不會再花 token
+    assert aisuite.calls == 3
+
+    replay = LLMClient("replay", sandbox.models, cache_dir=sandbox.replay_cache_dir, env={})
+    with pytest.raises(LLMRecordedFailureError):
+        replay.call("reporter", "系統", prompt)
+    assert replay.stats.total_errors == 1 and replay.stats.replay_misses == 0
+
+
+def test_recorded_failures_are_part_of_the_result_not_a_missing_cache():
+    assert "還沒錄完" in experiment._error_notice([RunResult("x", "x", errors=3, replay_misses=3)])
+    notice = experiment._error_notice([RunResult("x", "x", errors=3)])
+    assert "給不出能用的回覆" in notice and "還沒錄完" not in notice
+    assert experiment._error_notice([RunResult("x", "x")]) == ""
+
+
+def test_blank_replies_are_reported_after_recording(sandbox):
+    lines = []
+    totals = record_all(sandbox, log=lines.append, live_client=RecordingAisuite(blanks=1), env=GROQ_ENV,
+                        sleep=lambda seconds: None)
+    assert totals["unusable_replies"] == 1 and totals["gave_up"] == 0 and totals["recorded"] > 0
+    assert any("回覆不能用 1 次" in line for line in lines)
+
+
+def test_outside_of_recording_a_blank_reply_is_an_ordinary_failure(sandbox):
+    # 正式執行不重問：記錄錯誤、走失敗的路徑，交給 Watchdog（CLAUDE.md）
+    client = LLMClient("live", sandbox.models, cache_dir=sandbox.replay_cache_dir,
+                       live_client=RecordingAisuite(blanks=1), env=GROQ_ENV)
+    with pytest.raises(LLMError, match="空的"):
+        client.call("reporter", "系統", '{"task":"summarize"}')
+    assert client.stats.total_errors == 1
 
 
 def test_recording_without_a_key_stops_right_away_with_a_clear_message(sandbox):

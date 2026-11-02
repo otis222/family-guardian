@@ -1,0 +1,11 @@
+{
+  "key": "8fa200e46cc85918f20f21ceeb89f32bbaf273795d08d44accf5b2f8757bb08e",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：承諾保證獲利、要求加入LINE點擊未知連結，建議勿點擊、勿匆忙轉帳，必要時向主管機關查證。",
+  "usage": {
+    "prompt_tokens": 320,
+    "completion_tokens": 329
+  },
+  "recorded_at": "2026-11-02T02:55:11+00:00"
+}

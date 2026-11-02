@@ -1,0 +1,11 @@
+{
+  "key": "cf2ee8487ed11e7674254a1edecae8f1cae2532eb53807bb72173f386ded9361",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"索取驗證碼\",\n    \"要求使用者提供個人帳號資訊\",\n    \"可能涉及冒用身份或金錢詐騙\"\n  ],\n  \"evidence\": [\n    \"訊息要求受害者將驗證碼回傳給他人\",\n    \"此類行為常見於詐騙者取得帳號控制權\"\n  ],\n  \"advice\": [\n    \"切勿將驗證碼或任何一次性密碼提供給他人\",\n    \"直接向對方確認身份，或透過其他渠道確認需求的真實性\",\n    \"如懷疑詐騙，請立即向平台或相關機構報案\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 459,
+    "completion_tokens": 206
+  },
+  "recorded_at": "2026-11-02T03:14:16+00:00"
+}

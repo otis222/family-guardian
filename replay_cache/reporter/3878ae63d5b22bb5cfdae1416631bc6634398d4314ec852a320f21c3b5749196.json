@@ -1,0 +1,11 @@
+{
+  "key": "3878ae63d5b22bb5cfdae1416631bc6634398d4314ec852a320f21c3b5749196",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：含投資誘導、可疑下載連結、送禮承諾，勿點擊、勿提供資訊，需向官方核實。",
+  "usage": {
+    "prompt_tokens": 297,
+    "completion_tokens": 261
+  },
+  "recorded_at": "2026-11-02T02:32:16+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "448a6e2087f28080bcf1b7cc4f885b53e998a328bf93467babac4902f6be7229",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"中獎或包裹待領\",\n    \"要求先付手續費才能領獎\"\n  ],\n  \"evidence\": [\n    \"訊息提及抽中大獎並要求先付款\",\n    \"常見詐騙手法：以領獎為名索取金錢\"\n  ],\n  \"advice\": [\n    \"不要付款或提供任何個人資訊\",\n    \"直接刪除訊息並向相關單位報案\",\n    \"若有疑慮，可自行向官方客服確認活動真偽\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 478,
+    "completion_tokens": 176
+  },
+  "recorded_at": "2026-11-02T02:18:34+00:00"
+}

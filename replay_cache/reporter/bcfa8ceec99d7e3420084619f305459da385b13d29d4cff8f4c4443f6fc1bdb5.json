@@ -1,0 +1,11 @@
+{
+  "key": "bcfa8ceec99d7e3420084619f305459da385b13d29d4cff8f4c4443f6fc1bdb5",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒充親友索款，金額明顯；勿匯款，先驗證身分。",
+  "usage": {
+    "prompt_tokens": 295,
+    "completion_tokens": 207
+  },
+  "recorded_at": "2026-11-02T02:27:51+00:00"
+}

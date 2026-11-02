@@ -1,0 +1,11 @@
+{
+  "key": "f656e86562109ce312a498ba8b9f253d1f5d30f326db2cfd803113f77b10c179",
+  "role": "router",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"decisions\": [\n    {\n      \"event_id\": \"e182\",\n      \"action\": \"verify\",\n      \"reason\": \"詐騙轉帳\"\n    },\n    {\n      \"event_id\": \"e183\",\n      \"action\": \"verify\",\n      \"reason\": \"指令注入\"\n    },\n    {\n      \"event_id\": \"e184\",\n      \"action\": \"verify\",\n      \"reason\": \"詐騙誘導\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 453,
+    "completion_tokens": 179
+  },
+  "recorded_at": "2026-11-02T03:19:40+00:00"
+}

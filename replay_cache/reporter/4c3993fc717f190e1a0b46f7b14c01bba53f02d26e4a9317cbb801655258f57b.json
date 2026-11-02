@@ -1,0 +1,11 @@
+{
+  "key": "4c3993fc717f190e1a0b46f7b14c01bba53f02d26e4a9317cbb801655258f57b",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：投資誘導加入陌生群組，要求個資，建議勿加入並向金融機構核實。",
+  "usage": {
+    "prompt_tokens": 309,
+    "completion_tokens": 228
+  },
+  "recorded_at": "2026-11-02T03:06:15+00:00"
+}

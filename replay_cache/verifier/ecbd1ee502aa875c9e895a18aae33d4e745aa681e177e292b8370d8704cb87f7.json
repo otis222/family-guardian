@@ -1,0 +1,11 @@
+{
+  "key": "ecbd1ee502aa875c9e895a18aae33d4e745aa681e177e292b8370d8704cb87f7",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常提醒\"],\n  \"evidence\": [],\n  \"advice\": [\"保持警覺，若有不明連結或要求轉帳的訊息再進一步確認\"]\n}",
+  "usage": {
+    "prompt_tokens": 352,
+    "completion_tokens": 111
+  },
+  "recorded_at": "2026-11-02T02:37:46+00:00"
+}

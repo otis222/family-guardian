@@ -1,0 +1,11 @@
+{
+  "key": "63f256dcd95e576634b9f91ddb4c23bb842a106b3af04550e788ccb0d23da679",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常對話\"],\n  \"evidence\": [],\n  \"advice\": [\"保持警覺，若收到要求轉帳或提供個人資訊的訊息，請先確認真偽。\"]\n}",
+  "usage": {
+    "prompt_tokens": 340,
+    "completion_tokens": 77
+  },
+  "recorded_at": "2026-11-02T02:37:17+00:00"
+}

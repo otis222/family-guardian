@@ -1,0 +1,11 @@
+{
+  "key": "41d9c0387134512f28ecbb7492dc4345a40cee99728d27d2d7ac409894d624b9",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"medium\",\n  \"reasons\": [\n    \"承諾固定收益\",\n    \"以入金多回饋多誘導投資\",\n    \"缺乏具體資訊與合法證明\"\n  ],\n  \"evidence\": [\n    \"訊息中提到每月固定收益且入金越多回饋越多的說法\",\n    \"使用理財社團的名義進行誘導\"\n  ],\n  \"advice\": [\n    \"不要輕易匯款或提供個人金融資訊\",\n    \"查證該社團的合法性與過往評價\",\n    \"如有疑慮，可諮詢金融監理機關或專業顧問\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 464,
+    "completion_tokens": 269
+  },
+  "recorded_at": "2026-11-02T03:17:42+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "082eb8690aa239dbd440f72f60735ad7cd03a1cfd0e5a2d4566a33890946cebe",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"使用保證獲利、穩賺不賠的語句\",\n    \"誘導加入陌生 LINE 群組以取得名單\",\n    \"提供可疑連結\"\n  ],\n  \"evidence\": [\n    \"宣稱投資老師每日帶單且保證獲利\",\n    \"要求點擊連結加入 LINE 取得名單\"\n  ],\n  \"advice\": [\n    \"不要點擊不明連結\",\n    \"勿隨意加入陌生的投資群組\",\n    \"保持警惕，避免提供個人或金融資訊\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 380,
+    "completion_tokens": 219
+  },
+  "recorded_at": "2026-11-02T02:19:15+00:00"
+}

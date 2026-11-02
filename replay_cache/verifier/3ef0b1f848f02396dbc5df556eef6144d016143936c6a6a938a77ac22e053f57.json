@@ -1,0 +1,11 @@
+{
+  "key": "3ef0b1f848f02396dbc5df556eef6144d016143936c6a6a938a77ac22e053f57",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"tool_calls\":[{\"name\":\"search_165_rumors\",\"query\":\"社區抽獎 中獎 運費 自付 包裹待領\"}]}",
+  "usage": {
+    "prompt_tokens": 355,
+    "completion_tokens": 35
+  },
+  "recorded_at": "2026-11-02T03:55:49+00:00"
+}

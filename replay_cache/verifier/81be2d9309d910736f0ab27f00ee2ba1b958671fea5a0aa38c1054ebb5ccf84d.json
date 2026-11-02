@@ -1,0 +1,11 @@
+{
+  "key": "81be2d9309d910736f0ab27f00ee2ba1b958671fea5a0aa38c1054ebb5ccf84d",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"tool_calls\":[{\"name\":\"search_165_rumors\",\"query\":\"包裹地址不完整 更新資料 連結\"}]}",
+  "usage": {
+    "prompt_tokens": 368,
+    "completion_tokens": 28
+  },
+  "recorded_at": "2026-11-02T03:44:21+00:00"
+}

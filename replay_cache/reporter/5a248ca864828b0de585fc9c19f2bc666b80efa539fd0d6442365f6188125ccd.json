@@ -1,0 +1,11 @@
+{
+  "key": "5a248ca864828b0de585fc9c19f2bc666b80efa539fd0d6442365f6188125ccd",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：先付手續費領獎、抽獎誘餌、資訊模糊；建議勿付款、刪除訊息並向客服或相關單位檢舉。",
+  "usage": {
+    "prompt_tokens": 294,
+    "completion_tokens": 301
+  },
+  "recorded_at": "2026-11-02T03:04:57+00:00"
+}

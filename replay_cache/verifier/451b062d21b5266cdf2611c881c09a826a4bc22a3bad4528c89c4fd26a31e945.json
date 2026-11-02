@@ -1,0 +1,11 @@
+{
+  "key": "451b062d21b5266cdf2611c881c09a826a4bc22a3bad4528c89c4fd26a31e945",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常問候\"],\n  \"evidence\": [\"內容為普通的早安問候與天氣提醒，未包含金錢、驗證碼、連結或其他詐騙特徵\"],\n  \"advice\": [\"此訊息屬於日常對話，無需特別警戒\"]\n}",
+  "usage": {
+    "prompt_tokens": 349,
+    "completion_tokens": 103
+  },
+  "recorded_at": "2026-11-02T02:35:04+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "08f019be8b8715e89e48fb7cb38daff52bbf904189d2acb7aa7ef2295c5a14c8",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"緊急要求點擊連結更新資訊\",\n    \"涉及包裹或領取訊息\",\n    \"提供可疑網址\"\n  ],\n  \"evidence\": [\n    \"訊息中要求在限定時間內點擊連結\",\n    \"提及包裹地址不完整且可能被退回\",\n    \"包含未知域名的網址\"\n  ],\n  \"advice\": [\n    \"不要點擊或提供任何個人資料\",\n    \"直接透過官方渠道確認包裹狀態\",\n    \"刪除訊息並提醒群組成員提高警覺\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 505,
+    "completion_tokens": 179
+  },
+  "recorded_at": "2026-11-02T02:21:51+00:00"
+}

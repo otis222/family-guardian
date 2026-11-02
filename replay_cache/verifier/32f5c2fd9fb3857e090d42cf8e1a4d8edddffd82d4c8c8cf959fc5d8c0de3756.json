@@ -1,0 +1,11 @@
+{
+  "key": "32f5c2fd9fb3857e090d42cf8e1a4d8edddffd82d4c8c8cf959fc5d8c0de3756",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求付款或驗證費\",\n    \"提供不實獎勵誘導填寫個資\",\n    \"使用可疑連結或網站\"\n  ],\n  \"evidence\": [\n    \"提到先刷驗證費\",\n    \"聲稱是第一百萬個訪客送手機\"\n  ],\n  \"advice\": [\n    \"不要點擊或訪問未知網站\",\n    \"不要支付任何費用或提供驗證碼\",\n    \"保護個人資料，若有疑慮可向家人或官方管道確認\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 361,
+    "completion_tokens": 228
+  },
+  "recorded_at": "2026-11-02T02:51:55+00:00"
+}

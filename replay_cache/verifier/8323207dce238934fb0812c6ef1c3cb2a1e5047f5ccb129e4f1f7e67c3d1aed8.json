@@ -1,0 +1,11 @@
+{
+  "key": "8323207dce238934fb0812c6ef1c3cb2a1e5047f5ccb129e4f1f7e67c3d1aed8",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"tool_calls\": [\n    {\n      \"name\": \"search_165_rumors\",\n      \"query\": \"冒充檢警 監管帳戶\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 469,
+    "completion_tokens": 91
+  },
+  "recorded_at": "2026-11-02T03:24:30+00:00"
+}

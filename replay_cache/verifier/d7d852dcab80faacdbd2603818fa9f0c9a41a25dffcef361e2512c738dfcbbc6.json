@@ -1,0 +1,11 @@
+{
+  "key": "d7d852dcab80faacdbd2603818fa9f0c9a41a25dffcef361e2512c738dfcbbc6",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"risk_level\":\"medium\",\"reasons\":[\"中獎或包裹待領\",\"要求先付費\"],\"evidence\":[\"簡訊內容提及中獎\",\"要求支付手續費\"],\"advice\":[\"不要回覆簡訊或點擊連結\",\"直接忽略或刪除該簡訊\",\"如有疑慮可撥打 165 反詐騙專線查詢\"]}",
+  "usage": {
+    "prompt_tokens": 364,
+    "completion_tokens": 70
+  },
+  "recorded_at": "2026-11-02T03:55:44+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "ba1d4a773e68efa95c9c17d28f1a1206633a5a5d6edcfcd15a9f96d5ac1ce53a",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"risk_level\":\"medium\",\"reasons\":[\"包裹異常通知\",\"地址核對要求\"],\"evidence\":[\"提及包裹被退回\",\"要求補全或核對地址\"],\"advice\":[\"請透過官方管道或原購物平台確認包裹狀態\",\"切勿直接點擊訊息中的連結或回覆個人資訊\",\"若需補件，請自行輸入官方網站查詢\"]}",
+  "usage": {
+    "prompt_tokens": 477,
+    "completion_tokens": 73
+  },
+  "recorded_at": "2026-11-02T03:56:05+00:00"
+}

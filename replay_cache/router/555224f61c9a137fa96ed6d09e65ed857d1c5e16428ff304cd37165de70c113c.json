@@ -1,0 +1,11 @@
+{
+  "key": "555224f61c9a137fa96ed6d09e65ed857d1c5e16428ff304cd37165de70c113c",
+  "role": "router",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\"decisions\":[{\"event_id\":\"e040\",\"action\":\"ignore\",\"reason\":\"日常問候\"}]}",
+  "usage": {
+    "prompt_tokens": 552,
+    "completion_tokens": 52
+  },
+  "recorded_at": "2026-11-02T02:59:14+00:00"
+}

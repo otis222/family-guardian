@@ -1,0 +1,11 @@
+{
+  "key": "7dfe09b28372c99e00b62cc2ad095c468196065dc5045becd5870a2e48b585fb",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"tool_calls\": [\n    {\n      \"name\": \"search_165_rumors\",\n      \"query\": \"理財 社團 固定收益 入金 回饋 詐騙\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 460,
+    "completion_tokens": 99
+  },
+  "recorded_at": "2026-11-02T03:17:35+00:00"
+}

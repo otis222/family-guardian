@@ -1,0 +1,11 @@
+{
+  "key": "c71757861ecc5a56d84f55288882bb0c7bde715f4eb4357f35314cb62bfaeeed",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常對話\"],\n  \"evidence\": [\"提醒不要轉帳\"],\n  \"advice\": [\"保持警惕，若有可疑訊息仍可再確認\"]\n}",
+  "usage": {
+    "prompt_tokens": 346,
+    "completion_tokens": 84
+  },
+  "recorded_at": "2026-11-02T02:19:49+00:00"
+}

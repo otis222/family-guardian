@@ -1,0 +1,11 @@
+{
+  "key": "5bae053209b937c8098d32011907329991eef41922eb6c3878727f503d1ea36e",
+  "role": "router",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "訊息有詐騙特徵，涉及索取驗證碼。請勿點連結、勿轉帳。立即撥打165或詢問家人確認，切勿輕信。",
+  "usage": {
+    "prompt_tokens": 202,
+    "completion_tokens": 35
+  },
+  "recorded_at": "2026-11-02T03:28:02+00:00"
+}

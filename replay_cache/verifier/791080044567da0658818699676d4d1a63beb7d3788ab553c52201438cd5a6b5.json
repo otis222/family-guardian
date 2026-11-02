@@ -1,0 +1,11 @@
+{
+  "key": "791080044567da0658818699676d4d1a63beb7d3788ab553c52201438cd5a6b5",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求進行金融操作（ATM 操作）\",\n    \"誘導受害者依指示解除分期付款\",\n    \"使用緊急或官方語氣的系統通知\"\n  ],\n  \"evidence\": [\n    \"提及「您的網購訂單被誤設成分期付款」\",\n    \"要求「依客服指示到 ATM 操作解除」\"\n  ],\n  \"advice\": [\n    \"不要直接前往 ATM 依指示操作\",\n    \"先透過官方客服或銀行官方渠道確認訂單狀況\",\n    \"如有疑慮，立即向家人或相關單位報告\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 382,
+    "completion_tokens": 237
+  },
+  "recorded_at": "2026-11-02T02:19:38+00:00"
+}

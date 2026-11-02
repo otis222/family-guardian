@@ -1,0 +1,11 @@
+{
+  "key": "17e075ac8337791b8e02b0c9d3533b95da638be2bb6e44aa10846fe0c9b6268b",
+  "role": "router",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"decisions\":[{\"event_id\":\"e061\",\"action\":\"verify\",\"reason\":\"驗證碼洩露風險\"}]}",
+  "usage": {
+    "prompt_tokens": 219,
+    "completion_tokens": 27
+  },
+  "recorded_at": "2026-11-02T03:27:56+00:00"
+}

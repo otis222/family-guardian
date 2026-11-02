@@ -1,0 +1,11 @@
+{
+  "key": "866072e8724377c42922c8fcd024e1cba84e4f6b1c4e999e36e30f7a08b27195",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"誘導下載未知 App\",\n    \"提供投資或入金送禮的誘因\",\n    \"包含可疑連結\"\n  ],\n  \"evidence\": [\n    \"提及平台入金送禮\",\n    \"要求下載 App 進行投資\",\n    \"提供 https://app-invest.example/dl 之類的網址\"\n  ],\n  \"advice\": [\n    \"不要點擊或下載未知的連結與 App\",\n    \"先確認平台真實性與合法性\",\n    \"避免提供任何個人或金融資訊\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 364,
+    "completion_tokens": 211
+  },
+  "recorded_at": "2026-11-02T02:53:07+00:00"
+}

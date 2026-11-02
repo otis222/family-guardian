@@ -1,0 +1,11 @@
+{
+  "key": "5ae74d0df42da8b258f6dbcdb5c4540d60934c118e96137e1551adc64c74ff18",
+  "role": "router",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\"decisions\":[{\"event_id\":\"e075\",\"action\":\"verify\",\"reason\":\"洗錢/監管帳戶\"}]}",
+  "usage": {
+    "prompt_tokens": 342,
+    "completion_tokens": 59
+  },
+  "recorded_at": "2026-11-02T03:22:49+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "26e190644ae72a07f1e697578193ed4cef92f8d594be4792f5f8a95e12b03112",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"索取驗證碼\"\n  ],\n  \"evidence\": [\n    \"要求提供簡訊驗證碼\"\n  ],\n  \"advice\": [\n    \"不要將驗證碼告訴他人，驗證碼僅限本人使用，防止帳號被盜\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 468,
+    "completion_tokens": 111
+  },
+  "recorded_at": "2026-11-02T03:01:35+00:00"
+}

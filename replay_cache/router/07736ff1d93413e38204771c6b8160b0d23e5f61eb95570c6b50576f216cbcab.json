@@ -1,0 +1,11 @@
+{
+  "key": "07736ff1d93413e38204771c6b8160b0d23e5f61eb95570c6b50576f216cbcab",
+  "role": "router",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\"decisions\":[{\"event_id\":\"e033\",\"action\":\"verify\",\"reason\":\"詐騙電話\"}]}",
+  "usage": {
+    "prompt_tokens": 320,
+    "completion_tokens": 56
+  },
+  "recorded_at": "2026-11-02T02:58:10+00:00"
+}

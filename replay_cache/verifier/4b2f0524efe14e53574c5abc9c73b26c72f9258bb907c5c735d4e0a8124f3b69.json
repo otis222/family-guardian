@@ -1,0 +1,11 @@
+{
+  "key": "4b2f0524efe14e53574c5abc9c73b26c72f9258bb907c5c735d4e0a8124f3b69",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"tool_calls\": [\n    {\n      \"name\": \"search_165_rumors\",\n      \"query\": \"包裹 無法 配送 補運費 詐騙\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 461,
+    "completion_tokens": 81
+  },
+  "recorded_at": "2026-11-02T02:26:18+00:00"
+}

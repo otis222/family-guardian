@@ -1,0 +1,11 @@
+{
+  "key": "4c6bf692ed493ea35fecbe7c739ddc63256990614c1182c961217981a5c6e29f",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"risk_level\":\"high\",\"reasons\":[\"包裹待領或地址不完整\",\"要求點擊連結更新資料\",\"限時施壓（今天內）\"],\"evidence\":[\"中獎或包裹待領\",\"轉傳訊息含網址\"],\"advice\":[\"不要點擊訊息中的連結\",\"直接聯繫物流商官方客服或官網查詢包裹狀態\",\"提醒家人朋友注意類似包裹詐騙訊息\"]}",
+  "usage": {
+    "prompt_tokens": 451,
+    "completion_tokens": 77
+  },
+  "recorded_at": "2026-11-02T03:44:27+00:00"
+}

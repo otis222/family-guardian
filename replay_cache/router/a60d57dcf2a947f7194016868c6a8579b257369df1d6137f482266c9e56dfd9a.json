@@ -1,0 +1,11 @@
+{
+  "key": "a60d57dcf2a947f7194016868c6a8579b257369df1d6137f482266c9e56dfd9a",
+  "role": "router",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "這則訊息有詐騙常見特徵。請先別點連結、勿轉帳，撥打165或詢問家人確認。",
+  "usage": {
+    "prompt_tokens": 211,
+    "completion_tokens": 29
+  },
+  "recorded_at": "2026-11-02T03:27:24+00:00"
+}

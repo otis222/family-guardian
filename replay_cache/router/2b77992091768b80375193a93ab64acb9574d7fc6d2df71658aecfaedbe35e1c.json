@@ -1,0 +1,11 @@
+{
+  "key": "2b77992091768b80375193a93ab64acb9574d7fc6d2df71658aecfaedbe35e1c",
+  "role": "router",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\"decisions\":[{\"event_id\":\"e183\",\"action\":\"verify\",\"reason\":\"索取驗證碼\"}]}",
+  "usage": {
+    "prompt_tokens": 343,
+    "completion_tokens": 92
+  },
+  "recorded_at": "2026-11-02T02:28:27+00:00"
+}

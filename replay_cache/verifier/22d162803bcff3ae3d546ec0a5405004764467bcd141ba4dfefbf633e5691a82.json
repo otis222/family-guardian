@@ -1,0 +1,11 @@
+{
+  "key": "22d162803bcff3ae3d546ec0a5405004764467bcd141ba4dfefbf633e5691a82",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求轉帳或 ATM 操作\",\n    \"偽裝系統通知或官方訊息\"\n  ],\n  \"evidence\": [\n    \"訊息稱網購訂單被誤設成分期付款，要求使用者依客服指示到 ATM 操作解除\",\n    \"使用「系統通知」等字樣增加可信度\"\n  ],\n  \"advice\": [\n    \"不要依照訊息指示前往 ATM 進行任何操作，尤其是未經確認的客服指示\",\n    \"直接聯繫官方客服或平台官方渠道確認訂單狀況\",\n    \"保留相關訊息截圖，若有需要可向相關機構或平台舉報\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 485,
+    "completion_tokens": 203
+  },
+  "recorded_at": "2026-11-02T03:08:22+00:00"
+}

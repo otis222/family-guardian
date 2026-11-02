@@ -1,0 +1,11 @@
+{
+  "key": "87da51f24ef8ed19d4208fae041456989a9b6745b6a8e9bea596b21d71e5509e",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：以抽獎領獎需付費騙局，勿付款，立即止付報案。",
+  "usage": {
+    "prompt_tokens": 330,
+    "completion_tokens": 246
+  },
+  "recorded_at": "2026-11-02T03:05:21+00:00"
+}

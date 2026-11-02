@@ -1,0 +1,11 @@
+{
+  "key": "52c0ab3f2e636536b18803fee2519b080ad37842d77c3cda9dfcf89a125baf22",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常對話\"],\n  \"evidence\": [],\n  \"advice\": [\"保持警惕，若收到不明訊息可先核實來源\"]\n}",
+  "usage": {
+    "prompt_tokens": 436,
+    "completion_tokens": 91
+  },
+  "recorded_at": "2026-11-02T03:03:52+00:00"
+}

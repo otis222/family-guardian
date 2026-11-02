@@ -1,0 +1,11 @@
+{
+  "key": "c3f496c32804a3bdd0543042f44ea20e8f9c634906d8e43e76ceef3d9ef06eee",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-20b",
+  "response": "{\"risk_level\":\"high\",\"reasons\":[\"索取驗證碼\"],\"evidence\":[\"索取驗證碼\"],\"advice\":[\"請勿將任何驗證碼、密碼或個人資訊透露給不明來源的客服或訊息，並確認對方身份與官方渠道\"]}",
+  "usage": {
+    "prompt_tokens": 488,
+    "completion_tokens": 107
+  },
+  "recorded_at": "2026-11-02T03:36:54+00:00"
+}

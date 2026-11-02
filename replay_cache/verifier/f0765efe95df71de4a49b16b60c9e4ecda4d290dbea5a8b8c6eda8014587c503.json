@@ -1,0 +1,11 @@
+{
+  "key": "f0765efe95df71de4a49b16b60c9e4ecda4d290dbea5a8b8c6eda8014587c503",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"投資誘因或導流\",\n    \"保證獲利、穩賺不賠的承諾\",\n    \"要求加入 LINE 並點擊可疑連結\"\n  ],\n  \"evidence\": [\n    \"訊息中提供了投資群組的宣傳，承諾高額回報且無風險\",\n    \"包含誘導點擊的外部網址\"\n  ],\n  \"advice\": [\n    \"不要點擊未知連結或加入陌生的投資群組\",\n    \"提升警覺，避免因高額回報承諾而匆忙轉帳或提供個人資訊\",\n    \"如有疑慮，可向金融主管機關或相關防詐單位查證\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 483,
+    "completion_tokens": 215
+  },
+  "recorded_at": "2026-11-02T02:55:05+00:00"
+}

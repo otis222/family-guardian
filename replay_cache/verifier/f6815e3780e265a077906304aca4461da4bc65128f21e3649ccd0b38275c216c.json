@@ -1,0 +1,11 @@
+{
+  "key": "f6815e3780e265a077906304aca4461da4bc65128f21e3649ccd0b38275c216c",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"tool_calls\": [\n    {\n      \"name\": \"search_165_rumors\",\n      \"query\": \"朋友傳給我的 我也不知道真假 想問問大家\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 442,
+    "completion_tokens": 80
+  },
+  "recorded_at": "2026-11-02T03:04:04+00:00"
+}

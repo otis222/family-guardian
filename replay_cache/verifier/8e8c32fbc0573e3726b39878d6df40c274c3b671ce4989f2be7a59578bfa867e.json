@@ -1,0 +1,11 @@
+{
+  "key": "8e8c32fbc0573e3726b39878d6df40c274c3b671ce4989f2be7a59578bfa867e",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"投資誘因或導流\",\n    \"提供可疑連結\",\n    \"要求加好友或加入平台\"\n  ],\n  \"evidence\": [\n    \"訊息中使用「老師帶單、保證獲利」作為誘因\",\n    \"附帶未經驗證的 LINE 連結\"\n  ],\n  \"advice\": [\n    \"不要點擊或加入提供的連結\",\n    \"避免提供個人或金錢資訊\",\n    \"如有疑慮，可向相關機構或平台查證\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 484,
+    "completion_tokens": 171
+  },
+  "recorded_at": "2026-11-02T02:24:48+00:00"
+}

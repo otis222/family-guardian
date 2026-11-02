@@ -1,0 +1,11 @@
+{
+  "key": "490b30dbe84d4ee83b4324fe3f8258d7dc8e3b37c555b5de65d120fbde46d4f5",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\"投資誘因或導流\"],\n  \"evidence\": [\"提及保證獲利的飆股群，穩賺不賠，並提供加入 LINE 的方式\"],\n  \"advice\": [\"警惕此類保證高收益的投資誘導，勿隨意點擊或加入未驗證的群組，避免資金受騙\"]\n}",
+  "usage": {
+    "prompt_tokens": 477,
+    "completion_tokens": 147
+  },
+  "recorded_at": "2026-11-02T02:27:27+00:00"
+}

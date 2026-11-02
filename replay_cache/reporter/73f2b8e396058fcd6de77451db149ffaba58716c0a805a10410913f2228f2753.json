@@ -1,0 +1,11 @@
+{
+  "key": "73f2b8e396058fcd6de77451db149ffaba58716c0a805a10410913f2228f2753",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險，要求先付手續費、可疑連結、冒稱官方。建議勿點擊並立即聯絡客服或銀行。",
+  "usage": {
+    "prompt_tokens": 311,
+    "completion_tokens": 239
+  },
+  "recorded_at": "2026-11-02T03:10:51+00:00"
+}

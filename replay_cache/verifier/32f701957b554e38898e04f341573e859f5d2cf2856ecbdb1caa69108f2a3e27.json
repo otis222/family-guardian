@@ -1,0 +1,11 @@
+{
+  "key": "32f701957b554e38898e04f341573e859f5d2cf2856ecbdb1caa69108f2a3e27",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"medium\",\n  \"reasons\": [\n    \"包裹領取/退回類訊息\",\n    \"要求重新寄送可能涉及個資或金錢\"\n  ],\n  \"evidence\": [\n    \"訊息提及包裹地址不完整被退回\",\n    \"使用者被告知協助重新寄送\"\n  ],\n  \"advice\": [\n    \"核實包裹資訊，勿直接提供個人資料或付款資訊\",\n    \"如非本人寄送，請直接聯繫官方客服確認\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 469,
+    "completion_tokens": 304
+  },
+  "recorded_at": "2026-11-02T02:24:02+00:00"
+}

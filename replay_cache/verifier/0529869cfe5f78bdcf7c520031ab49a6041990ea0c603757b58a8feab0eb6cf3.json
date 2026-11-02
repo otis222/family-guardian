@@ -1,0 +1,11 @@
+{
+  "key": "0529869cfe5f78bdcf7c520031ab49a6041990ea0c603757b58a8feab0eb6cf3",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"risk_level\":\"high\",\"reasons\":[\"要求操作網銀\",\"疑似訂單取消詐騙\"],\"evidence\":[\"要求依照指示操作網銀\",\"提及訂單有問題\"],\"advice\":[\"切勿操作網銀\",\"直接聯繫銀行或官方客服確認\"]}",
+  "usage": {
+    "prompt_tokens": 355,
+    "completion_tokens": 51
+  },
+  "recorded_at": "2026-11-02T04:02:37+00:00"
+}

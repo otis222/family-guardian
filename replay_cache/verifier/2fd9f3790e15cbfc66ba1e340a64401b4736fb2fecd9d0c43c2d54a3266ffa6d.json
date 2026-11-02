@@ -1,0 +1,11 @@
+{
+  "key": "2fd9f3790e15cbfc66ba1e340a64401b4736fb2fecd9d0c43c2d54a3266ffa6d",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常對話\"],\n  \"evidence\": [\"詢問午餐內容\"],\n  \"advice\": [\"保持警覺，若出現金錢或個資要求再進一步判斷\"]\n}",
+  "usage": {
+    "prompt_tokens": 340,
+    "completion_tokens": 80
+  },
+  "recorded_at": "2026-11-02T02:20:00+00:00"
+}

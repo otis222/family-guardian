@@ -1,0 +1,11 @@
+{
+  "key": "38f52212e90c3166357bfb4b229d98e76e78f56d46db0ddc1ea0474c1b720917",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：以投資誘因及金額引導，建議勿轉帳、先核實身份。",
+  "usage": {
+    "prompt_tokens": 284,
+    "completion_tokens": 262
+  },
+  "recorded_at": "2026-11-02T03:34:28+00:00"
+}

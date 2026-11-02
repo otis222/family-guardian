@@ -1,0 +1,11 @@
+{
+  "key": "c978babf25fa3d9ec7fd70d17e6f14770112feebaab111ca3480e2fe094d896c",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"tool_calls\":[{\"name\":\"search_165_rumors\",\"query\":\"包裹地址不完整 退回 重寄 詐騙\"}]}",
+  "usage": {
+    "prompt_tokens": 350,
+    "completion_tokens": 30
+  },
+  "recorded_at": "2026-11-02T03:56:00+00:00"
+}

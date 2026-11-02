@@ -1,0 +1,11 @@
+{
+  "key": "e8162ae720048ec861d502363f8e5532e9b6e3517fd37f04d1e727daef145cb6",
+  "role": "verifier",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"tool_calls\":[{\"name\":\"search_165_rumors\",\"query\":\"老師群組 報明牌 投資詐騙\"}]}",
+  "usage": {
+    "prompt_tokens": 357,
+    "completion_tokens": 30
+  },
+  "recorded_at": "2026-11-02T03:56:11+00:00"
+}

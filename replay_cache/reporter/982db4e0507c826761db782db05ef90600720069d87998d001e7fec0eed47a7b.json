@@ -1,0 +1,11 @@
+{
+  "key": "982db4e0507c826761db782db05ef90600720069d87998d001e7fec0eed47a7b",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：偽裝官方要求補付運費，勿點連結，立即聯絡客服與銀行止付。",
+  "usage": {
+    "prompt_tokens": 302,
+    "completion_tokens": 203
+  },
+  "recorded_at": "2026-11-02T02:26:30+00:00"
+}

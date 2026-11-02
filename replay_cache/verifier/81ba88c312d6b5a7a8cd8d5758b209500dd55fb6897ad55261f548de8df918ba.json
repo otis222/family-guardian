@@ -1,0 +1,11 @@
+{
+  "key": "81ba88c312d6b5a7a8cd8d5758b209500dd55fb6897ad55261f548de8df918ba",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求點擊可疑連結\",\n    \"冒充系統公告或物流訊息\",\n    \"要求提供或更新個人資料\"\n  ],\n  \"evidence\": [\n    \"訊息中包含 https://parcel-fix.example/a 的連結\",\n    \"使用緊急語氣說包裹無法配送且將退回\",\n    \"指示收件人點連結更新資料\"\n  ],\n  \"advice\": [\n    \"不要點擊訊息中的連結\",\n    \"直接向官方物流平台或客服確認包裹狀態\",\n    \"如懷疑詐騙，向家族成員報告並刪除訊息\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 377,
+    "completion_tokens": 236
+  },
+  "recorded_at": "2026-11-02T02:47:19+00:00"
+}

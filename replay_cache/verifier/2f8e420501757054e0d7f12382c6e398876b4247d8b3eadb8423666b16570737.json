@@ -1,0 +1,11 @@
+{
+  "key": "2f8e420501757054e0d7f12382c6e398876b4247d8b3eadb8423666b16570737",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"保證獲利\",\n    \"穩賺不賠\",\n    \"要求加陌生通訊軟體\",\n    \"提供可疑連結\"\n  ],\n  \"evidence\": [\n    \"訊息中宣稱投資保證獲利且不會虧損\",\n    \"要求使用者加入 LINE 以取得名單\",\n    \"附帶未經驗證的網址\"\n  ],\n  \"advice\": [\n    \"不要點擊或訪問可疑連結\",\n    \"不要隨意加陌生人的 LINE\",\n    \"保持警惕，勿相信保證獲利的說法\",\n    \"如有疑慮可向家人或金融監管機構確認\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 380,
+    "completion_tokens": 259
+  },
+  "recorded_at": "2026-11-02T02:35:33+00:00"
+}

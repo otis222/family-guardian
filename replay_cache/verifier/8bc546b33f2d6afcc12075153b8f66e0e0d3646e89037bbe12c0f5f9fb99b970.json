@@ -1,0 +1,11 @@
+{
+  "key": "8bc546b33f2d6afcc12075153b8f66e0e0d3646e89037bbe12c0f5f9fb99b970",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"要求補付運費\",\n    \"偽裝官方或物流通知\",\n    \"利用包裹未送達作為誘因\"\n  ],\n  \"evidence\": [\n    \"訊息內容提及「包裹無法配送」且要求收費\",\n    \"符合常見的「包裹待領」詐騙模式\"\n  ],\n  \"advice\": [\n    \"不要點擊訊息內的任何連結或提供付款資訊\",\n    \"直接聯繫官方物流客服確認狀況\",\n    \"若已提供個人或付款資訊，立即聯繫銀行或支付平台止付\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 465,
+    "completion_tokens": 200
+  },
+  "recorded_at": "2026-11-02T02:26:24+00:00"
+}

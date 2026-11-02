@@ -1,0 +1,11 @@
+{
+  "key": "6ee640eefd2c0ac264eebab53750e933001219d9ae2e6a221ca8e8717608abac",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"tool_calls\": [\n    {\n      \"name\": \"search_165_rumors\",\n      \"query\": \"訂單 有問題 網銀 取消 詐騙\"\n    }\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 462,
+    "completion_tokens": 78
+  },
+  "recorded_at": "2026-11-02T02:25:06+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "0b6753300a95c9bd7c3dafb309fbd3a8ba62444e3d222f3f518b60107f3add37",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"high\",\n  \"reasons\": [\n    \"冒充客服\",\n    \"要求前往 ATM 操作\",\n    \"製造緊急情境\"\n  ],\n  \"evidence\": [\n    \"自稱客服的電話\",\n    \"網購訂單被誤設成分期付款\",\n    \"要求到 ATM 解除\"\n  ],\n  \"advice\": [\n    \"不要依指示前往 ATM 操作或提供個人資訊\",\n    \"直接透過官方平台或官方客服電話確認訂單狀況\",\n    \"若有疑慮，立即向家人或相關單位報告\"\n  ]\n}",
+  "usage": {
+    "prompt_tokens": 364,
+    "completion_tokens": 238
+  },
+  "recorded_at": "2026-11-02T02:38:09+00:00"
+}

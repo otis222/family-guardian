@@ -1,0 +1,11 @@
+{
+  "key": "783bdcd82bb8fb81c1bc94787fc206197f76059016c1458a76130a5ea7ca1f3e",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：索取驗證碼或簡訊內容，立即掛斷並更改密碼。",
+  "usage": {
+    "prompt_tokens": 287,
+    "completion_tokens": 133
+  },
+  "recorded_at": "2026-11-02T03:55:21+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "key": "156cc60e8493525ad704c1d0f3511c46a2b6fd2ae8b0b35d1200eb1693705f8f",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "{\n  \"risk_level\": \"low\",\n  \"reasons\": [\"日常提醒\"],\n  \"evidence\": [\"訊息內容為簡短提醒，無金錢、驗證碼或連結要求\"],\n  \"advice\": [\"保持警覺，若未涉及金錢或個資請放心回覆\"]\n}",
+  "usage": {
+    "prompt_tokens": 337,
+    "completion_tokens": 89
+  },
+  "recorded_at": "2026-11-02T02:49:57+00:00"
+}

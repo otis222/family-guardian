@@ -1,0 +1,11 @@
+{
+  "key": "6b6e24fc88504d73b8d366dd6438a75a23904d3223d547aaeff1a70c23bc83ac",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒充客服要求轉帳或ATM操作，勿執行，直接聯繫官方客服。",
+  "usage": {
+    "prompt_tokens": 285,
+    "completion_tokens": 126
+  },
+  "recorded_at": "2026-11-02T02:28:56+00:00"
+}

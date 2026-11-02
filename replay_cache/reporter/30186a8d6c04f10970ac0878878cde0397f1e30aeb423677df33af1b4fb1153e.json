@@ -1,0 +1,11 @@
+{
+  "key": "30186a8d6c04f10970ac0878878cde0397f1e30aeb423677df33af1b4fb1153e",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒充檢察官、稱涉洗錢要求保密，建議立即掛斷並報警。",
+  "usage": {
+    "prompt_tokens": 326,
+    "completion_tokens": 251
+  },
+  "recorded_at": "2026-11-02T03:13:39+00:00"
+}

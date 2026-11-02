@@ -1,0 +1,11 @@
+{
+  "key": "878dadb4cff574534b4238f83ec4fca7e14b386853842e27eb86ebdf1bb91a1f",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-20b",
+  "response": "{\"risk_level\":\"medium\",\"reasons\":[\"包含可疑連結\",\"聲稱包裹待領或地址不完整\",\"急迫性提醒\"],\"evidence\":[\"event.text\",\"signal.rules\"],\"advice\":[\"先確認寄件方官方渠道，避免點擊未知連結；如有疑問可直接聯絡物流公司客服核實。\"]}",
+  "usage": {
+    "prompt_tokens": 493,
+    "completion_tokens": 129
+  },
+  "recorded_at": "2026-11-02T03:32:25+00:00"
+}

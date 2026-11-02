@@ -1,0 +1,11 @@
+{
+  "key": "90ce98085c3219b828c30070dc94bb33ff262eb3cc92565cadea643da746ccf2",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒充官方、威脅恐嚇、索要個資；建議立即掛斷並向官方核實。",
+  "usage": {
+    "prompt_tokens": 273,
+    "completion_tokens": 158
+  },
+  "recorded_at": "2026-11-02T03:07:01+00:00"
+}

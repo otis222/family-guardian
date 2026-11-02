@@ -1,0 +1,11 @@
+{
+  "key": "2119ad61d4cdf1a6435e444df3445b5f9f8b70bd2038307c14179b491e28c7a9",
+  "role": "verifier",
+  "model": "groq:openai/gpt-oss-20b",
+  "response": "{\"risk_level\":\"high\",\"reasons\":[\"要求轉帳或 ATM 操作\"],\"evidence\":[\"系統通知要求到 ATM 操作解除分期付款\"],\"advice\":[\"此訊息包含典型的詐騙特徵，請勿依照指示操作，並向官方客服核實真偽。\"]}",
+  "usage": {
+    "prompt_tokens": 710,
+    "completion_tokens": 101
+  },
+  "recorded_at": "2026-11-02T03:35:01+00:00"
+}

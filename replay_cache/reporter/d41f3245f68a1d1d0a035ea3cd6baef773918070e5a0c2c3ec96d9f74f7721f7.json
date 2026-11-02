@@ -1,0 +1,11 @@
+{
+  "key": "d41f3245f68a1d1d0a035ea3cd6baef773918070e5a0c2c3ec96d9f74f7721f7",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：訊息要求ATM轉帳並含指令，勿執行，立即聯絡客服並檢查帳戶。",
+  "usage": {
+    "prompt_tokens": 330,
+    "completion_tokens": 59
+  },
+  "recorded_at": "2026-11-02T02:17:59+00:00"
+}

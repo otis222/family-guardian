@@ -1,0 +1,11 @@
+{
+  "key": "67724779ada36859804da8f900a89eacc6126d86ffd0438f5de490a0a9d3ed83",
+  "role": "router",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "訊息有詐騙特徵，涉及監管帳戶或要求保密。請勿點連結、勿轉帳，先打165或問家人。",
+  "usage": {
+    "prompt_tokens": 204,
+    "completion_tokens": 31
+  },
+  "recorded_at": "2026-11-02T03:28:18+00:00"
+}

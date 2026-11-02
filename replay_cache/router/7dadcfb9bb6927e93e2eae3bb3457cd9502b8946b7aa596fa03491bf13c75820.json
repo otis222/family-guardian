@@ -1,0 +1,11 @@
+{
+  "key": "7dadcfb9bb6927e93e2eae3bb3457cd9502b8946b7aa596fa03491bf13c75820",
+  "role": "router",
+  "model": "groq:qwen/qwen3.8-27b",
+  "response": "{\"decisions\":[{\"event_id\":\"e144\",\"action\":\"verify\",\"reason\":\"冒充公權力恐嚇\"}]}",
+  "usage": {
+    "prompt_tokens": 228,
+    "completion_tokens": 26
+  },
+  "recorded_at": "2026-11-02T03:28:29+00:00"
+}

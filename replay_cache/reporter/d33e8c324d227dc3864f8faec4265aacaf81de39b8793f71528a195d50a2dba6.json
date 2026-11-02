@@ -1,0 +1,11 @@
+{
+  "key": "d33e8c324d227dc3864f8faec4265aacaf81de39b8793f71528a195d50a2dba6",
+  "role": "reporter",
+  "model": "groq:openai/gpt-oss-120b",
+  "response": "高風險：冒充官方、要求保密、威脅洗錢，切勿提供資訊或轉帳，直接聯絡官方客服。",
+  "usage": {
+    "prompt_tokens": 284,
+    "completion_tokens": 284
+  },
+  "recorded_at": "2026-11-02T03:03:21+00:00"
+}

@@ -1,5 +1,7 @@
 # 顧家貓：家族群組防詐守護者
 
+[![在 Colab 開啟](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/otis222/family-guardian/blob/main/notebooks/guardian_demo.ipynb)
+
 加進家族 LINE 群組的防詐機器人，採用 Super-agent 架構：快速過濾 → Router → Worker → Watchdog。
 規格見 `SPEC.md`，開發守則見 `CLAUDE.md`。
 
@@ -8,10 +10,10 @@
 - [x] Phase 2 快速過濾：規則引擎、165 名單下載與快取、網址抽取、個資遮罩
 - [x] Phase 3 Router、Worker、Thread
 - [x] Phase 4 圖卡與 Watchdog
-- [ ] Phase 5 Gradio 模擬器與實驗區（回放已錄好，notebook 在全新環境跑過；Colab 實測等 repo 公開）
+- [ ] Phase 5 Gradio 模擬器與實驗區（回放已錄好，notebook 在全新環境跑過；還差在 Colab 實際跑一次）
 - [x] Phase 6 LINE 伺服器（2026-11-02 在只有守護人的測試群組驗收通過，模型用 `offline`）
 - [ ] Phase 7 家庭試行
-- [ ] Phase 8 收尾（notebook 和報告草稿完成；等 repo 公開、截圖、影片）
+- [ ] Phase 8 收尾（notebook 和報告草稿完成，repo 已公開；等 Colab 實測、截圖、影片）
 
 ## 快速開始
 ```bash

@@ -46,18 +46,18 @@
 | `apps/line_server.py` | FastAPI、簽章驗證、line-bot-sdk 的轉接、背景執行緒、啟動檢查 |
 | `notebooks/guardian_demo.py`、`.ipynb` | 繳交用的 notebook（jupytext）。第一格安裝，全部用 replay；改 `.py` 後跑 `jupytext --to ipynb notebooks/guardian_demo.py` |
 
-Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5 見 D33–D40 和 D51–D54，Phase 6 見 D41–D50 和 D55–D59，Phase 8 見 D60–D62。D10（Thread 直通只送有風險訊號的訊息）是使用者決定的；D24（Watchdog 通知不用 push）、D31（截圖文字辨識先不做）、D42（只處理允許的群組）、D59（被編輯的訊息要再檢查）是使用者 11/02 授權我自行選擇的；其他取捨都以 token 最少為準，改之前先看理由。
+Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5 見 D33–D40 和 D51–D54，Phase 6 見 D41–D50 和 D55–D59，Phase 8 見 D60–D63。D10（Thread 直通只送有風險訊號的訊息）是使用者決定的；D24（Watchdog 通知不用 push）、D31（截圖文字辨識先不做）、D42（只處理允許的群組）、D59（被編輯的訊息要再檢查）是使用者 11/02 授權我自行選擇的；其他取捨都以 token 最少為準，改之前先看理由。
 
 ## 下一步：Phase 8 收尾，Phase 7 等使用者開口
 
 ### Phase 8 目前的狀態（2026-11-02）
-- **notebook：** 在全新的 Python 環境、全新 clone、沒有金鑰的情況下，從第一格跑到最後一格，含安裝 67 秒；實驗表格和 `results/experiment.md` 完全相同。用 LF 換行的 clone（和 Linux 一樣）也重現了相同結果，回放沒有對不上。這些都是在 Windows 上跑的，真的 Linux（Colab）還沒跑過。
+- **notebook：** 在全新的 Python 環境、全新 clone、沒有金鑰的情況下，從第一格跑到最後一格，含安裝 67 秒；實驗表格和 `results/experiment.md` 完全相同。用 LF 換行的 clone（和 Linux 一樣）也重現了相同結果，回放沒有對不上。公開後又在沒有 git 設定和憑證的環境，從 GitHub 下載 notebook 和程式跑完一次，Colab 也打得開連結。這些都是在 Windows 上跑的，真的 Linux（Colab）還沒執行過。
 - **報告：** 草稿在 [Claude 文件](https://claude.ai/artifact/KbKLKuTN6LzG4fYMiiCAJb)，不放進 repo（決策 D62）。裡面有試行結果的空白表格、繳交對應、截圖清單和影片腳本。
+- **GitHub：** repo 已公開在 <https://github.com/otis222/family-guardian>（決策 D63），只推 `main`，其他分支留在本機。Commit 信箱已換成 GitHub 的代用信箱，這個 repo 的 `user.email` 也設好了。**這份 HANDOFF 和 SPEC 都是公開的：不要寫進個資、金鑰或試行結果；`git push` 前先想清楚。**
 - **還要做：**
-  1. 使用者同意後才能公開 repo：notebook 的 `REPO_URL` 指向 `github.com/otis222/family-guardian`，還不存在。公開前把 commit 的作者信箱換成 GitHub 的 noreply，不要把使用者的信箱公開出去。
-  2. 公開後請使用者在 Colab 跑一次「全部執行」，這也是 Phase 5 的驗收。
-  3. 使用者核對 notebook 第一格和老師的安裝指令（決策 D60）。
-  4. 使用者截圖、錄影片。錄手機那段時，要把伺服器和 cloudflared 打開。
+  1. 請使用者在 Colab 跑一次「全部執行」，這也是 Phase 5 的驗收。連結在 README 最上面。Colab 要登入 Google，會跳「不是由 Google 撰寫」的警告，選「仍要執行」。
+  2. 使用者核對 notebook 第一格和老師的安裝指令（決策 D60）。
+  3. 使用者截圖、錄影片。錄手機那段時，要把伺服器和 cloudflared 打開。
 
 ### Phase 6 的驗收結果（2026-11-02，真的 LINE，`LINE_LLM_MODE=offline`）
 在只有守護人的測試群組裡通過：群組裡沒有回應，守護人收到私訊報告（沒有訊息原文），私訊「今日摘要」收到摘要。LINE 官方的推播計數和報告則數對得上（3 筆風險事件、3 則推播，本月額度 200 則）；`records/events.jsonl` 只有最小紀錄，查過沒有原文。步驟見 README「LINE 伺服器」一節。

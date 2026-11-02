@@ -1,6 +1,8 @@
 """call_llm 的三種模式（SPEC 第 8 節；測試清單第 12 項：回放模式不需金鑰、結果和錄製時一致）。"""
 
+import http.server
 import json
+import threading
 from types import SimpleNamespace
 
 import pytest
@@ -8,6 +10,7 @@ import pytest
 from guardian.llm import (
     LLMCallError,
     LLMClient,
+    LLMError,
     ReplayMissError,
     cache_key,
     call_llm,
@@ -241,3 +244,68 @@ def test_call_llm_with_explicit_client():
     client = LLMClient("offline", MODELS)
     call_llm("reporter", "s", "u", client=client)
     assert client.stats.calls["reporter"] == 1
+
+
+# ---------------------------------------------------------------- 真的 aisuite 和 groq SDK，連到本機的替身
+
+class FakeGroqApi(http.server.BaseHTTPRequestHandler):
+    requests = []
+    status = 200
+
+    def do_POST(self):
+        body = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)))
+        type(self).requests.append((self.path, body))
+        if type(self).status == 200:
+            payload = {"id": "c1", "object": "chat.completion", "created": 1, "model": body["model"],
+                       "choices": [{"index": 0, "finish_reason": "stop",
+                                    "message": {"role": "assistant", "content": "回覆內容"}}],
+                       "usage": {"prompt_tokens": 123, "completion_tokens": 45, "total_tokens": 168}}
+        else:
+            payload = {"error": {"message": "rate limit", "type": "tokens", "code": "rate_limit_exceeded"}}
+        data = json.dumps(payload).encode()
+        self.send_response(type(self).status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def log_message(self, *args):
+        pass
+
+
+@pytest.fixture
+def groq_api(monkeypatch):
+    FakeGroqApi.requests = []
+    FakeGroqApi.status = 200
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), FakeGroqApi)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    monkeypatch.setenv("GROQ_BASE_URL", f"http://127.0.0.1:{server.server_port}")
+    monkeypatch.setenv("GROQ_API_KEY", FAKE_KEY)
+    yield FakeGroqApi
+    server.shutdown()
+    thread.join(timeout=5)
+
+
+def test_real_aisuite_sends_our_parameters_and_keeps_the_token_counts(groq_api, tmp_path):
+    client = LLMClient("live", MODELS, cache_dir=tmp_path,
+                       params={"router": {"temperature": 0.3, "reasoning_effort": "low", "max_completion_tokens": 8192}})
+    assert client.call("router", "系統提示", "使用者內容") == "回覆內容"
+    path, body = groq_api.requests[0]
+    assert path == "/openai/v1/chat/completions"
+    assert body["model"] == MODELS["router"].split(":", 1)[1]
+    assert (body["temperature"], body["reasoning_effort"], body["max_completion_tokens"]) == (0.3, "low", 8192)
+    assert [message["role"] for message in body["messages"]] == ["system", "user"]
+    assert (client.stats.prompt_tokens, client.stats.completion_tokens) == (123, 45)
+    assert client.stats.cache_writes == 1
+
+
+@pytest.mark.parametrize("status", [429, 500])
+def test_real_sdk_does_not_retry_on_its_own(groq_api, tmp_path, status):
+    groq_api.status = status
+    client = LLMClient("live", MODELS, cache_dir=tmp_path)
+    with pytest.raises(LLMError) as error:
+        client.call("router", "系統提示", "使用者內容")
+    assert len(groq_api.requests) == 1  # SDK 預設會再試兩次
+    assert FAKE_KEY not in str(error.value)
+    assert client.stats.total_errors == 1 and not list(tmp_path.rglob("*.json"))

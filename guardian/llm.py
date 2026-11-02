@@ -360,7 +360,8 @@ class LLMClient:
                 import aisuite as ai
             except ImportError:
                 raise LLMCallError("live 模式需要 aisuite，請先執行 pip install -r requirements.txt") from None
-            self._live_client = ai.Client()
+            # 供應商的 SDK 預設會自己重試，關掉：失敗就記錄，交給上層處理（CLAUDE.md）
+            self._live_client = ai.Client({provider: {"max_retries": 0} for provider in PROVIDER_KEY_ENV})
         return self._live_client
 
     def _live(self, role: str, model: str, system_prompt: str, user_prompt: str) -> str:

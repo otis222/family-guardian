@@ -9,3 +9,7 @@ __pycache__/
 
 # 風險事件的最小紀錄（真實資料，不進版控）
 records/
+
+# 真實的 165 資料每週更新，只有 LINE 伺服器用（模擬和實驗用 scenarios/snapshot_165/，決策 D35）
+data/165/*.csv
+data/165/meta.json

@@ -52,7 +52,7 @@ Phase 3 的決定見 SPEC 第 16 節 D10–D22，Phase 4 見 D23–D32，Phase 5
 程式用假的傳送層和本機的 LINE API 替身驗證過（簽章、reply、push、按鈕、webhook 更新、紀錄），也真的用 uvicorn 跑過一次。**還沒連過真的 LINE，也沒有跑過真的 cloudflared**：`/quicktunnel` 和 `isSelf` 是照文件寫的，第一次上線要特別看這兩個。
 
 步驟（README「LINE 伺服器」一節有完整版）：
-1. 建 Messaging API channel，開啟「Allow bot to join group chats」，在 LINE Official Account Manager 關掉自動回應和加入好友的歡迎訊息。
+1. 申請 LINE 官方帳號，在 LINE Official Account Manager 開通 Messaging API（決策 D55），開啟「Allow bot to join group chats」，關掉自動回應和加入好友的歡迎訊息。
 2. `.env` 填 `LINE_CHANNEL_SECRET`、`LINE_CHANNEL_ACCESS_TOKEN`、`GUARDIAN_HASH_SALT`、`GUARDIAN_LINE_USER_IDS`，先設 `GUARDIAN_LLM_MODE=offline` 測通道。
 3. 開 `uvicorn apps.line_server:app --port 8000` 和 `cloudflared tunnel --url http://localhost:8000`。
 4. 建一個只有守護人的測試群組，把官方帳號加進去。伺服器畫面會印出群組編號，填進 `GUARDIAN_GROUP_IDS` 再重新啟動。

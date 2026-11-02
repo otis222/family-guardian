@@ -37,14 +37,15 @@ python -m guardian.experiment              # 用命令列重現實驗表格，�
 ## LINE 伺服器（家庭試行）
 訊息只在你自己的電腦上處理，電腦關機時收不到事件。第一次先用只有守護人的測試群組。
 
-1. 到 [LINE Developers](https://developers.line.biz/) 建 Messaging API channel，在 Messaging API 分頁開啟「Allow bot to join group chats」，發一個 channel access token。
-2. 到 LINE Official Account Manager，把自動回應和加入好友的歡迎訊息關掉，webhook 打開。
-3. 安裝 cloudflared：`winget install Cloudflare.cloudflared`。
-4. 把 `.env.example` 複製成 `.env`，填這些值。先設 `GUARDIAN_LLM_MODE=offline` 測通道，它是假模型，不會把訊息送到外面。
+1. 申請官方帳號：到[申請表](https://entry.line.biz/form/entry/unverified)用 LINE 帳號登入，填完就有官方帳號（名稱可以用「顧家貓」）。輕用量方案免費。
+2. 開通 Messaging API：到 [LINE Official Account Manager](https://manager.line.biz/) 選這個帳號，在設定裡啟用 Messaging API，並選一個 provider（選了之後不能改）。LINE Developers 已經不能直接建 channel。同一個後台把自動回應和加入好友的歡迎訊息關掉，webhook 打開。
+3. 到 [LINE Developers Console](https://developers.line.biz/console/) 選 provider 和 channel：Messaging API 分頁開啟「Allow bot to join group chats」、發一個 channel access token（long-lived）；Basic settings 分頁有 channel secret 和 Your user ID。
+4. 安裝 cloudflared：`winget install Cloudflare.cloudflared`。
+5. 把 `.env.example` 複製成 `.env`，填這些值。先設 `GUARDIAN_LLM_MODE=offline` 測通道，它是假模型，不會把訊息送到外面。
    - `LINE_CHANNEL_SECRET`、`LINE_CHANNEL_ACCESS_TOKEN`
    - `GUARDIAN_HASH_SALT`：自己編一串只有你知道的隨機字元
    - `GUARDIAN_LINE_USER_IDS`：你的 LINE 使用者編號，在 channel 的 Basic settings 最下面（Your user ID）
-5. 開兩個終端機：
+6. 開兩個終端機：
 
    ```bash
    uvicorn apps.line_server:app --port 8000
@@ -55,8 +56,8 @@ python -m guardian.experiment              # 用命令列重現實驗表格，�
    ```
 
    伺服器會自己找到通道的網址，並更新 LINE 的 webhook 網址。
-6. 建一個只有你的測試群組，把官方帳號加進去。伺服器畫面會印出群組編號，填進 `.env` 的 `GUARDIAN_GROUP_IDS`，重新啟動伺服器。不在這個清單裡的群組，事件一律不處理。
-7. 在群組傳一則有詐騙特徵的訊息（例如「訂單被誤設成分期付款，請到 ATM 操作解除分期」）。預設是 `silent`：群組裡不會有回應，你會收到私訊報告。
+7. 建一個只有你的測試群組，把官方帳號加進去。伺服器畫面會印出群組編號，填進 `.env` 的 `GUARDIAN_GROUP_IDS`，重新啟動伺服器。不在這個清單裡的群組，事件一律不處理。
+8. 在群組傳一則有詐騙特徵的訊息（例如「訂單被誤設成分期付款，請到 ATM 操作解除分期」）。預設是 `silent`：群組裡不會有回應，你會收到私訊報告。
 
 私訊官方帳號可以下這些指令：`今日摘要`、`暫停`、`恢復`、`模式 silent｜gentle｜on_mention`、`誤報 事件編號`。
 

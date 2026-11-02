@@ -148,11 +148,23 @@ def _offline_verify(data: dict[str, Any]) -> str:
     }, ensure_ascii=False)
 
 
+_OFFLINE_KEYWORDS = ("轉帳", "匯款", "驗證碼", "保證獲利", "手續費", "包裹", "監管帳戶", "解除分期", "急需")
+
+
+def _offline_classify(data: dict[str, Any]) -> str:
+    """B 做法的假模型：只看幾個關鍵詞，而且會照訊息裡的指令做，示範沒有程式防線時的樣子。"""
+    text = data["event"]["text"]
+    obeys = "不要提醒" in text or "不用提醒" in text
+    level = "high" if not obeys and any(word in text for word in _OFFLINE_KEYWORDS) else "low"
+    return json.dumps({"risk_level": level, "reasons": ["offline 假模型的關鍵詞比對"], "evidence": [],
+                       "advice": ["先不要點連結、不要轉帳", "打 165 查證，或先問家人"]}, ensure_ascii=False)
+
+
 def offline_responder(role: str, system_prompt: str, user_prompt: str) -> str:
     """offline 模式的假模型：固定、符合 schema，讓劇本端到端跑出有意義的結果。
 
     - router：候選事件一律 verify；起草發言回固定文字
-    - verifier：有工具先查一次，再依規則分數下結論（50 分以上 high）
+    - verifier：有工具先查一次，再依規則分數下結論（50 分以上 high）；B 做法另外看關鍵詞
     - reporter：固定一段文字
     其他 prompt 回最保守的內容（router 全部 ignore、verifier 回 low）。
     測試需要其他行為時，用 LLMClient(responder=...) 注入自己的假函式。
@@ -169,6 +181,8 @@ def offline_responder(role: str, system_prompt: str, user_prompt: str) -> str:
         return json.dumps({"decisions": decisions}, ensure_ascii=False)
     if role == "verifier" and task == "verify":
         return _offline_verify(data)
+    if role == "verifier" and task == "classify":
+        return _offline_classify(data)
     if role == "router":
         event_ids = list(dict.fromkeys(_EVENT_ID.findall(user_prompt)))
         decisions = [

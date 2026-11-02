@@ -75,6 +75,22 @@ watchdog:
   push_quota_monthly: 200       # LINE 輕用量方案每月額度（SPEC 第 10 節）
   push_warn_ratio: 0.8          # 用到這個比例就通知守護人
 
+# 實驗（SPEC 11-1，決策 D33–D36）
+experiment:
+  scenario: scenarios/experiment.yaml
+  snapshot_dir: scenarios/snapshot_165  # 錄製時凍結的闢謠專區，回放才對得上
+  pace_seconds: 5                       # 錄製時每次呼叫前等幾秒，避免超過每分鐘上限
+  # 模型比較的候選。一次只換一個角色；不支援 reasoning_effort 的模型寫 null
+  compare_models:
+    router:
+      - {model: "groq:openai/gpt-oss-120b"}
+      - {model: "groq:openai/gpt-oss-20b"}
+      - {model: "groq:llama-3.1-8b-instant", params: {reasoning_effort: null}}
+    verifier:
+      - {model: "groq:openai/gpt-oss-120b"}
+      - {model: "groq:openai/gpt-oss-20b"}
+      - {model: "groq:llama-3.3-70b-versatile", params: {reasoning_effort: null}}
+
 # 隱私（SPEC 第 7 節）
 privacy:
   record_retention_days: 30

@@ -95,6 +95,7 @@ class Engine:
         extract_urls: Callable[[str], list[str]] | None = None,
         fast_filter: Callable[[Trigger], RiskSignal] | None = None,
         rumors: RumorIndex | None = None,
+        early_action: bool = True,
     ) -> None:
         if not isinstance(salt, str) or not salt:
             raise ValueError("Engine 需要雜湊用的鹽：模擬劇本用 DEMO_SALT，LINE 伺服器用 .env 的 GUARDIAN_HASH_SALT")
@@ -111,6 +112,7 @@ class Engine:
         self.verifier = Verifier(self.rules, base.blocklist, rumors, self.llm)
         self.router = Router(self.llm, config.max_reply_chars)
         self.threads = ThreadStore(config.thread_ttl_hours)
+        self.early_action = early_action  # 消融實驗才會關掉（SPEC 11-1）
         self.speaking_mode = config.speaking_mode
         self.trace: list[TraceEntry] = []
         self.records: list[EventRecord] = []
@@ -192,6 +194,8 @@ class Engine:
         message = f"{signal.score} 分 → {BAND_LABELS[band]}"
         if signal.reasons:
             message += f"（{'、'.join(signal.reasons)}）"
+        if getattr(self.fast_filter, "passthrough", False):
+            message = "這個做法沒有快速過濾"
         self._trace(trigger, "fast_path", message, score=signal.score, reasons=list(signal.reasons), band=band)
         if band != "ignore":
             self._record(trigger, signal, outcome=band)
@@ -222,7 +226,12 @@ class Engine:
             self._trace(trigger, "router", "進候選佇列")
         elif band == "watch":
             self._open_thread(trigger)
-            self._verify_and_act(trigger, signal, "early")
+            if trigger.is_mention:  # 家人主動問，不是提前行動：有特徵就要回答、也要報告（決策 D37）
+                self._verify_and_act(trigger, signal, "mention")
+            elif self.early_action:
+                self._verify_and_act(trigger, signal, "early")
+            else:
+                self._finish(trigger, signal, None, "watching")
         else:
             if thread:
                 self.counts["thread_skipped"] += 1
@@ -369,7 +378,7 @@ class Engine:
             self._trace(trigger, "thread", f"建立或沿用 Thread（{thread.key_type}）", key_type=thread.key_type)
 
     def _verify_and_act(self, trigger: Trigger, signal: RiskSignal, path: str) -> None:
-        """path：router（候選）｜thread（訂閱直通）｜early（提前行動，只有 high 才往下走）。"""
+        """path：router（候選）｜thread（訂閱直通）｜mention（觀察區間被 @）｜early（提前行動，只有 high 才往下走）。"""
         flagged = self.rules.flags_injection(trigger.text)
         outcome = self.verifier.verify(trigger, signal, flagged=flagged)
         data = {"calls": outcome.calls, "tools": list(outcome.tools), "path": path}

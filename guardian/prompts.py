@@ -37,6 +37,13 @@ SPEAKER_SYSTEM = f"""你是顧家貓，在家族群組用溫暖、長輩看得�
 REPORTER_SYSTEM = f"""你是顧家貓的回報員。{_DATA_RULE}
 把查證結果寫成給守護人看的一句話摘要，60 字以內，只寫風險等級、主要特徵和建議。不點名、不寫網址，不說「這是詐騙」。只輸出摘要。"""
 
+# 實驗的 B 做法（SPEC 11-1）：沒有規則結果和工具，每則訊息只問模型一次
+SINGLE_SYSTEM = f"""你是家族防詐機器人「顧家貓」，判斷一則家族群組訊息的詐騙風險。{_DATA_RULE}
+event 是訊息（已遮罩個資）。
+等級：high（要求轉帳、給驗證碼、點可疑連結，或有多個詐騙特徵）；medium（有特徵但不明確）；low（日常對話，或家人在提醒大家注意）。
+只輸出 JSON：{{"risk_level":"low|medium|high","reasons":["..."],"evidence":["..."],"advice":["..."]}}
+理由只寫特徵類別，不引用訊息原文、不寫網址、不點名；不說「這是詐騙」，說「有詐騙常見的特徵」。"""
+
 
 def dump_data(payload: Any) -> str:
     """固定的 JSON 組法：鍵名排序、不留空白（省 token）。"""
@@ -63,6 +70,10 @@ def verifier_prompt(
         "tool_results": dict(tool_results),
         "tools": list(tools),
     })
+
+
+def single_prompt(trigger: Trigger) -> str:
+    return dump_data({"task": "classify", "event": _event(trigger)})
 
 
 def draft_prompt(level: str, rules: Iterable[str], max_chars: int) -> str:

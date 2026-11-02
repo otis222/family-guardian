@@ -25,6 +25,9 @@ def test_default_config_is_valid():
     assert config.router_latency_seconds == 20
     assert config.watchdog.push_quota_monthly == 200  # LINE 輕用量方案（SPEC 第 10 節）
     assert config.watchdog.max_reminders_per_100 == 5
+    assert config.experiment.scenario.name == "experiment.yaml"
+    assert set(config.experiment.compare) == {"router", "verifier"}
+    assert len(config.experiment.compare["router"]) >= 2
     assert (config.data_165.rumors.dataset_id, config.data_165.rumors.kind) == ("38262", "rumors")
     assert config.record_retention_days == 30
     assert config.hash_salt_env == "GUARDIAN_HASH_SALT"
@@ -78,6 +81,11 @@ def test_invalid_env_mode_is_rejected():
     lambda d: d["watchdog"].update(max_error_rate=1.5),
     lambda d: d["watchdog"].update(push_warn_ratio=0),
     lambda d: d["watchdog"].update(push_quota_monthly="很多"),
+    lambda d: d.pop("experiment"),
+    lambda d: d["experiment"].update(pace_seconds=-1),
+    lambda d: d["experiment"]["compare_models"].update(painter=[{"model": "groq:x"}]),
+    lambda d: d["experiment"]["compare_models"].update(router=[]),
+    lambda d: d["experiment"]["compare_models"].update(router=[{"model": "gpt-oss-120b"}]),  # 少了供應商
 ])
 def test_invalid_config_is_rejected(tmp_path, mutate):
     with pytest.raises(ConfigError):

@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterator
@@ -14,8 +14,8 @@ from typing import Any, Iterator
 import yaml
 
 LABELS = ("normal", "scam", "injection")
-SCENARIO_KINDS = ("text", "member_joined")  # 圖片訊息在 Phase 4 加入
-MESSAGE_FIELDS = {"id", "time", "sender", "kind", "text", "mention", "label", "technique"}
+SCENARIO_KINDS = ("text", "member_joined")
+MESSAGE_FIELDS = {"id", "time", "sender", "kind", "text", "mention", "label", "technique", "compare"}
 USER_ID_PREFIX = "scenario:"  # 劇本角色轉成「原始 ID」時的前綴；進引擎後立刻被雜湊
 
 
@@ -39,6 +39,7 @@ class ScenarioMessage:
     mention: bool
     label: str
     technique: str | None = None
+    compare: bool = False  # 模型比較用的訊息（SPEC 11-1）
 
     def to_raw_event(self, group_id: str) -> dict[str, Any]:
         """轉成引擎的原始事件格式（和 LINE 伺服器解析 webhook 後的格式相同）。不含標註答案。"""
@@ -61,6 +62,7 @@ class Scenario:
     group_id: str
     members: tuple[Member, ...]
     messages: tuple[ScenarioMessage, ...]
+    blocklist: tuple[str, ...] = ()  # 模擬的 165 名單，只能是 .example 網域（決策 D35）
 
     def member_name(self, member_id: str) -> str:
         for member in self.members:
@@ -75,6 +77,11 @@ class Scenario:
     def label_counts(self) -> dict[str, int]:
         counts = Counter(message.label for message in self.messages)
         return {label: counts[label] for label in LABELS if counts[label]}
+
+    def compare_subset(self) -> Scenario:
+        """模型比較用的那幾則（SPEC 11-1）。"""
+        return replace(self, name=f"{self.name}（模型比較）",
+                       messages=tuple(message for message in self.messages if message.compare))
 
 
 def _text(value: Any, where: str, name: str) -> str:
@@ -135,6 +142,9 @@ def _parse_message(raw: Any, index: int, member_ids: set[str], file_name: str) -
     technique = raw.get("technique")
     if technique is not None:
         technique = _text(technique, where, "technique")
+    compare = raw.get("compare", False)
+    if not isinstance(compare, bool):
+        raise ScenarioError(f"{where}：compare 必須是 true 或 false")
 
     return ScenarioMessage(
         id=message_id,
@@ -145,6 +155,7 @@ def _parse_message(raw: Any, index: int, member_ids: set[str], file_name: str) -
         mention=mention,
         label=label,
         technique=technique,
+        compare=compare,
     )
 
 
@@ -187,6 +198,12 @@ def load_scenario(path: str | Path) -> Scenario:
         for index, item in enumerate(messages_raw, start=1)
     ]
 
+    blocklist = raw.get("blocklist") or []
+    if not isinstance(blocklist, list) or not all(
+        isinstance(domain, str) and domain.endswith(".example") for domain in blocklist
+    ):
+        raise ScenarioError(f"{file_name}：blocklist 只能列 .example 網域，劇本不放真實的詐騙網址")
+
     seen: set[str] = set()
     for previous, message in zip([None, *messages], messages):
         if message.id in seen:
@@ -201,4 +218,5 @@ def load_scenario(path: str | Path) -> Scenario:
         group_id=group_id,
         members=tuple(members),
         messages=tuple(messages),
+        blocklist=tuple(blocklist),
     )

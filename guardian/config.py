@@ -56,6 +56,20 @@ class WatchdogSettings:
 
 
 @dataclass(frozen=True)
+class ModelCandidate:
+    model: str
+    params: dict[str, Any]  # 覆蓋這個角色的 model_params；值是 null 代表不傳
+
+
+@dataclass(frozen=True)
+class ExperimentSettings:
+    scenario: Path
+    snapshot_dir: Path
+    pace_seconds: float
+    compare: dict[str, tuple[ModelCandidate, ...]]
+
+
+@dataclass(frozen=True)
 class Config:
     models: dict[str, str]
     llm_mode: str
@@ -69,6 +83,7 @@ class Config:
     thread_ttl_hours: int
     router_latency_seconds: int
     watchdog: WatchdogSettings
+    experiment: ExperimentSettings
     record_retention_days: int
     hash_salt_env: str
 
@@ -114,7 +129,7 @@ def _choice(value: Any, name: str, choices: tuple[str, ...]) -> str:
 def _path(value: Any, name: str, config_path: Path) -> Path:
     """相對路徑以設定檔所在的資料夾為準。"""
     if not isinstance(value, str) or not value.strip():
-        raise ConfigError(f"{name} 必須是資料夾路徑")
+        raise ConfigError(f"{name} 必須是路徑")
     path = Path(value)
     return path if path.is_absolute() else config_path.resolve().parent / path
 
@@ -177,6 +192,40 @@ def _watchdog(value: Any) -> WatchdogSettings:
     )
 
 
+def _model_string(value: Any, name: str) -> str:
+    provider, _, model = str(value).partition(":") if isinstance(value, str) else ("", "", "")
+    if not provider or not model:
+        raise ConfigError(f"{name} 必須是「供應商:模型」格式，例如 groq:openai/gpt-oss-120b")
+    return value
+
+
+def _experiment(value: Any, config_path: Path) -> ExperimentSettings:
+    data = _mapping(value, "experiment")
+    pace = _get(data, "pace_seconds", "experiment")
+    if isinstance(pace, bool) or not isinstance(pace, (int, float)) or pace < 0:
+        raise ConfigError("experiment.pace_seconds 必須是 0 以上的數字")
+    compare: dict[str, tuple[ModelCandidate, ...]] = {}
+    for role, items in _mapping(_get(data, "compare_models", "experiment"), "experiment.compare_models").items():
+        if role not in ROLES:
+            raise ConfigError(f"experiment.compare_models 只能有 {'、'.join(ROLES)}，收到：{role!r}")
+        if not isinstance(items, list) or not items:
+            raise ConfigError(f"experiment.compare_models.{role} 必須是非空清單")
+        candidates = []
+        for item in items:
+            item = _mapping(item, f"experiment.compare_models.{role} 的每一項")
+            candidates.append(ModelCandidate(
+                model=_model_string(item.get("model"), f"experiment.compare_models.{role} 的 model"),
+                params=dict(_mapping(item.get("params") or {}, f"experiment.compare_models.{role} 的 params")),
+            ))
+        compare[role] = tuple(candidates)
+    return ExperimentSettings(
+        scenario=_path(_get(data, "scenario", "experiment"), "experiment.scenario", config_path),
+        snapshot_dir=_path(_get(data, "snapshot_dir", "experiment"), "experiment.snapshot_dir", config_path),
+        pace_seconds=float(pace),
+        compare=compare,
+    )
+
+
 def load_config(path: str | Path | None = None, env: Mapping[str, str] | None = None) -> Config:
     """讀取設定檔並檢查。環境變數 GUARDIAN_LLM_MODE 有值時覆蓋 llm_mode。"""
     config_path = Path(path) if path is not None else DEFAULT_CONFIG_PATH
@@ -192,10 +241,7 @@ def load_config(path: str | Path | None = None, env: Mapping[str, str] | None = 
 
     models = _mapping(_get(raw, "models", where), f"{where} 的 models")
     for role in ROLES:
-        model = _get(models, role, f"{where} 的 models")
-        provider, _, name = str(model).partition(":") if isinstance(model, str) else ("", "", "")
-        if not provider or not name:
-            raise ConfigError(f"models.{role} 必須是「供應商:模型」格式，例如 groq:openai/gpt-oss-120b")
+        _model_string(_get(models, role, f"{where} 的 models"), f"models.{role}")
 
     llm_mode = _choice(_get(raw, "llm_mode", where), "llm_mode", MODES)
     override = (env.get(MODE_ENV) or "").strip()
@@ -246,6 +292,7 @@ def load_config(path: str | Path | None = None, env: Mapping[str, str] | None = 
         thread_ttl_hours=_int(_get(raw, "thread_ttl_hours", where), "thread_ttl_hours", 1),
         router_latency_seconds=_int(_get(raw, "router_latency_seconds", where), "router_latency_seconds", 0),
         watchdog=_watchdog(_get(raw, "watchdog", where)),
+        experiment=_experiment(_get(raw, "experiment", where), config_path),
         record_retention_days=_int(
             _get(privacy, "record_retention_days", "privacy"), "privacy.record_retention_days", 1
         ),

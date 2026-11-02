@@ -1,12 +1,15 @@
-"""Phase 3 測試共用：可以照腳本回應的假模型、固定分數的快速過濾、事件產生器。"""
+"""測試共用：可以照腳本回應的假模型、假的 aisuite、固定分數的快速過濾、事件和劇本的產生器。"""
 
 import json
 from datetime import datetime, timedelta, timezone
+from types import SimpleNamespace
 
 from guardian.data_165 import RumorIndex
 from guardian.engine import DEMO_SALT, Engine
 from guardian.llm import LLMClient, offline_responder
 from guardian.models import RiskSignal
+from guardian.prompts import ROUTER_SYSTEM, SINGLE_SYSTEM, SPEAKER_SYSTEM, VERIFIER_SYSTEM
+from guardian.scenario import Member, Scenario, ScenarioMessage
 
 BASE_TIME = datetime(2026, 11, 8, 8, 0, tzinfo=timezone(timedelta(hours=8)))
 RULE = "測試規則"
@@ -54,6 +57,26 @@ class Scripted:
                 for r, _, u in self.calls if r == "router" and json.loads(u).get("task") == "route"]
 
 
+class RecordingAisuite:
+    """長得像 aisuite.Client，回應內容由 offline 假模型產生。fail_after：成功幾次之後開始失敗。"""
+
+    ROLES = {ROUTER_SYSTEM: "router", SPEAKER_SYSTEM: "router", VERIFIER_SYSTEM: "verifier", SINGLE_SYSTEM: "verifier"}
+
+    def __init__(self, fail_after=None):
+        self.chat = SimpleNamespace(completions=self)
+        self.calls = 0
+        self.fail_after = fail_after
+
+    def create(self, model, messages, **kwargs):
+        if self.fail_after is not None and self.calls >= self.fail_after:
+            raise RuntimeError("429 rate limit")
+        self.calls += 1
+        system, user = messages[0]["content"], messages[1]["content"]
+        content = offline_responder(self.ROLES.get(system, "reporter"), system, user)
+        usage = SimpleNamespace(prompt_tokens=10, completion_tokens=5)
+        return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=content))], usage=usage)
+
+
 def fixed_filter(scores):
     """事件編號 → 分數；不在表裡的是 0 分。"""
     return lambda trigger: RiskSignal(scores.get(trigger.id, 0), [RULE] if scores.get(trigger.id) else [])
@@ -75,3 +98,14 @@ def event(event_id, seconds=0, text="早安", user="u1", group="g", mention=Fals
 
 def record_of(engine, event_id):
     return next((r for r in engine.records if r.event_id == event_id), None)
+
+
+def message(message_id, seconds=0, label="normal", text="早安", mention=False, compare=False, kind="text"):
+    return ScenarioMessage(id=message_id, time=BASE_TIME + timedelta(seconds=seconds), sender="u1", kind=kind,
+                           text=text, mention=mention, label=label, technique="手法" if label != "normal" else None,
+                           compare=compare)
+
+
+def scenario_of(*messages, blocklist=()):
+    return Scenario(name="測試劇本", description="", group_id="g", members=(Member("u1", "甲"),),
+                    messages=tuple(messages), blocklist=tuple(blocklist))

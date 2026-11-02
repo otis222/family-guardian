@@ -13,26 +13,14 @@ import argparse
 import dataclasses
 import sys
 
+from .approaches import build_engine
 from .config import SPEAKING_MODES, ConfigError, load_config, load_env_file
-from .engine import DEMO_SALT, Engine, RunSummary
+from .engine import Engine, RunSummary
 from .llm import MODES, LLMClient, LLMError, safe_error
 from .models import BAND_LABELS, BANDS, KIND_LABELS, RISK_LABELS, SchemaError
-from .rules import FastFilter, RulesError
+from .rules import RulesError
 from .scenario import Scenario, ScenarioError, load_scenario
-
-STAGE_LABELS = {
-    "normalize": "正規化",
-    "fast_path": "快速過濾",
-    "thread": "Thread",
-    "router": "Router",
-    "verifier": "查證",
-    "early_action": "提前行動",
-    "reflection": "發言前自檢",
-    "card": "圖卡",
-    "speak": "發言",
-    "reporter": "回報",
-    "watchdog": "Watchdog",
-}
+from .simulation import format_trace
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -47,13 +35,9 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def print_trace(engine: Engine, scenario: Scenario) -> None:
-    messages = {message.id: message for message in scenario.messages}
     print("決策紀錄")
-    for entry in engine.trace:
-        message = messages.get(entry.event_id)
-        when = message.time.strftime("%H:%M") if message else "--:--"
-        who = scenario.member_name(message.sender) if message else "?"
-        print(f"  {entry.event_id} {when} {who}｜{STAGE_LABELS.get(entry.stage, entry.stage)}｜{entry.message}")
+    for line in format_trace(engine.trace, scenario):
+        print(f"  {line}")
     print()
 
 
@@ -70,9 +54,9 @@ def print_summary(summary: RunSummary, scenario: Scenario, engine: Engine) -> No
     print(f"候選佇列：進過 {summary.candidates} 則，還留 {summary.pending} 則，Router 跑 {summary.router_rounds} 輪")
     print(f"風險事件紀錄：{summary.records} 筆　守護人報告：{summary.reports} 則　群組回覆：{summary.replies} 則")
     print(f"模型呼叫：{llm['total_calls']} 次（{calls}）　錯誤：{llm['total_errors']} 次")
-    if isinstance(engine.fast_filter, FastFilter):
-        print(f"165 名單：{engine.fast_filter.blocklist.describe()}")
-    print(f"165 闢謠專區：{engine.verifier.rumors.describe()}")
+    print(f"165 名單：劇本指定的模擬網域 {len(engine.verifier.blocklist)} 個")
+    rumors = len(engine.verifier.rumors)
+    print(f"165 闢謠專區：{f'錄製時凍結的 {rumors} 篇' if rumors else '沒有凍結的資料，查證不提供闢謠工具'}")
     watch = engine.watchdog.snapshot()
     state = f"模型暫停（{watch['pause_reason']}）" if watch["llm_paused"] else "模型正常"
     print(f"Watchdog：檢查 {watch['checks']} 次｜通知 {summary.notices} 則｜{state}"
@@ -86,7 +70,7 @@ def print_summary(summary: RunSummary, scenario: Scenario, engine: Engine) -> No
         print(f"通知（{notice.time:%H:%M}）：{notice.message}")
 
 
-def _never_crash_on_encoding() -> None:
+def never_crash_on_encoding() -> None:
     """轉存檔案時用的是系統編碼（例如 cp950），模型文字裡的符號可能編不出來；換成問號，不要整個中斷。"""
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
@@ -94,7 +78,7 @@ def _never_crash_on_encoding() -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    _never_crash_on_encoding()
+    never_crash_on_encoding()
     args = build_parser().parse_args(argv)
     load_env_file()
     try:
@@ -104,7 +88,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.speaking:
             config = dataclasses.replace(config, speaking_mode=args.speaking)
         scenario = load_scenario(args.scenario)
-        engine = Engine(config, salt=DEMO_SALT, llm_client=LLMClient.from_config(config))
+        engine = build_engine("C", config, scenario, llm_client=LLMClient.from_config(config))
         summary = engine.run(scenario.raw_events())
     except (ConfigError, ScenarioError, SchemaError, RulesError, LLMError, ValueError, OSError) as exc:
         print(f"錯誤：{safe_error(str(exc))}", file=sys.stderr)

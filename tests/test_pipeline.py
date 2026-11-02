@@ -3,17 +3,16 @@
 import dataclasses
 import json
 from datetime import timedelta
-from types import SimpleNamespace
 
 import pytest
-from helpers import RULE, Scripted, event, make_engine, record_of, route_all, verify_json
+from helpers import RULE, RecordingAisuite, Scripted, event, make_engine, record_of, route_all, verify_json
 
 from guardian.config import PROJECT_ROOT, load_config
 from guardian.data_165 import DomainList, RumorIndex
 from guardian.engine import DEMO_SALT, Engine
-from guardian.llm import LLMClient, offline_responder
+from guardian.llm import LLMClient
 from guardian.models import RiskSignal
-from guardian.prompts import ROUTER_SYSTEM, SPEAKER_SYSTEM, VERIFIER_SYSTEM
+from guardian.prompts import ROUTER_SYSTEM
 from guardian.router import NEUTRAL_TEMPLATE, REPLY_TEMPLATE, UNVERIFIED_TEMPLATE
 from guardian.rules import BLOCKLIST_REASON, INJECTION_REASON, FastFilter, RuleSet
 from guardian.scenario import load_scenario
@@ -165,6 +164,24 @@ def test_early_action_sends_high_through_router(config):
     assert [r.event_id for r in engine.reports] == ["w"] and [r.event_id for r in engine.replies] == ["w"]
     assert llm.count("router", "route") == 0  # 不佔分流呼叫，只有起草發言
     assert llm.count("router", "draft_reply") == 1
+
+
+def test_mention_in_the_watch_band_is_answered_and_reported_like_any_question(config):
+    # 家人主動問不是提前行動（決策 D37）：medium 也要回答「有特徵」，不能回「沒看到明顯特徵」
+    llm = Scripted(verifier=verify_json("medium"))
+    engine = make_engine(config, llm, scores={"q": 45})
+    engine.run([event("q", 0, mention=True)])
+    assert [r.event_id for r in engine.reports] == ["q"]
+    reply = engine.replies[0]
+    assert reply.text != NEUTRAL_TEMPLATE and reply.card is not None
+    assert record_of(engine, "q").outcome == "reported_replied"
+    assert not any(e.stage == "early_action" for e in engine.trace)
+
+
+def test_low_result_for_a_mention_in_the_watch_band_stays_neutral(config):
+    engine = make_engine(config, Scripted(verifier=verify_json("low")), scores={"q": 45})
+    engine.run([event("q", 0, mention=True)])
+    assert [r.text for r in engine.replies] == [NEUTRAL_TEMPLATE] and engine.reports == []
 
 
 def test_early_action_failure_bothers_nobody(config):
@@ -346,21 +363,6 @@ def test_model_text_never_enters_trace_or_records_and_links_never_reach_reports(
 
 
 # ---------------------------------------------------------------- 第 12 項：錄製後回放，不需要金鑰，結果一致
-
-class RecordingAisuite:
-    """長得像 aisuite.Client，回應內容由 offline 假模型產生。"""
-
-    ROLES = {ROUTER_SYSTEM: "router", SPEAKER_SYSTEM: "router", VERIFIER_SYSTEM: "verifier"}
-
-    def __init__(self):
-        self.chat = SimpleNamespace(completions=self)
-
-    def create(self, model, messages, **kwargs):
-        system, user = messages[0]["content"], messages[1]["content"]
-        content = offline_responder(self.ROLES.get(system, "reporter"), system, user)
-        usage = SimpleNamespace(prompt_tokens=10, completion_tokens=5)
-        return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=content))], usage=usage)
-
 
 def _run_demo(config, client):
     engine = Engine(config, salt=DEMO_SALT, llm_client=client, rumors=RumorIndex())

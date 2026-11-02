@@ -27,6 +27,20 @@ KIND_LABELS = {
 }
 BAND_LABELS = {"ignore": "不處理", "watch": "觀察", "candidate": "候選"}
 RISK_LABELS = {"low": "低", "medium": "中", "high": "高"}
+STAGE_LABELS = {
+    "normalize": "正規化",
+    "fast_path": "快速過濾",
+    "thread": "Thread",
+    "router": "Router",
+    "verifier": "查證",
+    "early_action": "提前行動",
+    "reflection": "發言前自檢",
+    "card": "圖卡",
+    "speak": "發言",
+    "reporter": "回報",
+    "watchdog": "Watchdog",
+    "approach": "做法",
+}
 
 # 風險事件的最小紀錄只能有這些欄位（SPEC 第 7 節）
 RECORD_FIELDS = ("event_id", "time", "sender_hash", "rules", "risk_level", "outcome")

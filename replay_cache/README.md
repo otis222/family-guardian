@@ -6,3 +6,5 @@
 - 檔名是「角色＋模型＋system prompt＋user prompt」的 SHA-256。prompt 有任何改動，就要重新錄製。
 - 檔案只存雜湊、模型名稱、回應和 token 用量，不存 prompt 原文。
 - 找不到對應的檔案時會直接報錯，不會偷偷改用 `live`。
+
+錄製：`python -m guardian.experiment --record`（需要 `GROQ_API_KEY`）。已經錄過的 prompt 不會再花 token；中途失敗會停下來，再跑一次接著錄。
